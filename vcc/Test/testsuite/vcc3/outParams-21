@@ -1,0 +1,15 @@
+#include <vcc.h>
+
+int f(int y _(out int x))
+{
+_(ghost x = 1;)
+return 1;
+}
+int test() {
+_(ghost int x1,x2;)
+f(f(0 _(out x1)) _(out x2));
+}
+`
+Verification of f succeeded.
+Verification of test succeeded.
+`

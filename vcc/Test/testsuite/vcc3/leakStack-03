@@ -1,0 +1,26 @@
+#include <vcc.h>
+
+struct S { int a; };
+
+void foo() {
+  struct S a[10];
+}
+
+void fooShouldFail() {
+  struct S a[10];
+  _(wrap &a[1])
+}
+
+
+void bar() {
+  struct S a[10];
+  _(wrap &a[1])
+  _(unwrap &a[1])
+}
+`
+Verification of foo succeeded.
+Verification of fooShouldFail failed.
+testcase(9,1) : error VC9502: Call 'stack_free(&#stackframe#0)' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the extent of the object being reclaimed is mutable'.
+Verification of bar succeeded.
+`

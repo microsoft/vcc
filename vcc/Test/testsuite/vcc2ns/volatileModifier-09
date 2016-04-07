@@ -1,0 +1,136 @@
+#include <vcc2test.h>
+
+typedef struct Node {
+  struct Node *next;
+  int data;
+} Node, *PNode;
+
+_(volatile_owns) struct Stack {
+  volatile PNode head;
+
+  _(invariant head != NULL ==> \mine(head))
+  _(invariant \forall PNode n; {&n->next} n \in \this->\owns ==> n->next == NULL || n->next \in \this->\owns)
+};
+
+_(atomic_inline)
+PNode ICX(volatile PNode  *p, PNode tst, PNode rpl)
+{
+  if (*p == tst) {
+    *p = rpl;
+    return tst;
+  } else {
+    return *p;
+  }
+}
+
+void drain(struct Stack *s _(ghost \claim c))
+  _(always c, s->\closed)
+{
+  _(atomic c,s) {
+    s->head = NULL;
+    _(set_closed_owns s, {})
+  }
+}
+
+void move(struct Stack *s1, struct Stack *s2 _(ghost \claim c))
+  _(always c, s1->\closed && s2->\closed)
+{
+  struct Node *n, *n2;
+  _(ghost  \objset s1_owns;)
+
+
+  _(atomic c,s1) {
+    n = s1->head;
+  }
+
+  _(atomic c,s1) {
+    n2 = ICX(&s1->head, n, NULL);
+    _(ghost 
+      if (n2 == n) {
+        s1_owns = s1->\owns;
+        _(set_closed_owns s1, {})
+      })
+  }
+
+
+  if (n2 == n) {
+    _(atomic c,s2) {
+      s2->head = n2;
+      _(set_closed_owns s2, s1_owns)
+    }
+  }
+}
+
+void drainFail1(struct Stack *s _(ghost \claim c))
+  _(always c, s->\closed)
+{
+  _(atomic c,s) {
+    _(set_closed_owns s, {})
+  }
+}
+
+
+void moveFail1(struct Stack *s1, struct Stack *s2 _(ghost \claim c))
+  _(always c, s1->\closed && s2->\closed)
+{
+  struct Node *n, *n2;
+  _(ghost  \objset s1_owns;)
+
+
+  _(atomic c,s1) {
+    n = s1->head;
+  }
+
+  _(atomic c,s1) {
+    n2 = ICX(&s1->head, n, NULL);
+    _(ghost 
+      if (n2 == n) {
+        s1_owns = s1->\owns;
+//        set_closed_owns(s1, set_empty());
+      })
+  }
+
+
+  if (n2 == n) {
+    _(atomic c,s2) {
+      s2->head = n2;
+      _(set_closed_owns s2, s1_owns)
+    }
+  }
+}
+
+_(dynamic_owns) struct NVO  {
+  int x;
+};
+
+void foo(struct NVO *n)
+  _(requires \wrapped(n))
+{
+  _(atomic n) {
+    _(set_closed_owns n, {})
+  }
+}
+
+void foo2(struct Stack *s)
+  _(requires \wrapped(s))
+  _(writes s)
+{
+  _(set_closed_owns s, {})
+}
+`
+Verification of Stack#adm succeeded.
+Verification of drain succeeded.
+Verification of move succeeded.
+Verification of drainFail1 failed.
+testcase(67,14) : error VC8524: Assertion 'chunk head != ((void*)0) ==> \mine(head) of invariant of s holds after atomic' did not verify.
+Verification of moveFail1 failed.
+testcase(97,9) : error VC8510: Assertion '\new_ownees(owner, owns) is writable in call to set_closed_owns s2, s1_owns' did not verify.
+testcase(97,9) : error VC9502: Call 'set_closed_owns s2, s1_owns' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'all newly owned objects are wrapped'.
+testcase(95,16) : error VC8524: Assertion 'chunk \forall PNode n; {&n->next} n \in \this->\owns ==> n->next == ((void*)0) || n->next \in \this->\owns) of invariant of s2 holds after atomic' did not verify.
+Verification of foo failed.
+testcase(110,7) : error VC9502: Call 'set_closed_owns n, {}' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the owner has volatile owns set'.
+Verification of foo2 failed.
+testcase(118,5) : error VC8532: Assertion 's is atomically updated in call to set_closed_owns s, {}' did not verify.
+`

@@ -1,0 +1,121 @@
+#include <vcc.h>
+
+struct A {
+  int x;
+  int y;
+};
+
+struct B {
+  struct A a;
+  _(invariant \mine(&a))
+};
+
+struct C {
+  struct B b;
+  int z;
+  _(invariant \mine(&b))
+};
+
+void up1(int sw, struct B *b)
+  _(writes b)
+  _(maintains \wrapped(b))
+  _(ensures sw ==> \domain_updated_at(b, {&b->a.x}))
+  _(ensures !sw ==> \domain_updated_at(b, {&b->a.y}))
+{
+  if (sw) {
+    _(unwrapping b, &b->a)
+      _(writes &b->a.x)
+    {
+      b->a.x = 1;
+    }
+  } else {
+    _(unwrapping b, &b->a)
+      _(writes &b->a.y)
+    {
+      b->a.y = 1;
+    }
+  }
+}
+
+void up2(struct C *c)
+  _(writes c)
+  _(requires \wrapped(c))
+  // note that &c->b is hidden from the set, as it is non-primitive
+  _(ensures \domain_updated_at(c, {&c->b.a.x, &c->z}))
+{
+  _(unwrapping c)
+    _(writes &c->b.a.x, &c->b)
+  {
+    up1(1, &c->b);
+  }
+
+  _(unwrapping c)
+    _(writes &c->z)
+  {
+    c->z = 12;
+  }
+}
+
+void up3(struct C *c)
+  _(writes c)
+  _(requires \wrapped(c))
+  _(ensures \domain_updated_at(c, {&c->b.a.x, &c->z}))
+{
+  _(unwrapping c)
+    _(writes &c->b.a.x, &c->z, &c->b)
+  {
+    up1(1, &c->b);
+    c->z = 12;
+  }
+}
+
+void up4(struct C *c)
+  _(writes c)
+  _(requires \wrapped(c))
+  _(ensures \domain_updated_at(c, {&c->b.a.x, &c->z}))
+{
+  _(unwrapping c)
+    _(writes &c->b.a.x, &c->z, &c->b)
+  {
+    c->z = 12;
+    up1(1, &c->b);
+  }
+}
+
+void up5(struct C *c)
+  _(writes c)
+  _(requires \wrapped(c))
+  _(ensures \domain_updated_at(c, {&c->b.a.x, &c->z}))
+{
+  _(unwrapping c)
+    _(writes &c->b.a.x, &c->z, &c->b)
+  {
+    c->z = 12;
+    up1(1, &c->b);
+    c->z = 13;
+  }
+}
+
+void up6(struct C *c)
+  _(writes c)
+  _(requires \wrapped(c))
+  _(ensures \domain_updated_at(c, {&c->b.a.x, &c->b.a.y}))
+{
+  _(unwrapping c)
+    _(writes &c->b.a.x, &c->b.a.y, &c->b)
+  {
+    up1(1, &c->b);
+    up1(0, &c->b);
+  }
+}
+
+`
+Verification of B#adm succeeded.
+Verification of C#adm succeeded.
+Verification of up1 succeeded.
+Verification of up2 succeeded.
+Verification of up3 succeeded.
+Verification of up4 succeeded.
+Verification of up5 succeeded.
+Verification of up6 succeeded.
+`

@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+typedef unsigned __int32 UINT32;
+
+typedef union _S
+{
+  _(backing_member) int AsUINT32:32;
+  int bla;
+} S;
+
+void foo(S *s)
+  _(writes s)
+  _(maintains \wrapped(s))
+  _(ensures s->AsUINT32 == 10)
+ { 
+  _(unwrapping s) {
+  s->AsUINT32 = 10;
+  }
+ }
+`
+Verification of foo succeeded.
+`

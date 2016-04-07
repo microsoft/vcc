@@ -1,0 +1,7 @@
+#include <vcc.h>
+struct Acct {
+  _(ghost volatile int baz;)
+};
+`
+testcase(2,1) : error VC9620: need at least one physical field in structure, got only ghost fields
+`

@@ -1,0 +1,65 @@
+#include "vcc2test.h"
+
+struct A {
+  int x;
+  int y[10];
+
+  _(invariant \this->x > 0)
+};
+
+void baz(struct A*a)
+  _(requires \wrapped(a))
+  _(ensures \wrapped(a))
+  _(writes a)
+{
+  _(unwrap a)
+  a->x = 12;
+  a->y[9] = 78;
+  _(wrap a)
+}
+
+
+void bar(struct A*a)
+  _(requires \mutable(a))
+  _(writes \full_extent(a))
+{
+  a->y[0] = 3;
+  a->y[9] = 3;
+  a->x = 12;
+  _(assert \addr_eq(&a->y[-1], &a->x))
+  *(_(retype)(&a->y[-1])) = 3;
+}
+
+void foo()
+{
+  struct A *a;
+  int *tmp;
+  int q;
+
+  a = malloc(sizeof(struct A));
+  if (a != NULL) {
+    a->x = 12;
+    tmp = a->y;
+    q = a->y[3];
+  }
+}
+
+
+_(ghost void fooSafe()
+{
+  struct A ^a;
+  int ^tmp;
+  int q;
+
+  a = \alloc<struct A>();
+  a->x = 12;
+  tmp = &a->y[0];
+  q = a->y[3];
+})
+`
+Verification of A#adm succeeded.
+Verification of baz succeeded.
+Verification of bar succeeded.
+Verification of foo succeeded.
+Verification of fooSafe succeeded.
+`

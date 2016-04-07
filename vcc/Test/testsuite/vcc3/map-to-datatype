@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+_(datatype D1 {
+  case A();
+  case B(int);
+})
+
+void foo()
+{
+  _(ghost D1 m[\integer])
+  _(ghost m[7] = A())
+}
+
+`
+Verification of foo succeeded.
+`

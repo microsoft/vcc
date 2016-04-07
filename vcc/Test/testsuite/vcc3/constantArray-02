@@ -1,0 +1,13 @@
+#include <vcc.h>
+
+unsigned const int a[] = {0, 1, 2, 3, 4, 5};
+
+void fooShoudFail(unsigned int n)
+  _(requires n < 6)
+  _(writes &a[n])
+{
+  a[n] = 5;
+}
+`
+testcase(9,3) : error VC0000: The left-hand side of an assignment must be a variable, property or indexer.
+`

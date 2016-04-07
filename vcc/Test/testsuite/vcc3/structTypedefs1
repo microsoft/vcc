@@ -1,0 +1,7 @@
+#include <vcc.h>
+
+typedef struct _S { int x; int y; } S;
+typedef struct _T { int x; S s; } T;
+static T  t[] = { {1, { 1,2}, }, {2, {2,3},}};
+`
+`

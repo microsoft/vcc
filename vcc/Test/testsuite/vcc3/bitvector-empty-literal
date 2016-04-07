@@ -1,0 +1,25 @@
+#include <vcc.h>
+
+#define BIT(y) (1UI64<<(y))
+
+typedef unsigned __int64 uint64_t;
+
+void foo1() {
+  _(assert {:bv} \forall uint64_t a, i, j; i < 64 && j < 64 && i != j ==> ((a | BIT(i)) & BIT(j)) == (a & BIT(j)))
+}
+
+void foo2() {
+  _(assert {:bv} \forall uint64_t a, i; i < 64 ==> (!((a & ~BIT(i)) & BIT(i))))
+}
+
+void foo3() {
+  _(assert {:bv} \forall uint64_t a, i, j; i < 64 && j < 64 && i != j ==> (((a & ~BIT(i)) & BIT(j)) == (a & BIT(j))))
+}
+`
+Verification of foo1 succeeded.
+Verification of foo2 succeeded.
+Verification of foo3 succeeded.
+Verification of foo1#bv_lemma#0 succeeded.
+Verification of foo2#bv_lemma#0 succeeded.
+Verification of foo3#bv_lemma#0 succeeded.
+`

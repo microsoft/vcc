@@ -1,0 +1,45 @@
+#include <vcc.h>
+
+_(record) struct S {
+  int a;
+  int b;
+};
+
+
+_(record) struct T {
+ struct S s;
+ int c;
+};
+
+_(ghost _(pure) struct S foo() 
+  _(ensures \result == (struct S) { .a = 10, .b = 20 } && \result.a == 20);)
+
+
+_(ghost _(pure) struct T foo2(struct S s) 
+  _(ensures \result == (struct T) { .s = s, .c = 20 } && \result.s.a == 20);)
+
+
+_(ghost _(pure) struct T foo3(struct S s) 
+  _(ensures \result == (struct T) { .s = s, .c = 20 } && \result.s == (struct S) { .a = 10, .b = 20 });)
+
+
+_(ghost _(pure) struct T foo4(struct S s) 
+  _(ensures \result.s == s && \result.s.a == 20);)
+
+
+void baz()
+{
+  _(ghost struct S s;) 
+  _(ghost struct T t;) 
+
+  _(ghost s = foo();) _(ghost t = foo2(s);) _(ghost t = foo3(s);)  _(ghost t = foo4(s);) 
+ _(assert \false)
+
+}
+`
+testcase(15,59) : warning VC9311: [possible unsoundness]: value of '\result.a' was already defined in this pure function contract (as '\result')
+testcase(19,58) : warning VC9311: [possible unsoundness]: value of '\result.s.a' was already defined in this pure function contract (as '\result')
+testcase(23,58) : warning VC9311: [possible unsoundness]: value of '\result.s' was already defined in this pure function contract (as '\result')
+testcase(27,31) : warning VC9311: [possible unsoundness]: value of '\result.s.a' was already defined in this pure function contract (as '\result.s')
+Verification of baz succeeded.
+`

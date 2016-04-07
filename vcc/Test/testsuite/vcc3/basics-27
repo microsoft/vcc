@@ -1,0 +1,14 @@
+#include "vcc.h"
+
+typedef struct _T
+{
+    unsigned d;
+} T;
+
+void foo() {
+    _(assert \forall T x; 42)
+}
+
+`
+Verification of foo succeeded.
+`

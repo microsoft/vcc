@@ -1,0 +1,8 @@
+#include "vcc.h"
+struct X {
+    int dummy;
+    _(invariant (&\this)->\closed)
+};
+`
+testcase(4,18) : error VC0000: Cannot take the address of the given expression.
+`

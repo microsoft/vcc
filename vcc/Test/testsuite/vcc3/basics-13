@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+static void notJustForFun (
+    unsigned char *lo,
+    unsigned char *hi,
+    unsigned int width
+    )
+_(requires \thread_local_array(lo, (1u << 31) + 10u))
+_(requires lo+width == hi)
+_(requires width == (1u << 31) + 1)
+{
+
+	hi = hi - width;
+	_(assert hi == lo)
+}
+`
+Verification of notJustForFun succeeded.
+`

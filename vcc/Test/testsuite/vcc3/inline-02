@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+_(primitive)
+struct S {
+	struct R { int i; } a;
+	
+};
+
+void foo(struct S *s) 
+	_(writes s)
+	_(ensures s->a.i == 0)
+{
+	s->a.i = 0;
+}
+`
+testcase(4,1) : error VC9741: type 'S' has field of non-primitive type 'struct S.R' and thus cannot be marked 'primitive'
+`

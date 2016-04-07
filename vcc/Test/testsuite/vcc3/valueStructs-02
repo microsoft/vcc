@@ -1,0 +1,34 @@
+#include <vcc.h>
+
+typedef unsigned __int64 UINT64;
+typedef unsigned __int32 UINT32;
+
+struct C;
+
+#ifdef VERIFY
+
+struct A {
+  UINT64 a;
+  struct C *c;
+  _(invariant abs(\this->c).a == \this->a)
+};
+
+#endif
+
+_(ghost _(pure) struct A abs(struct C *c);)
+struct C {
+  UINT32 x;
+  UINT32 y;
+};
+
+_(ghost _(pure) struct A abs(struct C *c) 
+  _(requires \thread_local(c))
+{
+  struct A r;
+  r.a = _(unchecked)(c->x + c->y);
+  return r;
+})
+`
+Verification of A#adm succeeded.
+Verification of abs succeeded.
+`

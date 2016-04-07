@@ -1,0 +1,47 @@
+#include <vcc.h>
+#include <limits.h>
+
+_(void bar()
+  _(decreases 0)
+{
+})
+
+_(void foo()
+  _(decreases 1)
+{
+  \integer i;
+  _(assume i > 0)
+
+  while (i -= 1) 
+    _(decreases i)
+    _(invariant i > 0)
+  {
+    bar();
+  }
+})
+
+
+void barP()
+  _(decreases 0)
+{
+}
+
+void fooP()
+  _(decreases 1)
+{
+  unsigned i;
+  _(assume i > 0)
+
+  while (_(unchecked)i--)
+    _(decreases i)
+  {
+    barP();
+  }
+}
+
+`
+Verification of bar succeeded.
+Verification of foo succeeded.
+Verification of barP succeeded.
+Verification of fooP succeeded.
+`

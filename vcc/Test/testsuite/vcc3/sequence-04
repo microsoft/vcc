@@ -1,0 +1,19 @@
+#include <vcc.h>
+
+int foo(int i, int j) {
+		return i;
+}
+
+int f() { return 1; }
+
+void bar() {
+	int i;
+	foo((i = 1), 
+		f());
+}
+
+`
+Verification of foo succeeded.
+Verification of f succeeded.
+Verification of bar succeeded.
+`

@@ -1,0 +1,16 @@
+#include <vcc.h>
+int x(int param) {
+return 0;
+}
+
+typedef int (*f)(int);
+
+f F = x;
+
+int main() {
+  return 0;
+}
+`
+Verification of x succeeded.
+Verification of main succeeded.
+`

@@ -1,0 +1,20 @@
+#include <vcc.h>
+
+_(ghost typedef _(record) struct Foo {
+  \bool x;
+} Foo)
+
+_(ghost typedef struct Bar {
+  Foo node[\integer];
+} Bar)
+
+_(ghost void foo()
+{
+  Bar t;
+  t.node = \lambda \integer i; (Foo) { .x = \false };
+
+})
+
+`
+Verification of foo succeeded.
+`

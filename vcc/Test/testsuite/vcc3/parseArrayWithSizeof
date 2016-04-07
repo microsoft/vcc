@@ -1,0 +1,6 @@
+#include <vcc.h>
+
+typedef struct _FOO { __int32 x; } FOO;
+typedef char __C_ASSERT__[sizeof(FOO)];
+`
+`

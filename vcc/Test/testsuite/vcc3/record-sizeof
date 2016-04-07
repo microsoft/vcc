@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+_(record A {
+  int x;
+  int y;
+})
+
+_(ghost void foo()
+{
+  A a;
+
+  _(assert sizeof(A) == 1)
+})
+`
+Verification of foo succeeded.
+`

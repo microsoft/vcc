@@ -1,0 +1,20 @@
+` /ps:32
+
+#include <vcc.h>
+
+struct S {
+  volatile __int64 a;
+};
+
+void foo(struct S *s) 
+  _(requires \wrapped(s))
+{ 
+  __int64 a;
+  _(atomic s) {
+    a = s->a;
+  }
+}
+`
+testcase(13,9) : warning VC9320: [possible unsoundness]: accessing 64 bits of memory may not be not atomic on this architecture
+Verification of foo succeeded.
+`

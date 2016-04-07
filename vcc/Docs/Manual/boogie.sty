@@ -1,0 +1,41 @@
+\usepackage{listings}
+\lstdefinelanguage{BoogiePL}%
+  {morekeywords={const,unique,axiom,procedure,implementation,return,returns,bool,int,type,function,%
+                 assert,assume,if,else,havoc,requires,ensures,var,call,modifies,old,true,false,},
+   literate=
+     {&&}{{$\wedge$}}1
+     {||}{{$\vee$}}1
+     {forall}{{$\forall$}}1
+     {exists}{{$\exists$}}1
+     {==}{{=}}1
+     {<=}{$\le$}1%
+     {>=}{$\ge$}1%
+     {==>}{{$\Rightarrow$}}1
+     {<==>}{{$\Leftrightarrow$}}1
+     {::}{{$\bullet$}}1
+     {!}{{$\neg$}}1
+     {!=}{{$\neq$}}1
+   ,
+   sensitive=t,
+   morecomment=[l]{//},
+   morecomment=[s]{/*}{*/},
+   morestring=[b]"
+  }
+
+\lstnewenvironment{BPL}[1][]{%
+  \lstset{%
+    floatplacement={tbp},
+    captionpos=b,language=BoogiePL,#1
+    }}{}%
+
+\def\bpl{%
+    \lstinline[language=BoogiePL,columns=fullflexible]}
+
+\lstnewenvironment{BPL2}[1][]
+    {\global\let\lst@intname\@empty
+     \gdef\lst@sample{}%
+    \setbox0=\hbox\bgroup
+         \setkeys{lst}{floatplacement={tbp},captionpos=b,language=BoogiePL,#1}
+         }
+    {\egroup%
+      \noindent\begin{minipage}{0.45\linewidth}\hbox to\linewidth{\box0\hss}\end{minipage}}

@@ -1,0 +1,81 @@
+#include "vcc2test.h"
+
+struct B { int x; };
+
+struct A {
+  struct B *b;
+};
+
+struct C {
+  struct B *b;
+  _(invariant \mine(b))
+};
+
+void failWr(struct A*a)
+  _(requires \mutable(a))
+{
+  _(wrap a)
+}
+
+void failMut(struct A*a)
+  _(requires \wrapped(a))
+  _(writes a)
+{
+  _(wrap a)
+}
+
+void okA(struct A*a)
+  _(requires \mutable(a))
+  _(ensures \wrapped(a))
+  _(writes a)
+{
+  _(wrap a)
+}
+
+void okC(struct C*c, struct B*b)
+  _(requires \wrapped(b))
+  _(writes \extent(c), b)
+  _(ensures \wrapped(c) && \nested(b))
+{
+  c->b = b;
+  _(wrap c)
+}
+
+void failCChWr(struct C*c, struct B*b)
+  _(requires \wrapped(b))
+  _(writes \extent(c))
+{
+  c->b = b;
+  _(wrap c)
+}
+
+void failCChWrap(struct C*c, struct B*b)
+  _(writes \extent(c), b)
+{
+  c->b = b;
+  _(wrap c)
+}
+
+void failWrongCh(struct C*c, struct B*b)
+  _(requires \wrapped(b))
+  _(writes \extent(c), b)
+{
+  _(wrap c)
+}
+`
+Verification of C#adm succeeded.
+Verification of failWr failed.
+testcase(17,10) : error VC8020: 'a' is not writable before wrapping it.
+Verification of failMut failed.
+testcase(24,5) : error VC9502: Call 'wrap a' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the object being wrapped is mutable'.
+Verification of okA succeeded.
+Verification of okC succeeded.
+Verification of failCChWr failed.
+testcase(49,10) : error VC8019: 'b' is not writable before wrapping 'c' (its owner).
+Verification of failCChWrap failed.
+testcase(56,10) : error VC8018: 'b' is not wrapped before wrapping 'c' (its owner).
+Verification of failWrongCh failed.
+testcase(63,10) : error VC8018: 'b' is not wrapped before wrapping 'c' (its owner).
+testcase(63,10) : error VC8019: 'b' is not writable before wrapping 'c' (its owner).
+`

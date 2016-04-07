@@ -1,0 +1,11 @@
+#include <vcc.h>
+#include <limits.h>
+
+void foo()
+{
+  unsigned i = UINT_MAX / 2;
+  _(assert i == INT_MAX)
+} 
+`
+Verification of foo succeeded.
+`

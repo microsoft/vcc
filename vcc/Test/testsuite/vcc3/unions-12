@@ -1,0 +1,28 @@
+#include "vcc.h"
+
+typedef unsigned __int64 UINT64;
+
+typedef union U
+{
+    struct 
+    {
+                UINT64   Rax;
+                UINT64   Rip;
+    };
+    _(backing_member) UINT64  AsUINT64[2];
+} U, *PU;
+
+
+void foo(PU vmcb, UINT64 Value)
+        _(maintains \wrapped(vmcb))
+        _(writes vmcb)
+        _(ensures vmcb->Rip == Value)
+{
+        _(unwrap vmcb)
+        vmcb->Rip = Value;
+        _(assert vmcb->Rip == Value)
+        _(wrap vmcb)
+};
+`
+Verification of foo succeeded.
+`

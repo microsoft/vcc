@@ -1,0 +1,60 @@
+#include <vcc.h>
+
+_(logic \bool fresh_object(\object ptr) =
+  \object_root(ptr) && \mutable(ptr) && \fresh(ptr))
+
+void *alloc(unsigned __int64  sz)
+  _(ensures fresh_object(_(blob sz)(\result)))
+  ;
+
+typedef unsigned __int8 uint8_t;
+
+struct S { int a; };
+struct T { int a, b; };
+
+void foo()
+{
+    struct S *s = _(unblobify) _(root_array 10) (struct S *s) alloc(10 * sizeof(struct S));
+}
+
+void bar()
+{
+    unsigned P = sizeof(struct T);
+    unsigned Q = 10 * sizeof(struct S);
+    unsigned R = P + Q;
+    uint8_t *p = alloc(R);
+
+    _(split_blob _(blob R) p, P);
+
+    struct T *t = _(unblobify) (struct T *) p;
+
+    p += P;
+
+    struct S *s = _(unblobify) _(root_array 10) (struct S *s) p;
+}
+
+void baz()
+{
+    unsigned P = sizeof(struct T);
+    unsigned Q = 10 * sizeof(struct S);
+    unsigned R = P + Q;
+    uint8_t *p = alloc(R + 42);
+
+    _(split_blob _(blob R + 42) p, P);
+
+    struct T *t = _(unblobify) (struct T *) p;
+
+    p += P;
+
+    _(split_blob _(blob Q + 42) p, Q);
+
+    struct S *s = _(unblobify) _(root_array 10) (struct S *s) p;
+
+    _(assert \forall unsigned x; x < 10 ==> \mutable(&s[x]))
+}
+
+/*`
+Verification of foo succeeded.
+Verification of bar succeeded.
+Verification of baz succeeded.
+`*/

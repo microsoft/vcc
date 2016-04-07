@@ -1,0 +1,41 @@
+#include <vcc.h>
+
+typedef struct _S { 
+  __int64 a;
+  __int64 b; 
+ } S;
+
+void foo() 
+{
+  __int8 i8 = 0;
+  __int16 i16 = 0;
+  __int32 i32 = 0;
+  __int64 i64 = 0;
+  unsigned __int8  ui8 = 0;
+  unsigned __int16 ui16 = 0;
+  unsigned __int32 ui32 = 0;
+  unsigned __int64 ui64 = 0;
+  struct _S x_s;
+  S xs;
+  void* p = (void *)0;
+  char* strings[] ={"one", "two", "three"};
+  char* strings4[4];
+
+  _(assert sizeof(i8) == 1)
+  _(assert sizeof(i16) == 2)
+  _(assert sizeof(i32) == 4)
+  _(assert sizeof(i64) == 8)
+  _(assert sizeof(ui8) == 1)
+  _(assert sizeof(ui16) == 2)
+  _(assert sizeof(ui32) == 4)
+  _(assert sizeof(ui64) == 8)
+  _(assert sizeof(x_s) == sizeof(struct _S))
+  _(assert sizeof(xs) == sizeof(S))
+  _(assert sizeof(p) == sizeof(void *))
+  _(assert (sizeof strings)/(sizeof strings[0]) == 3) 
+  _(assert (sizeof strings4)/(sizeof strings4[0]) == 4) 
+  
+}
+`
+Verification of foo succeeded.
+`

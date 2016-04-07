@@ -1,0 +1,195 @@
+#include <vcc.h>
+
+struct A {
+  int x;
+  int y;
+};
+
+struct B {
+  struct A a;
+  _(invariant \mine(&a))
+};
+
+struct C {
+  struct B b;
+  int z;
+  int z2;
+  _(invariant \mine(&b))
+};
+
+void up1(int sw, struct B *b)
+  _(writes b)
+  _(maintains \wrapped(b))
+  _(ensures sw ==> \domain_updated_at(b, {&b->a.x}))
+  _(ensures !sw ==> \domain_updated_at(b, {&b->a.y}))
+{
+  if (sw) {
+    _(unwrapping b, &b->a)
+      _(writes &b->a.x)
+    {
+      b->a.x = 1;
+    }
+  } else {
+    _(unwrapping b, &b->a)
+      _(writes &b->a.x)
+    {
+      b->a.x = 1;
+    }
+  }
+}
+
+void up1b(int sw, struct B *b)
+  _(writes b)
+  _(maintains \wrapped(b))
+  //ensures(sw ==> domain_updated_at(b, SET(&b->a.x)))
+  _(ensures !sw ==> \domain_updated_at(b, {&b->a.y}));
+
+void up2(struct C *c)
+  _(writes c)
+  _(requires \wrapped(c))
+{
+  _(unwrapping c)
+    _(writes &c->b.a.x)
+  {
+    up1(1, &c->b);
+  }
+}
+
+void up2b(struct C *c)
+  _(writes c)
+  _(requires \wrapped(c))
+{
+  _(unwrapping c)
+    _(writes &c->b.a.y, &c->b)
+  {
+    up1(1, &c->b);
+  }
+}
+
+void up2c(struct C *c)
+  _(writes c)
+  _(requires \wrapped(c))
+{
+  _(unwrapping c)
+    _(writes &c->b)
+  {
+    up1(1, &c->b);
+  }
+}
+
+void up2d(struct C *c)
+  _(writes c)
+  _(requires \wrapped(c))
+  _(ensures \domain_updated_at(c, {&c->b.a.y}))
+{
+  _(unwrapping c)
+    _(writes &c->b.a.x, &c->b)
+  {
+    up1(1, &c->b);
+  }
+}
+
+void up2f(struct C *c)
+  _(writes c)
+  _(requires \wrapped(c))
+  _(ensures \domain_updated_at(c, {&c->b.a.x}))
+{
+  _(unwrapping c)
+    _(writes &c->b.a.x, &c->b)
+  {
+    up1b(1, &c->b);
+  }
+}
+
+void up2ok(struct C *c)
+  _(writes c)
+  _(requires \wrapped(c))
+  _(ensures \domain_updated_at(c, {&c->b.a.x}))
+{
+  _(unwrapping c)
+    _(writes &c->b.a.x, &c->b)
+  {
+    up1(1, &c->b);
+  }
+}
+
+void up3(struct C *c)
+  _(writes c)
+  _(requires \wrapped(c))
+  _(ensures \domain_updated_at(c, {&c->b.a.x, &c->z}))
+{
+  _(unwrapping c)
+    _(writes &c->b.a.x, &c->z, &c->b)
+  {
+    up1(1, &c->b);
+    c->z2 = 12;
+  }
+}
+
+void up4(struct C *c)
+  _(writes c)
+  _(requires \wrapped(c))
+  _(ensures \domain_updated_at(c, {&c->b.a.x, &c->z}))
+{
+  _(unwrapping c)
+    _(writes &c->b.a.x, &c->z, &c->b)
+  {
+    c->z2 = 12;
+    up1(1, &c->b);
+  }
+}
+
+void up5(struct C *c)
+  _(writes c)
+  _(requires \wrapped(c))
+  _(ensures \domain_updated_at(c, {&c->b.a.x, &c->z}))
+{
+  _(unwrapping c)
+    _(writes &c->b.a.x, &c->z, &c->b)
+  {
+    c->z2 = 12;
+    up1(1, &c->b);
+    c->z = 13;
+  }
+}
+
+void up6(struct C *c)
+  _(writes c)
+  _(requires \wrapped(c))
+  _(ensures \domain_updated_at(c, {&c->b.a.x, &c->z}))
+{
+  _(unwrapping c)
+    _(writes &c->b.a.x, &c->z, &c->b)
+  {
+    c->z = 12;
+    up1(1, &c->b);
+    c->z2 = 13;
+  }
+}
+`
+Verification of B#adm succeeded.
+Verification of C#adm succeeded.
+Verification of up1 failed.
+testcase(39,1) : error VC9501: Post condition '!sw ==> \domain_updated_at(b, {&b->a.y})' did not verify.
+testcase(24,13) : error VC9599: (related information) Location of post condition.
+Verification of up2 failed.
+testcase(51,16) : error VC8530: Assertion 'skinny_expose(c, ...) body has written at an unlisted location' did not verify.
+Verification of up2b failed.
+testcase(62,16) : error VC8530: Assertion 'skinny_expose(c, ...) body has written at an unlisted location in a domain' did not verify.
+Verification of up2c failed.
+testcase(73,16) : error VC8530: Assertion 'skinny_expose(c, ...) body has written at an unlisted location in a domain' did not verify.
+Verification of up2d failed.
+testcase(90,1) : error VC9501: Post condition '\domain_updated_at(c, {&c->b.a.y})' did not verify.
+testcase(83,13) : error VC9599: (related information) Location of post condition.
+Verification of up2f failed.
+testcase(97,16) : error VC8530: Assertion 'skinny_expose(c, ...) body has written at an unlisted location in a domain' did not verify.
+Verification of up2ok succeeded.
+Verification of up3 failed.
+testcase(121,16) : error VC8530: Assertion 'skinny_expose(c, ...) body has written at an unlisted location' did not verify.
+Verification of up4 failed.
+testcase(134,16) : error VC8530: Assertion 'skinny_expose(c, ...) body has written at an unlisted location' did not verify.
+Verification of up5 failed.
+testcase(147,16) : error VC8530: Assertion 'skinny_expose(c, ...) body has written at an unlisted location' did not verify.
+Verification of up6 failed.
+testcase(161,16) : error VC8530: Assertion 'skinny_expose(c, ...) body has written at an unlisted location' did not verify.
+`

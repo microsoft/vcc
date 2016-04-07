@@ -1,0 +1,11 @@
+#include "vcc.h"
+// This example should yield a warning / error
+int foo(_(out int a));
+void bar() {
+  int x;
+  foo(_(out x));
+}
+`
+testcase(6,7) : warning VC9304: [possible unsoundness]: physical location passed as out parameter
+Verification of bar succeeded.
+`

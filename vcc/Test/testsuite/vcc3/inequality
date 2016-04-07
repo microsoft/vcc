@@ -1,0 +1,9 @@
+#include <vcc.h>
+
+void foo() {
+  _(assert 1 == 2)
+}
+`
+Verification of foo failed.
+testcase(4,12) : error VC9500: Assertion '1 == 2' did not verify.
+`

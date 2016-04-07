@@ -1,0 +1,33 @@
+#include <vcc.h>
+
+typedef struct _S {
+  int *p;
+} S;
+
+void foo(S s)
+  _(requires (s.p)->\valid) {
+}
+
+typedef union _U {
+  int *a;
+  _(backing_member) unsigned __int64 *b;
+} U;
+
+void bar(U u) 
+  _(requires (u.a)->\valid) {
+}
+
+void baz(int *p) {
+  S s;
+  U u;
+  s.p = p;
+  u.a = p;
+  s.p = u.a;
+  u.a = s.p;
+}
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+Verification of baz succeeded.
+`

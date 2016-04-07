@@ -1,0 +1,36 @@
+#include <vcc.h>
+
+typedef unsigned __int64 UINT64;
+
+ _(ghost typedef \bool BITMAP[UINT64];) 
+
+
+_(ghost _(pure) BITMAP ToBm64(UINT64 n);)
+
+
+typedef union _BITSET_INDEX {
+_(backing_member) UINT64 AsUINT64;
+struct {
+UINT64 BitIndex:5;
+UINT64 IntegerIndex:10;
+UINT64 RbKey:49;
+};
+} BITSET_INDEX, *PBITSET_INDEX;
+
+_(ghost _(pure)
+BITMAP PgBitmap(unsigned int Page[])
+  _(reads \universe())
+  _(ensures \forall BITSET_INDEX i; \result[i.AsUINT64] <==> ToBm64((UINT64)Page[i.IntegerIndex])[i.BitIndex]);)
+
+
+void foo() {
+  unsigned int P[1024];
+  _(ghost BITMAP bm)
+  _(ghost bm = PgBitmap(P))
+  _(assume !ToBm64(P[0])[0])
+  _(assert !bm[0])
+}
+`
+testcase(20,11) : warning VC9310: [possible unsoundness]: a non-equality postcondition in a pure function (not _(ensures \result == ...))
+Verification of foo succeeded.
+`

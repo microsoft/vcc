@@ -1,0 +1,41 @@
+#include "vcc.h"
+
+void foo(int x)
+  _(requires x > 0);
+
+void ok1(int x)
+{
+  foo(x);
+  _(assume \start_here())
+}
+
+void fail1(int x)
+{
+  _(assume \start_here())
+  foo(x);
+}
+
+
+struct A { int x; };
+
+void ok2(struct A *a)
+{
+  _(wrap a)
+  _(assume \start_here())
+}
+
+void fail2(struct A *a)
+{
+  _(wrap a)
+}
+`
+Verification of ok1 succeeded.
+Verification of fail1 failed.
+testcase(15,3) : error VC9502: Call 'foo(x)' did not verify.
+testcase(4,14) : error VC9599: (related information) Precondition: 'x > 0'.
+Verification of ok2 succeeded.
+Verification of fail2 failed.
+testcase(29,10) : error VC8020: 'a' is not writable before wrapping it.
+testcase(29,5) : error VC9502: Call 'wrap a' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the object being wrapped is mutable'.
+`

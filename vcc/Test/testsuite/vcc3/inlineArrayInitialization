@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+typedef union _X86X_PAT_ATTRIBUTES
+{
+    struct    {        unsigned __int8 Pat[8];    };
+    unsigned __int64 AsUINT64;
+} X86X_PAT_ATTRIBUTES;
+X86X_PAT_ATTRIBUTES HkpP = { 16,    13,    7,    2,    4,    5,    6,   6};
+`
+`

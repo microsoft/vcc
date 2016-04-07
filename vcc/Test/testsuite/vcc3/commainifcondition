@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+// should return 0... the tester wouldnt complain..
+int main() {
+  int i = (0,1);
+  _(assert i)
+  return 1;
+}
+`
+testcase(5,12) : warning VC9001: The expression '0' has no side effect; expected operation with side effect.
+Verification of main succeeded.
+`

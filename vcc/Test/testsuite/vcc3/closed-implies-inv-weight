@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+typedef struct S {
+               struct S *p;
+               _(invariant \on_unwrap(\this,\false))
+               _(invariant \this->\closed ==> p->\closed)
+} S;
+`
+Verification of S#adm succeeded.
+`

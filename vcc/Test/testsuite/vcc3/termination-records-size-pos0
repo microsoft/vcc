@@ -1,0 +1,23 @@
+#include <vcc.h>
+
+_(typedef _(record) struct S {
+int x;
+} S;)
+
+_(datatype D {
+case d1();
+case d2(S s, D d);
+})
+
+_(def \bool foo(D d) {
+switch (d) {
+case d1(): return \true;
+case d2(s,x):
+  //_(assert s.x != 0)
+  return foo(x);
+}
+})
+
+`
+Verification of foo succeeded.
+`

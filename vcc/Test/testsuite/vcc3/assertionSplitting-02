@@ -1,0 +1,21 @@
+#include <vcc.h>
+
+_(logic \bool And(\bool a, \bool b) = (a && b);)
+
+void foo2()
+{
+  int a, b, c;
+  _(assert And(a > b, And(b > c, b > 0)))
+}
+
+`
+Verification of foo2 failed.
+testcase(8,16) : error VC9500: Assertion 'a > b' did not verify.
+testcase(3,3) : error VC9599: (related information) from expansion of 'And(a > b, And(b > c, b > 0))'.
+testcase(8,27) : error VC9500: Assertion 'b > c' did not verify.
+testcase(3,3) : error VC9599: (related information) from expansion of 'And(a > b, And(b > c, b > 0))'.
+testcase(3,3) : error VC9599: (related information) from expansion of 'And(b > c, b > 0)'.
+testcase(8,34) : error VC9500: Assertion 'b > 0' did not verify.
+testcase(3,3) : error VC9599: (related information) from expansion of 'And(a > b, And(b > c, b > 0))'.
+testcase(3,3) : error VC9599: (related information) from expansion of 'And(b > c, b > 0)'.
+`

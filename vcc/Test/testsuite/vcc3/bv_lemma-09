@@ -1,0 +1,9 @@
+#include <vcc.h>
+
+void foo() {
+  _(assert {:bv} \forall unsigned int i; i == i)
+}
+`
+Verification of foo succeeded.
+Verification of foo#bv_lemma#0 succeeded.
+`

@@ -1,0 +1,40 @@
+#include <vcc2test.h>
+
+struct A {
+  int z;
+};
+
+
+_(ghost _(record) struct S {
+  int dummy;
+  struct A *a;
+  int b;
+  \object o;
+  int map[int];
+};)
+
+
+_(ghost struct S foo(struct A *a, struct S s0) 
+  _(ensures \result == s0 / { .a = a })
+{
+  return s0 / { .a = a };
+})
+
+void bar() {
+  _(ghost struct S s = { .dummy = 1 })
+  struct A a;
+
+
+  _(ghost s = foo(&a, s))
+  _(assert s.a == &a)
+
+   _(ghost s = s / { .o = &a };) 
+  _(assert s.o == &a)
+
+   _(ghost s.map = (\lambda int x; x + 1);) 
+  _(assert s.map[2] == 3)
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

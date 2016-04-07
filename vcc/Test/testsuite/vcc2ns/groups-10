@@ -1,0 +1,32 @@
+#include <vcc.h>
+
+struct S{
+
+  _(group G0)
+  _(group G1)
+  int a;
+  _(group G)
+  int b;
+  int c;
+  _(group G2)
+};
+
+struct T {
+  int a;
+  int b;
+  int c;
+};
+
+void foo(struct S *s) {
+  _(assert &(s->b) - &(s->a) == &(s->c) - &(s->b))
+}
+
+void bar(struct T *t) {
+  size_t ss = sizeof(struct S);
+  size_t st = sizeof(struct T);
+  _(assert ss == st)
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

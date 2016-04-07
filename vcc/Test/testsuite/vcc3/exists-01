@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+_(pure) int f(int);
+void foo()
+{
+  int x = 10;
+  _(assert \exists int i; {f(i)} i < 0 && i == x)
+}
+`
+Verification of foo failed.
+testcase(7,12) : error VC9500: Assertion '\exists int i; {f(i)} i < 0 && i == x)' did not verify.
+`

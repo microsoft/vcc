@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+typedef struct _S {
+  unsigned __int64 a;
+  union {
+    _(backing_member) int *p;
+    int *q;
+  };
+} S;
+
+void foo(S s)
+  _(requires (s.p)->\valid) {
+}
+
+`
+Verification of foo succeeded.
+`

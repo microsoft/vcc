@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+typedef struct Foo {
+int x;
+} Foo;
+
+void foo() {
+_(ghost Foo f)
+f.x = 3;
+}
+`
+testcase(9,1) : warning VC9301: [possible unsoundness]: write to specification variable 'f' from non-specification code
+Verification of foo succeeded.
+`

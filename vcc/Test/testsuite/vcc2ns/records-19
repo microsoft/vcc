@@ -1,0 +1,21 @@
+#include <vcc.h>
+
+_(record) struct S {
+  int a;
+  int b;
+};
+
+
+_(record) struct T {
+  struct S s;
+  struct S s1;
+  int c;
+};
+
+_(ghost _(pure) struct T foo()
+  _(ensures \result == (struct T) { .s = { .a = 10, .b = 20 }, .c = 20, .s1 = {2, 4}}) {
+  return (struct T) { .s = { .a = 10, .b = 20 }, .c = 20, .s1 = { 2, 4 } };
+})
+`
+Verification of foo succeeded.
+`

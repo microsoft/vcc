@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+int bar();
+
+void foo(int b) 
+_(requires b)
+{
+
+if (_(known \true)b || bar()) {
+_(assert \true)
+} else {
+bar();
+}
+}
+`
+Verification of foo succeeded.
+`

@@ -1,0 +1,38 @@
+#include "vcc.h"
+ 
+typedef struct _mailbox {
+int data;
+} mailbox;
+
+vcc_attr("no_infer", "always_by_claim")
+typedef _(dynamic_owns) struct _pls {
+int data;
+_(group ipi)
+_(:ipi) 
+mailbox mbox[2];
+_(invariant :ipi \depends(\this->\owner, \this))
+_(ghost \claim c)
+_(invariant \mine(c) &&
+\claims(c, (&ghost)->\closed))
+_(invariant &(_(by_claim c)(onepls))->mbox[1] \in \this->\owns)
+_(invariant &(_(by_claim c)(kpr[1]))->mbox[1] \in \this->\owns)
+} pls, *ppls;
+
+vcc_attr("no_infer", "always_by_claim")
+typedef _(dynamic_owns) _(claimable) struct _owner {
+int data;
+_(invariant \gemb(&onepls) \in \this->\owns)
+//invariant(set_in((struct pls::ipi *)onepls, owns(this)))
+_(invariant \gemb(&kpr) \in \this->\owns)
+_(invariant \forall int i; 0 <= i && i < 2 ==> ((struct pls::ipi *)kpr[i] \in \this->\owns))
+_(invariant kpr[0] != kpr[1])
+} owner;
+
+ppls onepls;
+ppls kpr[2];
+owner ghost;
+`
+Verification of _pls#adm succeeded.
+Verification of _pls##ipi#adm succeeded.
+Verification of _owner#adm succeeded.
+`

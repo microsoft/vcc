@@ -1,0 +1,7 @@
+#include <vcc.h>
+typedef unsigned __int8 uint8_t;
+int ToBm8(uint8_t n);
+void foo(unsigned i) { ToBm8(1UI8); };
+`
+Verification of foo succeeded.
+`

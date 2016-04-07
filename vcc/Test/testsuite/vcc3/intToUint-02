@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+void foo() {
+  unsigned x;
+  x = 0;
+  _(assert ((unsigned)-1) < x)
+}
+`
+Verification of foo failed.
+testcase(6,12) : error VC9500: Assertion '((unsigned)-1) < x' did not verify.
+`

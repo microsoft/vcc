@@ -1,0 +1,19 @@
+#include "vcc.h"
+typedef unsigned __int32 uint32_t;
+
+union Y {
+    struct {
+        unsigned hi:16;
+        unsigned lo:16;
+    };
+    _(backing_member) uint32_t x;
+};
+
+void foo() {
+    union Y s1;
+    s1.hi = s1.lo;
+    _(assert s1.hi == s1.lo)
+}
+`
+Verification of foo succeeded.
+`

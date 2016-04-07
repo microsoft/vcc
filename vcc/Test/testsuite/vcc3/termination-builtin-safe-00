@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+struct toto_s
+{ int dummy; };
+
+void tata(struct toto_s* T)
+  _(decreases 0)
+  _(writes \extent(T))
+  _(ensures \wrapped(T))
+{
+  _(wrap T)
+  return;
+}
+`
+Verification of tata succeeded.
+`

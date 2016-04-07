@@ -1,0 +1,32 @@
+#include <vcc.h>
+
+void gotoSample()
+{
+	int x = 0, y = 0;
+
+	if (known(x  > 0, false)) x = 0;
+	if (test_classifier(lambda(obj_t p; false),known(x == 0,true))) {y = 1; goto label;}
+label:
+	x = 0;
+
+	assert(is_low(x));
+}
+
+void gotoFail()
+{
+	int h;
+	int x = 0, y = 0, z = 0;
+
+	if (h  > 0) {x = 1; goto label;}
+	if (test_classifier(lambda(obj_t p; true),x == 0)) y = 1;
+	z = 1;
+	x = 0;
+label:
+
+	assert(is_low(x));
+}
+`
+Verification of gotoSample succeeded.
+Verification of gotoFail failed.
+testcase(20,22) : error VC9716: Assertion 'the target label's context is at least as high as the jump's' did not verify.
+`

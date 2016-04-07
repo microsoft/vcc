@@ -1,0 +1,9 @@
+#include <vcc.h>
+
+template<typename T> void foo(T t)
+{
+  T* s = &t;
+}
+`
+testcase(3,22) : error VC9693: Cannot declare parameter 't' of generic type 'T'
+`

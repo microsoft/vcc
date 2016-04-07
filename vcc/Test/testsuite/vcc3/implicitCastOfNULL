@@ -1,0 +1,21 @@
+#include <vcc.h>
+#include <sal.h>
+
+typedef struct _SINGLE_LIST_ENTRY
+{
+    struct _SINGLE_LIST_ENTRY *Next;
+
+} SINGLE_LIST_ENTRY, *PSINGLE_LIST_ENTRY;
+
+
+__forceinline
+void
+InitializeSingleListHead(PSINGLE_LIST_ENTRY ListHead) 
+  _(writes \extent(ListHead))
+{
+    ListHead->Next = ((void *) 0);
+}
+
+`
+Verification of InitializeSingleListHead succeeded.
+`

@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+typedef unsigned __int16    UINT16;
+typedef UINT16 PTSP_PTE_INDEX, *PPTSP_PTE_INDEX;
+
+void foo() {
+    PTSP_PTE_INDEX PteIndex;
+    PteIndex = (PteIndex % 4);
+}
+`
+Verification of foo succeeded.
+`

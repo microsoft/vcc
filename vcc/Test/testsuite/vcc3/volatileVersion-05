@@ -1,0 +1,34 @@
+#include <vcc2test.h>
+
+struct VS {
+  volatile int y;
+  _(ghost volatile \object yappr;)
+
+  _(invariant \approves(yappr, y))
+  _(invariant \approves(yappr, yappr))
+};
+
+struct Dummy1 {
+  int dummy;
+};
+
+void foo1(struct Dummy1 *d, struct VS *vs _(ghost \claim c))
+  _(always c, d->\closed && vs->\closed && vs->yappr == d)
+{
+  _(atomic vs, c) {
+    vs->y = 10;
+  }
+}
+
+void foo2(struct VS *vs _(ghost \claim c))
+  _(always c, vs->\closed && vs->yappr == NULL)
+{
+  _(atomic vs, c) {
+    vs->y = 10;
+  }
+}
+`
+Verification of VS#adm succeeded.
+Verification of foo1 succeeded.
+Verification of foo2 succeeded.
+`

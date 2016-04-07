@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+void foo()
+{
+  int result = 0;
+  int i;
+  for (i= 0; i < 10; i++) 
+    _(invariant 0 <= i && i <= 10)
+  {
+    continue;
+    result = 1;
+  }
+  _(assert result == 0)
+}
+`
+Verification of foo succeeded.
+`

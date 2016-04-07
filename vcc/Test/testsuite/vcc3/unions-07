@@ -1,0 +1,19 @@
+#include<vcc.h>
+
+union U {
+  int a;
+  _(backing_member) int b;
+  _(ghost int c;)
+} ;
+
+void foo(union U *p)
+  _(writes \extent(p))
+  _(requires \mutable(p))
+{
+  p->a = 10;
+  _(assert p->b == 10)
+  _(assert p->c == \old(p->c))
+}
+`
+Verification of foo succeeded.
+`

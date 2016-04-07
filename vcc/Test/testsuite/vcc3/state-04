@@ -1,0 +1,19 @@
+#include "vcc.h"
+
+#define unchanged_s(s,e) (\at((s),e)==(e))
+
+_(ghost struct X {
+  _(ghost \state s;)
+  int a;
+};)
+
+void foo(int *y)
+{
+    _(ghost struct X x;)
+    _(assert unchanged_s(x.s,*y))
+}
+
+`
+Verification of foo failed.
+testcase(13,15) : error VC9500: Assertion '\at((x.s),*y)==(*y)' did not verify.
+`

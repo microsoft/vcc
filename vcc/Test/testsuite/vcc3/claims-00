@@ -1,0 +1,127 @@
+#include <vcc.h>
+
+struct Counter {
+  volatile int count;
+  _(invariant \unchanged(count) || count == \old(count) + 1)
+};
+
+int foo(struct Counter *cnt _(ghost \claim cl) _(ghost \claim ^res))
+  _(writes res, cl)
+  _(requires \wrapped(cl) && \claims(cl, cnt->\closed))
+  _(ensures \wrapped(*res) && \claims(*res, cnt->count >= \result - 1))
+{
+  int y;
+   _(ghost \claim x;) 
+
+  _(atomic cl,cnt) {
+    y = cnt->count;
+     _(ghost x = \make_claim({cl}, cnt->count >= y))
+  }
+
+   _(ghost *res = x;) 
+
+  return y;
+}
+
+int fooFail1(struct Counter *cnt _(ghost \claim cl) _(ghost \claim ^res))
+  _(writes res)
+  _(requires \wrapped(cl) && \claims(cl, cnt->\closed))
+  _(ensures \wrapped(*res) && \claims(*res, cnt->count >= \result - 1))
+{
+  int y;
+   _(ghost \claim x;) 
+
+  _(atomic cl,cnt) {
+    y = cnt->count;
+     _(ghost x = \make_claim({cl}, cnt->count >= y))
+  }
+
+   _(ghost *res = x;) 
+
+  return y;
+}
+
+int fooFail2(struct Counter *cnt _(ghost \claim cl) _(ghost \claim ^res))
+  _(writes res, cl)
+  _(requires \wrapped(cl) && \claims(cl, cnt->\closed))
+  _(ensures \wrapped(*res) && \claims(*res, cnt->count >= \result + 1))
+{
+  int y;
+   _(ghost \claim x;) 
+
+  _(atomic cl,cnt) {
+    y = cnt->count;
+     _(ghost x = \make_claim({cl}, cnt->count >= y))
+  }
+
+   _(ghost *res = x;) 
+
+  return y;
+}
+
+int fooFail3(struct Counter *cnt _(ghost \claim cl) _(ghost \claim ^res))
+  _(writes res, cl)
+  _(requires \wrapped(cl) && \claims(cl, cnt->\closed))
+  _(ensures \wrapped(*res) && \claims(*res, cnt->count >= 0))
+{
+  int y;
+   _(ghost \claim x;) 
+
+  _(atomic cl,cnt) {
+    y = cnt->count;
+     _(ghost x = \make_claim({cl}, cnt->count >= 0))
+  }
+
+   _(ghost *res = x;) 
+
+  return y;
+}
+
+int fooFail4(struct Counter *cnt _(ghost \claim cl) _(ghost \claim ^res))
+  _(writes res, cl)
+  _(requires \wrapped(cl) && \claims(cl, \true))
+{
+  int y;
+   _(ghost \claim x;) 
+
+  _(atomic cl,cnt) {
+    y = cnt->count;
+  }
+
+  return y;
+}
+
+int fooFail5(struct Counter *cnt _(ghost \claim cl) _(ghost \claim ^res))
+  _(writes res, cl)
+  _(requires \wrapped(cl) && \claims(cl, cnt->\closed))
+  _(ensures \wrapped(*res) && \claims(*res, cnt->count >= \result - 1))
+{
+  int y;
+   _(ghost \claim x;) 
+
+  _(atomic cl,cnt) {
+    y = cnt->count;
+     _(ghost x = \make_claim({cl}, cnt->count == y))
+  }
+
+   _(ghost *res = x;) 
+
+  return y;
+}
+
+
+`
+Verification of Counter#adm succeeded.
+Verification of foo succeeded.
+Verification of fooFail1 failed.
+testcase(36,18) : error VC8008: cl is non-writable and its owner is not listed in atomic(...) (and thus is impossible to claim).
+Verification of fooFail2 failed.
+testcase(59,3) : error VC9501: Post condition '\wrapped(*res) && \claims(*res, cnt->count >= \result + 1)' did not verify.
+testcase(47,13) : error VC9599: (related information) Location of post condition.
+Verification of fooFail3 failed.
+testcase(72,18) : error VC8520: Assertion 'chunk cnt->count >= 0 of the claim initially holds' did not verify.
+Verification of fooFail4 failed.
+testcase(87,15) : error VC8527: Assertion 'cnt is closed (for atomic(...))' did not verify.
+Verification of fooFail5 failed.
+testcase(104,18) : error VC8521: Assertion 'chunk cnt->count == y of the claim holds after a step of the machine' did not verify.
+`

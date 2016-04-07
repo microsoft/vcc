@@ -1,0 +1,13 @@
+#include <vcc.h>
+
+typedef struct _PROCESSOR_STARTUP_BLOCK
+{
+    unsigned __int64 ApicVa;
+} PROCESSOR_STARTUP_BLOCK;
+
+PROCESSOR_STARTUP_BLOCK H0 = 
+{
+  (0xFFFFF80070000010UI64 + (2*0x1000))
+};
+`
+`

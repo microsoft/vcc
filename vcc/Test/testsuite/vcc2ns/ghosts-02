@@ -1,0 +1,16 @@
+#include <vcc2test.h>
+
+void foo(unsigned int x)
+  _(requires x > 0 && x < 1000)
+{
+  _(ghost {
+    _(ghost \objset ^p = \alloc_array<\objset>(x);)
+    _(assert (char^)(p + 1) - (char^)p == 1)
+    p[x + 1] = {};
+  })
+
+}
+`
+Verification of foo failed.
+testcase(9,5) : error VC8507: Assertion 'p[x + 1] is writable' did not verify.
+`

@@ -1,0 +1,35 @@
+`/ps:32 
+
+
+#include <vcc.h>
+#include <stddef.h>
+
+struct Alignment {
+	char c1;
+	char c2;
+	short s1;
+	short s2;
+	int i1;
+	int i2;
+	long l1;
+	long l2;
+	long long ll1;
+	long long ll2;
+};
+
+void foo() { 
+	_(assert offsetof(struct Alignment, c1) == 0)
+	_(assert offsetof(struct Alignment, c2) == 1)
+	_(assert offsetof(struct Alignment, s1) == 2)
+	_(assert offsetof(struct Alignment, s2) == 4)
+	_(assert offsetof(struct Alignment, i1) == 8)
+	_(assert offsetof(struct Alignment, i2) == 12)
+	_(assert offsetof(struct Alignment, l1) == 16)
+	_(assert offsetof(struct Alignment, l2) == 20)
+	_(assert offsetof(struct Alignment, ll1) == 24)
+	_(assert offsetof(struct Alignment, ll2) == 32)
+	_(assert sizeof(struct Alignment) == 40)
+}
+`
+Verification of foo succeeded.
+`

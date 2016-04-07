@@ -1,0 +1,12 @@
+#include<vcc.h>
+typedef struct __generated {
+  int value;
+} T;
+
+void foo() {
+  T t;
+  t.value = 3;
+}
+`
+Verification of foo succeeded.
+`

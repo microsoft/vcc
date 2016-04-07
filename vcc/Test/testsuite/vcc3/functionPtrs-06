@@ -1,0 +1,33 @@
+#include <vcc.h>
+
+typedef int (*i2i)(int);
+
+void foo(i2i f1, i2i f2)
+  _(requires \mutable(f1) && \mutable(f2) && f1->\valid && f2->\valid)
+{
+  int a,b;
+  a = f1(1);
+  b = f2(1);
+  // this unfortunately relies on the fact that we generate pure function for i2i
+  _(assert f1 == f2 ==> a == b)
+}
+
+void foo2(i2i f1, i2i f2)
+  _(requires \mutable(f1) && \mutable(f2) && f1->\valid && f2->\valid)
+{
+  int a,b;
+  _(assert f1(1) == f2(1)) // error
+}
+
+void foo3(i2i f1, i2i f2)
+  _(requires \mutable(f1) && \mutable(f2) && f1->\valid && f2->\valid)
+{
+  int a,b;
+  _(assert f1 == f2 ==> f1(1) == f2(1)) // OK
+}
+`
+testcase(19,12) : error VC9635: function 'i2i#1' used in pure context, but not marked with '_(pure)'
+testcase(19,21) : error VC9635: function 'i2i#1' used in pure context, but not marked with '_(pure)'
+testcase(26,25) : error VC9635: function 'i2i#1' used in pure context, but not marked with '_(pure)'
+testcase(26,34) : error VC9635: function 'i2i#1' used in pure context, but not marked with '_(pure)'
+`

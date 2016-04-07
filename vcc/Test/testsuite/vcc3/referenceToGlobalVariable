@@ -1,0 +1,15 @@
+#include <vcc.h>
+
+int takeschar(char c);
+
+char cc;
+
+void main() {
+}
+
+int takeschar(char c) { return cc;}
+`
+Verification of takeschar failed.
+testcase(10,32) : error VC8512: Assertion 'cc is thread local (accessing field data)' did not verify.
+Verification of main succeeded.
+`

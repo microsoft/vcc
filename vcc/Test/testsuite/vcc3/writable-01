@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+struct S {
+	int a;
+};
+
+void foo(struct S *p) 
+	_(updates p)
+{
+	_(assert \writable(p))
+	_(unwrap p)
+	_(assert \writable(&p->a))
+	p->a = 5;
+	_(wrap p)
+}
+`
+Verification of foo succeeded.
+`

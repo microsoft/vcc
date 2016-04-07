@@ -1,0 +1,35 @@
+#include <vcc.h>
+
+void foo()
+{
+  int x = 0x80000000;
+  unsigned int ux = 0x80000000;
+}
+
+void bar()
+{
+  int x = 0x80000000 + 1;
+  unsigned int ux = 0x80000000 + 1;
+}
+
+void fooWithCast()
+{
+  int x = (int)0x80000000;
+  unsigned int ux = (unsigned int)0x80000000;
+}
+
+void barWithCast()
+{
+  int x = (int)(0x80000000 + 1);
+  unsigned int ux = (unsigned int)(0x80000000 + 1);
+}
+
+void main(){}
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+Verification of fooWithCast succeeded.
+Verification of barWithCast succeeded.
+Verification of main succeeded.
+`

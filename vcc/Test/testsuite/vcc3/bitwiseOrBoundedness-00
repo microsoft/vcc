@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+typedef unsigned __int8 UINT8;
+
+UINT8 foo(UINT8 a, UINT8 b) {
+  return a | b;
+}
+
+`
+Verification of foo succeeded.
+`

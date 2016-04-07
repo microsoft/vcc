@@ -1,0 +1,19 @@
+#include <vcc.h>
+
+typedef int (*TF)(int x)
+  _(requires x > 1)
+  _(ensures \result > 0);
+
+int bar(int x)
+  _(requires x > 0)
+  _(ensures \result > 1);
+
+void foo() {
+  TF p;
+  int res = p(3);
+  _(assert res > 0)
+}
+`
+Verification of foo failed.
+testcase(13,13) : error VC8504: Assertion 'p is valid function pointer' did not verify.
+`

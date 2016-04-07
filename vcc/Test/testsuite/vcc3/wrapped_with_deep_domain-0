@@ -1,0 +1,38 @@
+#include <vcc.h>
+
+struct X { int x; };
+struct Y { short y; };
+
+union U {
+  struct X x;
+  struct Y y;
+};
+
+_(dynamic_owns) struct A {
+  int tag;
+  union U u;
+  _(invariant tag == 0 || tag == 1)
+  _(invariant \mine(&u))
+  _(invariant tag == 0 ==> \mine(&u.x))
+  _(invariant tag == 1 ==> \mine(&u.y))
+};
+
+struct B {
+  struct X x;
+  struct A a;
+  _(invariant \mine(&x) && \mine(&a))
+};
+
+void foo(struct B *b)
+  _(requires \wrapped(b))
+{
+  struct B bb;
+  struct B *bp = &bb;
+  _(assert \wrapped_with_deep_domain(b))
+  *bp = *b;
+}
+`
+Verification of A#adm succeeded.
+Verification of B#adm succeeded.
+Verification of foo succeeded.
+`

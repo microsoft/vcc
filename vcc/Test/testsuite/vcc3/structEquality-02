@@ -1,0 +1,30 @@
+#include "vcc.h"
+
+void foo(void *);
+
+struct A {
+  int x, y, z;
+};
+
+void test1(struct A *a)
+  _(requires \wrapped(a))
+{
+  struct A a2;
+
+  a2 = *a;
+  _(assert a2.y == a->y)
+}
+
+void test2(struct A *a)
+  _(requires \wrapped(a))
+{
+  struct A a2;
+
+  foo(&a2);
+  a2 = *a;
+  _(assert a2.y == a->y)
+}
+`
+Verification of test1 succeeded.
+Verification of test2 succeeded.
+`

@@ -1,0 +1,43 @@
+#include "vcc.h"
+
+typedef unsigned __int64 uint64;
+struct CONC {
+    int a;
+    uint64   GPR[16];
+    uint64   RIP;
+ uint64  DebugR[8];
+};
+typedef struct X64_Core{
+    uint64   RIP;       // instruction pointer
+    uint64   R[16];     // general-purpose registers
+ uint64  DR[8];  // debug registers
+} X64_Core;
+struct ABS {
+    int a;
+ int c;
+ struct X64_Core core;
+ _(invariant \mine(&\this->core))
+};
+struct DESC {
+ int c;
+ struct CONC *conc;
+ _(ghost struct ABS abs)
+ _(invariant \mine(\this->conc, &\this->abs))
+ _(invariant AbsConcRel(&\this->abs,\this->conc))
+ _(invariant \this->c == \this->abs.c)
+};
+ 
+
+_(ghost _(no_reads_check)
+_(pure) \bool AbsConcRel(struct ABS ^abs, struct CONC *conc)
+ _(reads abs, conc)
+ _(returns abs->a == conc->a &&
+      abs->core.RIP == conc->RIP &&
+   (\forall uint64 i; i <= 16 ==> abs->core.R[i] == conc->GPR[i]) &&
+   \forall uint64 i; i < 8 ==> abs->core.DR[i] == conc->DebugR[i]);)
+
+`
+Verification of ABS#adm succeeded.
+Verification of DESC#adm failed.
+testcase(26,14) : error VC8012: invariant(AbsConcRel(&\this->abs,\this->conc)) of DESC is not admissible.
+`

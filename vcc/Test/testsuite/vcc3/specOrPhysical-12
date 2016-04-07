@@ -1,0 +1,29 @@
+#include<vcc.h>
+
+typedef struct  c{
+int b;
+}c;
+
+typedef _(dynamic_owns) struct d{
+    c *cc;
+    _(ghost 
+        c arr[3];)
+    c iarr[3];
+    _(invariant \mine(cc))
+}d;
+
+void foo(d *dd)
+_(requires \wrapped(dd))
+_(writes dd)
+_(requires \forall int i; i >= 0 && i < 3 ==> &dd->arr[i] \in dd->\owns)
+_(requires \forall int i; i >= 0 && i < 3 ==> &dd->iarr[i] \in dd->\owns)
+{
+    _(unwrap dd)
+    
+    _(ghost dd->\owns =  dd->\owns \diff \array_members(dd->iarr, 3));
+    _(ghost dd->\owns =  dd->\owns \diff \array_members(dd->arr, 3));
+}
+`
+Verification of d#adm succeeded.
+Verification of foo succeeded.
+`

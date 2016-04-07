@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+void foo() {
+  _(ghost \integer i = 5)
+  _(ghost \integer j = -i)
+  _(assert j < 0)
+  _(assert i + j == 0)
+}
+`
+Verification of foo succeeded.
+`

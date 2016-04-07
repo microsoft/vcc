@@ -1,0 +1,13 @@
+#include <vcc.h>
+
+typedef unsigned __int32 UINT32;
+UINT32 f() { return 1; }
+
+void HtBarrierSynchronize()
+{
+    _Bool b  = ((UINT32)f()) == 5;
+}
+`
+Verification of f succeeded.
+Verification of HtBarrierSynchronize succeeded.
+`

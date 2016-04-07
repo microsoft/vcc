@@ -1,0 +1,97 @@
+#include <vcc.h>
+
+_(claimable) struct A {
+  volatile int x;
+  _(invariant \old(\this->x) == \this->x || \old(\this->x) + 1 == \this->x)
+};
+
+void foo(struct A *a _(ghost \claim c))
+  _(writes c)
+  _(requires \wrapped(c) && \claims(c, a->\closed))
+{
+  _(ghost \destroy_claim(c, {}));
+}
+
+void foo2(struct A *a _(ghost \claim c))
+  _(requires \wrapped(c) && \claims(c, a->\closed))
+  _(requires c->\claim_count == 0)
+{
+  _(ghost \destroy_claim(c, {}));
+}
+
+void foo4(struct A *a _(ghost \claim c))
+  _(writes c, a)
+  _(requires \wrapped(c) && \claims(c, a->\closed))
+  _(requires c->\claim_count == 0)
+{
+  _(ghost \destroy_claim(c, {a}));
+}
+
+void foo6(struct A *a _(ghost \claim c))
+  _(writes c)
+  _(requires \wrapped(c) && \claims(c, a->\closed))
+  _(requires c->\claim_count == 0 && \claims_object(c, a))
+{
+  _(ghost \destroy_claim(c, {a}));
+}
+
+void foo7(struct A *a _(ghost \claim c))
+  _(writes c, a)
+  _(requires \wrapped(c) && \claims(c, a->\closed))
+  _(requires c->\claim_count == 0 && \claims_object(c, a))
+{
+  _(ghost \destroy_claim(c, {a, a}));
+}
+
+void ok1(struct A *a _(ghost \claim c))
+  _(writes c)
+  _(requires \wrapped(c) && \claims(c, a->\closed))
+  _(requires c->\claim_count == 0)
+{
+  _(ghost \destroy_claim(c, {}));
+}
+
+
+void ok2(struct A *a _(ghost \claim c))
+  _(writes c, a)
+  _(requires \wrapped(c) && \claims(c, a->\closed))
+  _(requires c->\claim_count == 0 && \claims_object(c, a))
+{
+  _(ghost \destroy_claim(c, {a}));
+}
+
+void ok3(struct A *a, struct A *b _(ghost \claim c))
+  _(writes c, a, b)
+  _(requires \wrapped(c) && \claims(c, a->\closed))
+  _(requires c->\claim_count == 0 && \claims_object(c, a) && \claims_object(c, b) && a != b)
+{
+  _(ghost \destroy_claim(c, {a, b}));
+}
+
+void foo8(struct A *a, struct A *b _(ghost \claim c))
+  _(writes c, a, b)
+  _(requires \wrapped(c) && \claims(c, a->\closed))
+  _(requires c->\claim_count == 0 && \claims_object(c, a) && \claims_object(c, b))
+{
+  _(ghost \destroy_claim(c, {a, b}));
+}
+
+`
+Verification of A#adm succeeded.
+Verification of foo failed.
+testcase(12,11) : error VC9502: Call '\destroy_claim(c, {})' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the claim has no outstanding references'.
+Verification of foo2 failed.
+testcase(19,11) : error VC8523: Assertion 'the disposed claim c is writable' did not verify.
+Verification of foo4 failed.
+testcase(27,11) : error VC8522: Assertion 'object a was claimed by c' did not verify.
+Verification of foo6 failed.
+testcase(35,11) : error VC8008: a is non-writable and its owner is not listed in atomic(...) (and thus is impossible to unclaim).
+Verification of foo7 failed.
+testcase(43,11) : error VC8010: object a might equal a.
+Verification of ok1 succeeded.
+Verification of ok2 succeeded.
+Verification of ok3 succeeded.
+Verification of foo8 failed.
+testcase(76,11) : error VC8010: object a might equal b.
+`

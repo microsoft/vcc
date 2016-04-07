@@ -1,0 +1,6 @@
+#include <vcc.h>
+
+typedef struct _S *PS;
+typedef struct _T {  PS x; } T, *PT;
+`
+`

@@ -1,0 +1,27 @@
+#include <vcc.h>
+
+struct S {
+  int a;
+  _(ghost int b)
+};
+
+void foo() {
+  _(ghost int i)
+  _(ghost int ^p)
+  _(ghost p = &i)
+}
+
+void bar(struct S *s) {
+  _(ghost int ^p)
+  _(ghost p = &s->b)
+}
+
+_(ghost void baz(struct S ^s) {
+  _(ghost int ^p)
+  p = &s->a;
+})
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+Verification of baz succeeded.
+`

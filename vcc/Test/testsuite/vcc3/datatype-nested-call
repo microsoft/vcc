@@ -1,0 +1,20 @@
+#include <vcc.h>
+
+_(datatype List {
+       case Nil();
+       case Cons(int, List);
+})
+
+_(def List app(List x, List y)
+{
+       switch (x) {
+              case Nil(): return y;
+              case Cons(h,t): 
+              {
+              return Cons(h, app(t,y)); 
+              }
+       }
+})
+`
+Verification of app succeeded.
+`

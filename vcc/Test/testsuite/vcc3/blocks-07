@@ -1,0 +1,40 @@
+#include <vcc.h>
+
+typedef struct _A{
+    int a;
+} A, *PA;
+
+void foo(PA p _(out \claim c))
+_(ensures \wrapped(c) && \fresh(c))
+_(writes p)
+;
+
+void test(PA p, PA p1)
+_(requires p != p1)
+ _(writes p)
+ _(writes p1)
+{
+_(ghost \claim c)
+_(ghost \claim c1)
+
+
+ // writes(&c)
+ _(requires p != p1)
+ _(ensures \wrapped(c))
+ _(ensures \wrapped(c1))
+ _(writes p)
+ _(writes p1)
+{
+   foo(p _(out c));
+   _(assert \active_claim(c))
+
+   foo(p1 _(out c1));
+   _(assert \active_claim(c))
+   _(assert \wrapped(c))
+   _(assert \wrapped(c1))
+}
+}
+`
+Verification of test succeeded.
+Verification of test#block#0 succeeded.
+`

@@ -1,0 +1,325 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{CAB0EED0-564C-4981-97BC-497AB7D13433}</ProjectGuid>
+    <RootNamespace>Samples</RootNamespace>
+    <Keyword>MakeFileProj</Keyword>
+    <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath11)</VCTargetsPath>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
+    <NMakeBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">nmake</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <NMakeCleanCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <NMakeOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Samples.exe</NMakeOutput>
+    <NMakePreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <NMakeIncludeSearchPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeForcedIncludes Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(NMakeForcedIncludes)</NMakeForcedIncludes>
+    <NMakeAssemblySearchPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(NMakeAssemblySearchPath)</NMakeAssemblySearchPath>
+    <NMakeForcedUsingAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(NMakeForcedUsingAssemblies)</NMakeForcedUsingAssemblies>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+    <NMakeBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <NMakeReBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <NMakeCleanCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <NMakeOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Samples.exe</NMakeOutput>
+    <NMakePreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <NMakeIncludeSearchPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeForcedIncludes Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(NMakeForcedIncludes)</NMakeForcedIncludes>
+    <NMakeAssemblySearchPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(NMakeAssemblySearchPath)</NMakeAssemblySearchPath>
+    <NMakeForcedUsingAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(NMakeForcedUsingAssemblies)</NMakeForcedUsingAssemblies>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="testsuite\tutorial\inc.c">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="testsuite\tutorial\lsearch.c">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="testsuite\tutorial\max.c">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="testsuite\tutorial\rect.c">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="testsuite\tutorial\rect_inv.c">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="testsuite\tutorial\rect_ptr.c">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="testsuite\tutorial\succ.c">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\ArrayList.c">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\BitMap.c">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\ClaimOnGroup.c">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\ClaimPassing.c">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\Handles.c">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\Iterator.c">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\List.c">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\Lock.c">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\LockFreeIncr.c">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\LockFreeStack.c">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\PageSet.c">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\Reserve.c">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\Rundown.c">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\SingleList.c">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\StackArray.c">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\StackAsArray.c">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\VolatileAbstractState.c">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="testsuite\vcc2\arrays">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\arraysNeg">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\assertionSplitting">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\atomicInline">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\basics">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\bitfields">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\blocks">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\bv_lemma">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\by_claim">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\castFromObjT">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\claim_tutorial">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\claims">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\containingRecord">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\customAdmissiblity">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\deposit">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\expose">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\fieldInlining">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\frameaxiom">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\functionPtrs">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\ghosts">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\globals">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\groups">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\infer">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\informationFlow">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\ints">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\invChunk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\invs">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\mapofmap">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\maps">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\mapsNeg">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\memoryReintp">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\move">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\nestedLocals">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\nestedStructs">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\not_shared">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\outParams">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\overloads">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\packedFraming">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\parameterPassing">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\pruning">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\pure">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\quantRange">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\records">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\return">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\shift">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\skinnyExpose">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\start_here">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\state">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\staticWrap">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\structEquality">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\structQuantifier">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\termination">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\thread_id">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\triggerInference" />
+    <None Include="testsuite\vcc2\unions">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\unionsNeg">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\valueStructs">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\volatile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\volatileModifier">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\volatileVersion">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="testsuite\vcc2\writes">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,131 @@
+﻿{
+
+//-----------------------------------------------------------------------------
+//
+// Copyright (C) Microsoft Corporation.  All Rights Reserved.
+//
+//-----------------------------------------------------------------------------
+
+module Lexer
+
+open System
+open Parser
+open Microsoft.FSharp.Text.Lexing
+
+let debug = false
+
+let lexeme = LexBuffer<_>.LexemeString 
+
+let regs = [ ("rax", REG_RAX); ("rbx", REG_RBX); ("rcx", REG_RCX); ("rdx", REG_RDX); ("rdi", REG_RDI); ("rsi", REG_RSI); ("rbp", REG_RBP); ("rsp", REG_RSP); ("r8",  REG_R8);  ("r9",  REG_R9);  ("r10",  REG_R10);  ("r11",  REG_R11);  ("r12",  REG_R12);  ("r13",  REG_R13);  ("r14",  REG_R14);  ("r15",  REG_R15); ("cr0", REG_CR0); ("cr1", REG_CR1); ("cr2", REG_CR2); ("cr3", REG_CR3); ("cr4", REG_CR4); ("cr5", REG_CR5); ("cr6", REG_CR6); ("cr7", REG_CR7); ("cr8", REG_CR8);
+             ("eax", REG_EAX); ("ebx", REG_EBX); ("ecx", REG_ECX); ("edx", REG_EDX); ("edi", REG_EDI); ("esi", REG_ESI); ("ebp", REG_EBP); ("esp", REG_ESP); ("r8d", REG_R8D); ("r9d", REG_R9D); ("r10d", REG_R10D); ("r11d", REG_R11D); ("r12d", REG_R12D); ("r13d", REG_R13D); ("r14d", REG_R14D); ("r15d", REG_R15D);
+             ("ax",  REG_AX);  ("bx",  REG_BX);  ("cx",  REG_CX);  ("dx",  REG_DX);  ("di",  REG_DI);  ("si",  REG_SI);  ("bp",  REG_BP);  ("sp",  REG_SP);  ("r8b", REG_R8B); ("r9b", REG_R9B); ("r10b", REG_R10B); ("r11b", REG_R11B); ("r12b", REG_R12B); ("r13b", REG_R13B); ("r14b", REG_R14B); ("r15b", REG_R15B); ("al", REG_AL);
+             ("cs",  REG_CS);  ("ds",  REG_DS);  ("es",  REG_ES);  ("fs",  REG_FS);  ("gs",  REG_GS);  ("ss",  REG_SS);  ("dr0", REG_DR0); ("dr1", REG_DR1); ("dr2", REG_DR2); ("dr3", REG_DR3); ("dr4",  REG_DR4);  ("dr5",  REG_DR5);  ("dr6",  REG_DR6);  ("dr7", REG_DR7);
+             ("xmm0", REG_XMM0); ("xmm1", REG_XMM1); ("xmm2", REG_XMM2); ("xmm3", REG_XMM3); ("xmm4", REG_XMM4); ("xmm5", REG_XMM5); ("xmm6", REG_XMM6); ("xmm7", REG_XMM7); ("xmm8", REG_XMM8); ("xmm9", REG_XMM9); ("xmm10", REG_XMM10); ("xmm11", REG_XMM11); ("xmm12", REG_XMM12); ("xmm13", REG_XMM13); ("xmm14", REG_XMM14); ("xmm15", REG_XMM15);
+             ("Xmm0", REG_XMM0); ("Xmm1", REG_XMM1); ("Xmm2", REG_XMM2); ("Xmm3", REG_XMM3); ("Xmm4", REG_XMM4); ("Xmm5", REG_XMM5); ("Xmm6", REG_XMM6); ("Xmm7", REG_XMM7); ("Xmm8", REG_XMM8); ("Xmm9", REG_XMM9); ("Xmm10", REG_XMM10); ("Xmm11", REG_XMM11); ("Xmm12", REG_XMM12); ("Xmm13", REG_XMM13); ("Xmm14", REG_XMM14); ("Xmm15", REG_XMM15); ]
+let regsMap = Map.ofList regs
+let ident lexbuf tokenText = match regsMap.TryFind tokenText with | Some tt -> tt | None -> STRING tokenText
+
+let log_debug s =
+    match debug with
+    | true -> printf s
+    | false -> ()
+}
+
+// These are some regular expression definitions
+let digit = ['0'-'9']
+let hdigit = ['0'-'9' 'a'-'f' 'A'-'F']
+let letter = ['a'-'z' 'A'-'Z' '_']
+let eletter = ['a'-'z' 'A'-'Z' '_' '$']
+let whitespace = [' ' '\t' ]
+let newline = ('\n' | '\r' '\n')
+
+rule tokenize = parse
+| whitespace	{ tokenize lexbuf }
+| "byte ptr"	{ log_debug "BYTEP "; BYTEP }
+| "word ptr"	{ log_debug "WORDP "; WORDP }
+| "dword ptr"	{ log_debug "DWORDP "; DWORDP }
+| "qword ptr"	{ log_debug "QWORDP "; QWORDP }
+| "fword ptr"	{ log_debug "QWORDP "; QWORDP }
+| newline		{ log_debug "NL\n"; lexbuf.EndPos <- lexbuf.EndPos.NextLine; NL }
+| "lock"		{ log_debug "PREFIX "; PREFIX("lock") }
+| "sizeof"		{ log_debug "SIZEOF "; SIZEOF }
+| "proc"		{ log_debug "PROC "; PROC }
+| "proc" whitespace* "frame" { log_debug "PROC "; PROC }
+| "struct"		{ log_debug "STRUCT "; STRUCT }
+| "short" { log_debug "NEAR "; NEAR }
+| "near" { log_debug "NEAR "; NEAR }
+| letter(letter|digit)* whitespace* "endp"		{ log_debug "EPROC "; EPROC }
+| "altentry"	{ log_debug "ALTENTRY "; ALTENTRY }
+| "extern"		{ log_debug "EXTERN "; EXTERN }
+| "_CurrentSection_"[^'\n']* { SEMICOLON }
+| "subttl" ([^'\n'])* { SEMICOLON }
+| "align" ([^'\n'])* { SEMICOLON }
+| "db" ([^'\n'])* { SEMICOLON }
+| "public" ([^'\n'])* { SEMICOLON }
+| "title" ([^'\n'])* { SEMICOLON }
+| "TITLE" ([^'\n'])* { SEMICOLON }
+| "end" ([^'\n'])* { SEMICOLON }
+| "END" ([^'\n'])* { SEMICOLON }
+| "_TEXT"[^'\n']* { SEMICOLON }
+| "__TEXT"[^'\n']* { SEMICOLON }
+| ".allocstack"[^'\n']* { SEMICOLON }
+| ".data"[^'\n']* { SEMICOLON }
+| ".code"[^'\n']* { SEMICOLON }
+| ".savexmm128"[^'\n']* { SEMICOLON }
+| ".savereg"[^'\n']* { SEMICOLON }
+| ".pushreg"[^'\n']* { SEMICOLON }
+| ".pushframe"[^'\n']* { SEMICOLON }
+| ".setframe"[^'\n']* { SEMICOLON }
+| "segment"[^'\n']* { SEMICOLON }
+| "align"[^'\n']* { SEMICOLON }
+| ".endprolog"[^'\n']* { SEMICOLON }
+| "frame"[^'\n']* { SEMICOLON }
+| "jmp"			{ log_debug "JMP "; JMP }
+| "je"			{ log_debug "JE "; JE }
+| "jne"			{ log_debug "JNE "; JNE }
+| "jnz"			{ log_debug "JNZ "; JNZ }
+| "jnc"			{ log_debug "JNC "; JNC }
+| "jz"			{ log_debug "JZ "; JZ }
+| "?"			{ log_debug "QMARK "; QMARK }
+| "+"			{ log_debug "PLUS "; PLUS }
+| "-"			{ log_debug "MINUS "; MINUS }
+| "*"			{ log_debug "ASTER "; ASTER }
+| "/"			{ log_debug "SLASH "; SLASH }
+| ";^" whitespace* "spec" whitespace* "(" [^'\n']*		{ log_debug "SPEC "; SPEC ((((lexeme lexbuf).Substring(2,(lexeme lexbuf).Length - 2)).Trim()).Substring("spec".Length,(((lexeme lexbuf).Substring(2,(lexeme lexbuf).Length - 2)).Trim()).Length - "spec".Length).Trim()) }
+| ";^" whitespace* "assert" whitespace* "(" [^'\n']*	{ log_debug "ASSERT "; ASSERT ((((lexeme lexbuf).Substring(2,(lexeme lexbuf).Length - 3)).Trim()).Substring("assert".Length,(((lexeme lexbuf).Substring(2,(lexeme lexbuf).Length - 2)).Trim()).Length - "assert".Length).Trim()) }
+| ";^" whitespace* "specends" [^'\n']*	{ log_debug "SPECENDS "; SPECENDS }
+| ";^" whitespace* "invariant" whitespace* "(" [^'\n']*	{ log_debug "INVARIANT "; INVARIANT ((((lexeme lexbuf).Substring(2,(lexeme lexbuf).Length - 3)).Trim()).Substring("invariant".Length,(((lexeme lexbuf).Substring(2,(lexeme lexbuf).Length - 2)).Trim()).Length - "invariant".Length).Trim()) }
+| ";^" whitespace* "maintains" whitespace* "(" [^'\n']*	{ log_debug "MAINTAINS "; MAINTAINS ((((lexeme lexbuf).Substring(2,(lexeme lexbuf).Length - 2)).Trim()).Substring("maintains".Length,(((lexeme lexbuf).Substring(2,(lexeme lexbuf).Length - 2)).Trim()).Length - "maintains".Length).Trim()) }
+| ";^" whitespace* "requires" whitespace* "(" [^'\n']*	{ log_debug "REQUIRES "; REQUIRES ((((lexeme lexbuf).Substring(2,(lexeme lexbuf).Length - 2)).Trim()).Substring("requires".Length,(((lexeme lexbuf).Substring(2,(lexeme lexbuf).Length - 2)).Trim()).Length - "requires".Length).Trim()) }
+| ";^" whitespace* "ensures" whitespace* "(" [^'\n']*	{ log_debug "ENSURES "; ENSURES ((((lexeme lexbuf).Substring(2,(lexeme lexbuf).Length - 2)).Trim()).Substring("ensures".Length,(((lexeme lexbuf).Substring(2,(lexeme lexbuf).Length - 2)).Trim()).Length - "ensures".Length).Trim()) }
+| ";^" whitespace* "writes" whitespace* "(" [^'\n']*	{ log_debug "WRITES "; WRITES ((((lexeme lexbuf).Substring(2,(lexeme lexbuf).Length - 2)).Trim()).Substring("writes".Length,(((lexeme lexbuf).Substring(2,(lexeme lexbuf).Length - 2)).Trim()).Length - "writes".Length).Trim()) }
+| ";^" [^'\n']*	{ printf "unknown Spec: %s" (lexeme lexbuf) ; SEMICOLON }
+| ";"[^'\n']*	{ log_debug "Comment "; SEMICOLON }
+| ","			{ log_debug "COMMA "; COMMA }
+| "."			{ log_debug "FULLSTOP "; FULLSTOP }
+| ":"			{ log_debug "COLON "; COLON }
+| "NOT"			{ log_debug "NOT "; NOT }
+// Misc
+| "("			{ log_debug "LPAREN "; LPAREN }
+| ")"			{ log_debug "RPAREN "; RPAREN }
+| "["			{ log_debug "LBRACKET "; LBRACKET }
+| "]"			{ log_debug "RBRACKET "; RBRACKET }
+| "@@"			{ log_debug "AT "; AT }
+| "@b"			{ log_debug "BACK "; BACK }
+| "@B"			{ log_debug "BACK "; BACK }
+| "@f"			{ log_debug "FORWARD "; FORWARD }
+| "@F"			{ log_debug "FORWARD "; FORWARD }
+| "??" (letter|digit)* { log_debug "STRING "; STRING ("_L" + (lexeme lexbuf).Substring(2,(lexeme lexbuf).Length - 2)) }
+| "equ"			{ log_debug "CONSTDEF "; CONSTDEF }
+// Constants
+| ['-']?digit+				{ log_debug "INT64 "; INT64 (Int64.Parse(lexeme lexbuf)) }
+| ['-']?hdigit+ (['h' 'H']) { log_debug "INT64 "; INT64 (Int64.Parse((lexeme lexbuf).Substring(0,(lexeme lexbuf).Length - 1),System.Globalization.NumberStyles.HexNumber)) }
+| letter(eletter|digit)* whitespace+ "ends"	{ log_debug "ENDS "; ENDS (((lexeme lexbuf).Substring(0,(lexeme lexbuf).Length - 5)).ToLower()) }
+| "dq" { log_debug "QWORD "; QWORD }
+| "dd" { log_debug "DWORD "; DWORD }
+| letter(letter|digit)*		{ log_debug "ident "; ident lexbuf ((lexeme lexbuf).ToLower()) }
+| letter(eletter|digit)* whitespace+ "segment"[^'\n']* { SEMICOLON }
+
+// EOF
+| eof   { EOF }
+| _		{ printf "nothing recognized: %s\n" (lexeme lexbuf); SEMICOLON }

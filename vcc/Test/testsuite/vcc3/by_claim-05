@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+typedef _(claimable) struct _TH_PROCESS {
+  int x;
+} *PTH_PROCESS;
+
+
+void ThpCreateThread(PTH_PROCESS Process _(ghost \claim c))
+  _(always c, Process->\closed)
+  _(writes c)
+{
+  _(assert _(by_claim c)(Process->x) == 0)
+}
+`
+Verification of ThpCreateThread failed.
+testcase(12,12) : error VC9500: Assertion '_(by_claim c)(Process->x) == 0' did not verify.
+`

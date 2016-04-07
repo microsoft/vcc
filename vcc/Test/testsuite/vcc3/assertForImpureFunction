@@ -1,0 +1,23 @@
+#include <vcc.h>
+#include <sal.h>
+
+typedef unsigned __int32 UINT32, *PUINT32;
+
+UINT32 foo(__in_ecount(a) PUINT32 p, UINT32 a)
+  _(writes {})
+  _(ensures a == 0 ==> \result == 0)
+  
+ {
+    UINT32 b = 0;
+    _(assert b == foo(p, 0))
+    
+    b += a;
+    return b;
+}
+
+`
+testcase(12,19) : error VC9635: function 'foo' used in pure context, but not marked with '_(pure)'
+testcase(6,1) : error : (Location of symbol related to previous error.)
+testcase(6,1) : error : (Location of symbol related to previous error.)
+testcase(12,19) : error VC9703: Calling function 'foo' with non-empty writes clause in pure context is not allowed.
+`

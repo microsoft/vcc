@@ -1,0 +1,11 @@
+#include <vcc.h>
+void foo()
+{
+  int i;
+  do ;
+  while(i);
+}
+`
+testcase(5,6) : warning VC0000: Possible mistaken null statement.
+Verification of foo succeeded.
+`

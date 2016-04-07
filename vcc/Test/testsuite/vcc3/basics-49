@@ -1,0 +1,10 @@
+#include "vcc.h"
+
+struct S { int a; };
+
+void foo(struct S *s) {
+	_(assert \addr_eq(s, &s->a))
+}
+`
+Verification of foo succeeded.
+`

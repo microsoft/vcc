@@ -1,0 +1,12 @@
+#include "vcc.h"
+
+_(ghost _(pure) \bool a_is_increasing(\state s1, \state s2, struct S *s)
+    _(returns \at(s1,s->a) <= \at(s2,s->a)))
+
+struct S {
+    volatile int a;
+    _(invariant a_is_increasing(\old(\now()), \now(), \this))
+};
+`
+Verification of S#adm succeeded.
+`

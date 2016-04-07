@@ -1,0 +1,19 @@
+#include <vcc.h>
+
+struct S {
+  int a;
+  _(ghost int b)
+  _(ghost int ^p)
+  _(invariant p != &b)
+};
+
+struct T {
+  int a;
+  _(ghost int b)
+  _(ghost int ^p)
+  _(invariant p == &b)
+};
+`
+Verification of S#adm succeeded.
+Verification of T#adm succeeded.
+`

@@ -1,0 +1,13 @@
+#include "vcc.h"
+
+_(pure) \bool Length(int *x)
+    _(ensures \result == *x > 0);
+
+void foo()
+{
+  int x;
+  _(assert Length(&x))
+}
+`
+testcase(3,3) : error VC9650: the specification refers to memory, but function is missing a reads clause
+`

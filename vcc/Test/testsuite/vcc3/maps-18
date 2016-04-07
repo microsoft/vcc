@@ -1,0 +1,17 @@
+#include "vcc.h"
+
+void foo() {
+  _(ghost int XY[int][int])
+  _(ghost XY[3][4] = 42)
+  _(assert XY[3][4] == 42)
+}
+
+void bar() {
+  _(ghost int XY[int][int][int])
+  _(ghost XY[3][4][5] = 42)
+  _(assert XY[3][4][5] == 42)
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

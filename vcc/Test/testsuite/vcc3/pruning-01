@@ -1,0 +1,45 @@
+`/a /functions:baz 
+
+#include <vcc.h>
+
+typedef int (*FOO)(int i)
+  _(ensures \result == i);
+  
+typedef int (*BAR)(int i)
+  _(ensures \result == i);
+  
+void bar(FOO f) 
+  _(requires f->\valid)
+{
+  int i = f(2);
+  _(assert i == 2)
+}
+
+int foo(int i)
+  _(ensures \result == i)
+{
+  return i;
+}
+
+int fail(int i)
+  _(ensures \result == 1)
+{
+	return 1;
+}
+
+int baz() 
+{
+  BAR b = &foo;
+  bar(&foo);
+  bar(&foo); 
+  bar(&fail); 
+  return 0;
+}
+`
+Verification of baz succeeded.
+Verification of baz#fnptr#fail_to_FOO#2 failed.
+testcase(34,7) : error VC9501: Post condition '\result == i' did not verify.
+testcase(5,13) : error VC9599: (related information) Location of post condition.
+Verification of baz#fnptr#foo_to_FOO#2 succeeded.
+Verification of baz#fnptr#foo_to_BAR#1 succeeded.
+`

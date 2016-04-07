@@ -1,0 +1,41 @@
+#include <vcc.h>
+
+void foo() {
+  int i;
+
+  for (i = 0; i < 1024; i++) 
+  {
+    int j;
+    int *p = &j;
+    *p = i; 
+  }
+}
+
+void bar() {
+  int i;
+  int j;
+  for (i = 0; i < 1024; i++) 
+  {
+    int a[100];
+    j = i; 
+  }
+}
+
+
+struct S { int a; };
+
+void baz() {
+  int i;
+  int j;
+  for (i = 0; i < 1024; i++) 
+  {
+    struct S s;
+    struct S *p = &s;
+    j = i; 
+  }
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+Verification of baz succeeded.
+`

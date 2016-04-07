@@ -1,0 +1,71 @@
+#include <vcc.h>
+
+_(pure) int f1(int *x)
+  _(reads x);
+
+_(pure) int f2(int *x)
+  _(reads x);
+
+_(pure) int f3(int *x)
+  _(reads x);
+
+_(pure) int f4(int *x)
+  _(reads x);
+
+_(pure) int f5(int *x)
+  _(reads x);
+
+_(pure) int f6(int *x)
+  _(reads x);
+
+#ifdef VERIFY
+vcc_attr ("is_reads_check", "f1")
+vcc_attr ("is_reads_check", "f2")
+void reads_f12()
+{
+  _(reads_havoc)
+}
+
+
+vcc_attr ("is_reads_check", "f3")
+void reads_f3_1()
+{
+  _(reads_havoc)
+}
+
+vcc_attr ("is_reads_check", "f3")
+void reads_f3_2()
+{
+  _(reads_havoc)
+}
+
+vcc_attr ("is_reads_check", "f4")
+void reads_f4(short *y)
+{
+  _(reads_havoc)
+}
+
+vcc_attr ("is_reads_check", "f5")
+void reads_f5(int *x, short *y)
+{
+  _(reads_havoc)
+}
+
+
+
+vcc_attr ("is_reads_check", "szczebrzyszczykiewicz")
+void reads_szczebrzyszczykiewicz()
+{
+  _(reads_havoc)
+}
+#endif
+`
+testcase(56,1) : error VC9643: function 'szczebrzyszczykiewicz' is nowhere to be found (for reads check)
+testcase(22,1) : error VC9639: function 'reads_f12' pretends to be several read checks at once
+testcase(36,1) : warning VC9105: reads check for 'f3' specified multiple times
+testcase(30,1) : warning VC9105: (this is the first one)
+testcase(42,1) : error VC9642: the reads check and function checked differ on type of parameter 'y'
+testcase(12,3) : error : (Location of symbol related to previous error.)
+testcase(48,1) : error VC9641: the reads check and the function checked have different number of parameters
+testcase(15,3) : error : (Location of symbol related to previous error.)
+`

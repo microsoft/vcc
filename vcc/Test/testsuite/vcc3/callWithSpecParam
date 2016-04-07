@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+int f(_(ghost int n))
+{
+  return 0;
+}
+
+int g(_(ghost int n))
+{
+  return f(_(ghost n));
+}        
+
+`
+Verification of f succeeded.
+Verification of g succeeded.
+`

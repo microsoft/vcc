@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+void foo(unsigned x)
+{
+  x = 7;
+  switch (x) {
+  case 7:
+  case 1:
+    _(assert \false) break;
+  default: break;
+  }
+}
+`
+Verification of foo failed.
+testcase(9,14) : error VC9500: Assertion '\false' did not verify.
+`

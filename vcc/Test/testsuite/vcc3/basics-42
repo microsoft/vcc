@@ -1,0 +1,18 @@
+#include "vcc.h"
+
+typedef struct { int a; } X;
+
+typedef void (*FOO)(unsigned X)
+  _(requires (X) & 3);
+
+void foo(unsigned X, FOO f)
+	_(requires (X) & 3)	
+	_(requires X & 3)		
+	_(requires f->\valid)
+{
+	_(assert (X) & 3)	
+	f(X);
+}
+`
+Verification of foo succeeded.
+`

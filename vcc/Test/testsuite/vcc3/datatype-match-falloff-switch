@@ -1,0 +1,34 @@
+#include <vcc.h>
+
+_(datatype List {
+       case Nil();
+       case Cons(List, List);
+})
+
+_(def List F(List k)
+{
+       switch (k) {
+              case Cons(h,z): 
+                 switch (h) {
+                   case Cons(x,y): return F(h);
+                   case Nil(): return F(z);
+                 }
+              case Nil(): return k;
+       }
+})
+
+_(def List F2(List k)
+{
+       switch (k) {
+              case Cons(h,z): 
+                 switch (h) {
+                   case Cons(x,y): return F(h);
+                 }
+              case Nil(): return k;
+       }
+})
+`
+Verification of F succeeded.
+Verification of F2 failed.
+testcase(24,26) : error VC8030: case Nil is unhandled when matching h.
+`

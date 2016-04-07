@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+typedef unsigned __int32 UINT32;
+
+void foo(UINT32 NumberToClear) {
+
+  if (NumberToClear > 8)
+    NumberToClear %= 8;
+   
+  _(assert NumberToClear < 8)
+}
+
+`
+Verification of foo failed.
+testcase(10,12) : error VC9500: Assertion 'NumberToClear < 8' did not verify.
+`

@@ -1,0 +1,25 @@
+#include <vcc.h>
+
+_(ghost _(pure) int f(int a) _(ensures \result == (a == 0 ? 1 : -1));)
+
+struct S {
+  volatile int a;
+  _(ghost volatile int b;)
+  
+  _(invariant b == f(a))
+};
+
+void foo(struct S *p _(ghost \claim c))
+  _(always c, p->\closed)
+{
+  _(ghost int i)
+  _(atomic c,p) {
+    _(ghost i = f(10))
+    p->a = 10;
+    _(ghost p->b = i;)
+  }
+}
+`
+Verification of S#adm succeeded.
+Verification of foo succeeded.
+`

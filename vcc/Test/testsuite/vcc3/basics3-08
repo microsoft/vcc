@@ -1,0 +1,12 @@
+#include "vcc.h"
+
+typedef _(claimable) struct X {
+  int dummy;
+
+  _(group R)
+  _(ghost _(:R) \claim c;)
+  _(invariant :R c)
+};
+`
+Verification of X##R#adm succeeded.
+`

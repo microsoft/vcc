@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+void foo(int i) {
+  _(assert \old(i) == i)
+}
+
+void bar() {
+  int i = 1;
+  _(assert \old(i) == i)
+}
+`
+testcase(4,12) : warning VC9106: '\old', '\at', or '\when_claimed' in '\old(i)' has no effect
+testcase(9,12) : warning VC9106: '\old', '\at', or '\when_claimed' in '\old(i)' has no effect
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

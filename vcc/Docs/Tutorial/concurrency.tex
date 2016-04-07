@@ -1,0 +1,725 @@
+\section{Atomics}
+\label{sect:concurrency}
+
+Writing concurrent programs is generally considered harder than
+writing sequential programs.  Similar opinions are held about
+verification.  However, in VCC the leap from verifying sequential
+programs to verifying fancy lock-free code is not that big.  This is
+because verification in VCC is inherently based on object invariants.
+
+Coarse-grained concurrency - where objects are protected by locks - is
+really no different from sequential programming. Each lock protects a
+single (typically fixed) object; when you acquire an exclusive lock,
+you obtain ownership of the object protected by the lock. You are then
+free to operate on tht object just as you would in sequential
+programming; you can unwrap it, play with it, and eventually wrap it
+up (checking that you restored the object invariant) and release the
+lock, giving ownership of the protected object back to the lock.
+
+Fine-grained concurrency - where memory is accessed using atomic
+actions - is not very different from coarse-grained concurrency
+(except that one is obviously restricted to operations that are
+implemented atomically on the hardware platform). The
+main difference is that you do not get ownership of the object you
+operate on; instead, you operate on the objct by reading or writing
+its volatile fields while leaving the object closed.
+
+We begin with what is probably the most important lock free algorith:
+the humble spin-lock.  The spin-lock data-structure is very simple --
+it contains just a single boolean field, meant to indicate whether the
+spin-lock is currently acquired. However, like most concurrent
+objects, the important thing about a spinlock is forcing its users to
+``play by the rules''. For example, the most important
+characteristic of a spinlock is that once you acquire a spinlock, you
+know that nobody else can acquire it until you release it; this would
+be broken if somebody else could release the lock. But what does it
+mean for ``you'' to release it? Does that mean your thread? How then
+would you cope with protocols where you intentionally transfer your
+right to release the spinlock to another thread?
+
+Fortunately, we have the means at hand to represent an unforgable
+right: since each object has a unique owner, we can represent a unique
+right with ownership of an object. When a lock is acquired, the caller
+receives ownership of an object associated with the lock (not the lock
+itself, which will ultimately remain shared). To release the lock, the
+caller has to give this object back. This approach prevents other
+threads from competing for the lock, yet allows the thread to ``give''
+his right to release the lock to another thread (or to store it in a
+data structure) by simply transfering ownership.
+
+The protected object need not serve as a simple token; being an
+object, it can own data and have an invariant. These correspond to the
+data ``protected'' by the lock and the notion of ``consistency'' of
+this data.
+
+\vccInput[linerange={lock-init}]{c/8.1.lockw.c}
+
+\noindent
+We use a ghost field to hold a reference to the object meant to be protected
+by this lock.
+If you wish to protect multiple objects with a single lock, you can make
+the object referenced by \vcc{protected_obj} own them all.
+The \vcc{locked} field is annotated with \vcc{volatile}.
+It has the usual meaning ascribed to the modifier in C (\ie it makes the compiler
+assume that the environment might write to that field, outside the knowledge
+of the compiler). However, in practice C compilers also provide the 
+stronger guarantee that volatile operations performed by a single
+thread are guaranteed to happen in program order.
+
+VCC treats volatile fields differently from nonvolatile fields in two
+specific ways. First, a volatile field of an object can be modified
+while the object is closed, as long as the update occurs inside an
+explicit atomic action that preserves the object invariant. Second,
+volatile fields are not in sequential domains, so a thread forgets the
+values of these fields when it makes an impure function call (and, as
+we will see soon, just before an atomic action).
+
+The attribute
+\vcc{_(volatile_owns)} means that we want the \vcc{\owns} set
+to be treated as a volatile field (\ie we want to be able to write
+it while the object is closed); without this declaration, \vcc{\owns}
+sets can only be update when the object is open.
+
+Here is the constructor for the lock:
+
+\vccInput[linerange={init-xchg}]{c/8.1.lockw.c}
+
+\noindent
+The parameter \vcc{ob} is passed as a \Def{ghost parameter}.
+The regular lock initialization function prototype does not say which
+object the lock is supposed to protect, but the lock invariant requires it.
+Thus, we introduce additional parameter for the purpose of verification.
+A call to the initialization will look like 
+\vcc{InitializeLock(&l _(ghost o))}. Note that in order to allow VCC
+annotations to be erased by the preprocessor, ghost arguments are not
+separated with commas.
+The transfer of ownership of \vcc{ob} into the lock is exactly as in
+adding an object to a container data-structure, like
+\vcc{sc_add()} from \secref{dynamic-ownership}.
+
+Now we can see how we operate on volatile fields.
+We will start with the simpler of the two lock operations, the release:
+
+\vccInput[linerange={release-out}]{c/8.1.lockw.c}
+
+\noindent
+First, let's look at the contract.
+The contract above requires the lock to be wrapped, which is
+hardly realistic for a lock (which of course must be shared). We will
+fix this problem later, but for now, we note that what we really need
+is a reliable way to make sure that the lock remains closed.
+
+
+The preconditions on the protected object are very similar to the
+preconditions on the \vcc{InitializeLock()}.
+Note that the \vcc{Release()} does not need to mention the lock in its writes clause,
+this is because the write it performs is volatile.
+This is because the lock is not in the sequential domain of \vcc{\me}
+(since it is a volatile field), and so the thread forgets whatever it
+knew about the field when it calls a function. 
+
+The \vcc{atomic} block is similar in spirit to the \vcc{unwrapping} block ---
+it allows for modifications of listed objects and checks if their invariants
+are preserved.
+The difference is that the entire update happens instantaneously from the point
+of view of other threads.
+We needed the unwrapping operation because we wanted to mark that we temporarily
+break the object invariants.
+Here, there is no point in time where other threads can observe that the invariants
+are broken.
+Invariants hold before the beginning of the atomic block (by our principal reasoning
+rule, \secref{wrap-unwrap}), and we check the invariant at the end of the atomic block.
+
+For the use of an atomic action construct to be sound, VCC requires
+that the actions on volatile concrete data of closed objects performed
+by the action must appear atomic to other threads.  VCC issues a
+warning if there is more than one volatile physical memory operation
+inside of an atomic block (since this is unlikely to be atomic on most
+architectures), but is otherwise silent, assuming that a single
+volatile memory access is implemented in an atomic way by the host
+compiler (even though this is not true for all data types on all
+platforms). Ultimately,  it is up to the user to
+guarantee that the access performed is indeed atomic.
+
+Here, the physically atomic operation is writing to the \vcc{l->locked}; Other
+possibilities include reading from a volatile field, or a performing a
+primitive operation supported by the hardware, like interlocked
+compare-and-exchange, on such a field.  The block may also include any
+number of accesses to mutable variables, reads of thread-local
+variables, reads of nonvolatile fields of objects named in the atomic,
+reads of volatile ghost variables (in any object), and writes of
+volatile ghost variables of objects named in the atomic. The
+additional operations on concrete fields are allowed because these
+accesses are not racing with other threads, and the ghost operations
+are allowed because we can pretend that ghost updates happen
+immediately (without scheduler boundary).
+
+It is not hard to see that this atomic operation preserves the
+invariant of the lock.
+However, VCC must also make the usual checks on the sequential data.
+To transfer ownership of \vcc{l->protected_obj} to the lock, we also need
+write permission to the object being transferred, and
+we need to know it is closed.
+For example, had we forgotten to mention \vcc{l->protected_obj}
+in the writes clause,  VCC would have complained:
+
+\vccInput[linerange={out-999}]{c/8.2.lockw_wrong.c}
+
+\noindent
+And had we forgotten to perform the ownership transfer inside of
+\vcc{Release()}, VCC would have complained
+about the invariant of the lock:
+
+\vccInput[linerange={out-999}]{c/8.3.lockw_wrong2.c}
+
+Now we'll look at \vcc{Acquire()}. 
+The specification is not very surprising. It requires the lock to be
+wrapped (again, unrealistic for a shared lock, but we will fix this later).
+It ensures that the calling thread will own the protected object,
+and moreover, that the thread didn't directly own it before.
+This is much like the postcondition on \vcc{sc_set()} function
+from \secref{dynamic-ownership}.
+
+\vccInput[linerange={acquire-release}]{c/8.1.lockw.c}
+
+\noindent
+The \vcc{InterlockedCompareAndExchange()} function is a compiler instrinsic,
+which on the x86/x64 hardware translates to the \vcc{cmpxchg} assembly instruction.
+It takes a memory location and two values.
+If the memory location contains the first value, then it is replaced with the second.
+It returns the old value.
+The entire operation is performed atomically (and is also a write barrier).
+
+VCC doesn't have all the primitives of all the C compilers predefined.
+You define such intrinsics for VCC by providing a body. 
+It is seen only by VCC (it is enclosed in
+\vcc{_(atomic_inline ...)}) so that the normal compiler doesn't get confused
+about it.
+
+\vccInput[linerange={xchg-acquire}]{c/8.1.lockw.c}
+
+\noindent
+It is up to you to make sure that any such functions you provide
+indeed match the semantics provided by your compiler and platform. 
+Such definitions may in future be provided in header files for certain compiler/platform
+combinations.
+
+
+\subsection{Using claims}
+\label{sect:using-claims}
+
+The contracts of functions operating on the lock require that the lock
+is wrapped.
+This is because one can only perform atomic operations on objects
+that are closed. 
+If an object is open, then the owning thread is in full control of it.
+However, wrapped means not only closed, but also owned by the current thread,
+which defeats the purpose of the lock --- it should be possible
+for multiple threads to compete for the lock.
+Let's then say, there is a thread which owns the lock.
+Assume some other thread \vcc|t| got to know that the lock is closed.
+How would \vcc|t| know that the owning thread won't unwrap (or worse yet, deallocate) the lock, just
+before \vcc|t| tries an atomic operation on the lock?
+The owning thread thus needs to somehow promise \vcc|t|
+that lock will stay closed.
+In VCC such a promise takes the form of a \Def{claim}.
+Later we'll see that claims are more powerful, but for
+now consider the following to be the definition of a claim:
+
+\begin{VCC}
+_(ghost 
+typedef struct {
+  \ptrset claimed;
+  _(invariant \forall \object o; o \in claimed ==> o->\closed)
+} \claim_struct, *\claim;
+)
+\end{VCC}
+
+\noindent
+Thus, a claim is an object, with an invariant stating that a number of other objects
+(we call them \Def{claimed objects}) are closed.
+As this is stated in the invariant of the claim, it only needs to be true
+as long as the claim itself stays closed.
+
+Recall that what can be written in invariants is subject to the admissibility
+condition, which we have seen partially explained in \secref{admissibility0}.
+There we said that an invariant should talk only about things the object owns.
+But here the claim doesn't own the claimed objects,
+so how should the claim know the object will stay closed?
+In general, an admissible invariant can depend on other objects invariants always being
+preserved (we'll see the precise rule in \secref{inv2}).
+So VCC adds an implicit invariant to all types
+marked with \vcc{_(claimable)} attribute.
+This invariant states that the object cannot be unwrapped when
+there are closed claims on it.
+More precisely, each claimable object keeps track of the count of outstanding
+claims.
+The number of outstanding claims on an object is stored in
+\vcc{\claim_count} field.
+
+Now, getting back to our lock example, the trick is that there can be
+multiple claims claiming the lock (note that this is orthogonal to
+the fact that a single claim can claim multiple objects).
+The thread that owns the lock will need to keep track of who's using
+the lock.
+The owner won't be able to destroy the lock (which requires unwrapping it),
+before it makes sure there is no one using the lock.
+Thus, we need to add \vcc{_(claimable)} attribute to our lock
+definition, and change the contract on the functions operating
+on the lock. As the changes are very similar we'll only
+show \vcc{Release()}.
+
+\vccInput[linerange={release-struct_data}]{c/8.4.lock_claimsobj.c}
+
+\noindent
+We pass a ghost parameter holding a claim.
+The claim should be wrapped.
+The function \vcc{\claims_obj(c, l)} is defined to be
+\vcc{l \in c->claimed}, \ie that the claim claims the lock.
+We also need to know that the claim is not the protected object,
+otherwise we couldn't ensure that the claim is wrapped after the call.
+This is the kind of weird corner case that VCC is very good catching
+(even if it's bogus in this context).
+Other than the contract, the only change is that we list the claim
+as parameter to the atomic block.
+Listing a normal object as parameter to the atomic makes VCC know you're
+going to modify the object.
+For claims, it is just a hint, that it should use this claim when trying
+to prove that the object is closed.
+
+Additionally, the \vcc{InitializeLock()} needs to ensure \vcc{l->\claim_count} \vcc{== 0}
+(\ie no claims on freshly initialized lock).
+VCC even provides a syntax to say something is wrapped and has no claims: \vcc{\wrapped0(l)}.
+
+\subsection{Creating claims}
+\label{sect:creating-claims}
+
+When creating (or destroying) a claim one needs to list the claimed objects.
+Let's have a look at an example.
+
+\vccInput[linerange={create_claim-out}]{c/8.4.lock_claimsobj.c}
+
+This function tests that we can actually create a lock, create a claim on it,
+use the lock, and then destroy it.
+The \vcc{InitializeLock()} leaves the lock wrapped and writable by the current thread.
+This allows for the creation of an appropriate claim, which is then passed to \vcc{Acquire()} and \vcc{Release()}.
+Finally, we destroy the claim, which allows for unwrapping of the lock, and subsequently deallocating
+it when the function activation record is popped off the stack.
+
+The \vcc{\make_claim(...)} function takes the set of objects to be claimed
+and a property (an invariant of the claim, we'll get to that in the next section).
+Let us give desugaring of \vcc{\make_claim(...)} for a single object
+in terms of the \vcc{\claim_struct} defined in the previous section.
+
+\begin{VCC}
+// c = \make_claim({o}, \true) expands to
+o->\claim_count += 1;
+c = malloc(sizeof(\claim_struct));
+c->claimed = {o};
+_(wrap c);
+
+// \destroy_claim(c, {o}) expands to
+assert(o \in c->claimed);
+o->\claim_count -= 1;
+_(unwrap c);
+free(c);
+\end{VCC}
+
+
+Because creating or destroying a claim on \vcc{c} assigns to
+\vcc{c->\claim_count}, it requires write access to that memory location.
+One way to obtain such access is getting sequential write access to \vcc{c} itself:
+in our example the lock is created on the stack and thus sequentially writable.
+We can thus create a claim and immediately use it.
+A more realistic claim management scenario is described in \secref{dynamic-claims}.
+%when a thread creates an object, constructs
+%a number of claims on it, and stores the claims in some shared, possibly global, data-structures
+%(\eg a work-queue) where other threads can access them.
+
+The \vcc{\true} in \vcc{\make_claim(...)} is the claimed property (an invariant
+of the claim), which will be explained in the next section.
+
+\begin{note}
+The destruction can possibly leak claim counts, \ie one could say:
+\begin{VCC}
+\destroy_claim(c, {});
+\end{VCC}
+\noindent
+and it would verify just fine.
+This avoids the need to have write access to \vcc{p}, but on the other hand prevents
+\vcc{p} from unwrapping forever (which might be actually fine if \vcc{p} is a ghost object).
+%It seems clear why the claimed objects need to be listed when creating a claim, but
+%why do we need them for destruction?
+\end{note}
+
+\subsection{Two-state invariants}
+\label{sect:inv2}
+
+Sometimes it is not only important what are the valid states of objects,
+but also what are the allowed \emph{changes} to objects.
+For example, let's take a counter keeping track of certain operations
+since the beginning of the program.
+
+\vccInput[linerange={counter-reading}]{c/8.5.counter.c}
+
+\noindent
+Its first invariant is a plain single-state invariant -- for some reason
+we decided to exclude zero as the valid count.
+The second invariant says that for any atomic update of (closed)
+counter, \vcc{v} can either stay unchanged or increment by exactly one.
+The syntax \vcc{\old(v)} is used to refer to value of \vcc{v} before
+an atomic update, and plain \vcc{v} is used for the value of \vcc{v}
+after the update.
+(Note that the argument to \vcc{\old(...)} can be an arbitrary expression.)
+That is, when checking that an atomic update preserves the invariant
+of a counter, we will take the state of the program right
+before the update, the state right after the update, and check
+that the invariant holds for that pair of states.
+
+\begin{note}
+In fact, it would be easy to prevent any changes to some field \vcc{f}, by
+saying \vcc{_(invariant \old(f) == f)}.
+This is roughly what happens under the hood when a field is
+declared without the \vcc{volatile} modifier.
+\end{note}
+
+As we can see the single- and two-state invariants are both defined
+using the \vcc{_(invariant ...)} syntax.
+The single-state invariants are just two-state invariants, which do not use
+\vcc{\old(...)}.
+However, we often need an interpretation of an object invariant in a single state \vcc{S}.
+For that we use the \Def{stuttering transition} from \vcc{S} to \vcc{S} itself.
+VCC enforces that all invariants are \Def{reflexive} that is if they hold
+over a transition \vcc{S0, S1}, then they should hold in just \vcc{S1}
+(\ie over \vcc{S1, S1}).
+In practice,
+this means that \vcc{\old(...)} should be only used to describe
+how objects change, and not what are their proper values.
+In particular,
+all invariants which do not use \vcc{\old(...)} are reflexive, and so
+are all invariants of the form \vcc{\old(E) == (E) || (P)}, for any expression \vcc{E} and condition \vcc{P}.
+On the other hand, the invariants \vcc{\old(f) < 7} and \vcc{x == \old(x) + 1} are not reflexive.
+
+Let's now discuss where can you actually rely on invariants being preserved.
+
+\begin{VCC}
+void foo(struct Counter *n)
+  _(requires \wrapped(n))
+{
+  int x, y;
+  atomic(n) { x = n->v; }
+  atomic(n) { y = n->v; }
+}
+\end{VCC}
+
+\noindent
+The question is what do we know about \vcc{x} and \vcc{y}
+at the end of \vcc{foo()}.
+If we knew that nobody is updating \vcc{n->v} while \vcc{foo()}
+is running we would know \vcc{x == y}.
+This would be the case if \vcc{n} was unwrapped, but it is wrapped.
+In our case, because \vcc{n} is closed, other threads can update it,
+while \vcc{foo()} is running, but they will need to
+adhere to \vcc{n}'s invariant.
+So we might guess that at end of \vcc{foo()} we know
+\vcc{y == x || y == x + 1}.
+But this is incorrect: \vcc{n->v} might get incremented
+by more than one, in several steps.
+The correct answer is thus \vcc{x <= y}.
+Unfortunately, in general, such properties are very difficult to deduce
+automatically, which is why we use plain object invariants and admissibility
+check to express such properties in VCC.
+
+\begin{note}
+An invariant is \Def{transitive} if it holds over states \vcc{S0, S2},
+provided that it holds over \vcc{S0, S1} and \vcc{S1, S2}.
+Transitive invariants could be assumed over arbitrary
+pairs of states, provided that the object stays closed
+in between them. 
+VCC does not require invariants to be transitive, though.
+
+Some invariants are naturally transitive (\eg we could say
+\vcc{_(invariant \old(x) <= x)} in \vcc{struct Counter},
+and it would be almost as good our current invariant).
+Some other invariants, especially the more complicated ones,
+are more difficult to make transitive.
+For example, an invariant on a reader-writer lock might say
+\begin{VCC}
+_(invariant writer_waiting ==> old(readers) >= readers)
+\end{VCC}
+\noindent
+To make it transitive one needs to introduce version numbers.
+Some invariants describing hardware (\eg a step of physical CPU)
+are impossible to make transitive.
+\end{note}
+
+Consider the following structure definition:
+
+\vccInput[linerange={reading-endreading}]{c/8.5.counter.c}
+
+\noindent 
+It is meant to represent a reading from a counter.
+Let's consider its admissibility.
+It has a pointer to the counter, and a owns a claim, which
+claims the counter.
+So far, so good.
+It also states that the current value of the counter is no less than \vcc{r}.
+Clearly, the \vcc{Reading} doesn't own the counter, so our previous rule
+from \secref{admissibility0}, which states
+that you can mention in your invariant everything that you own, doesn't apply.
+It would be tempting to extend that rule to say ``everything that you own
+or have a claim on'', but VCC actually uses a more general rule.
+In a nutshell, the rule says that every invariant should be preserved
+under changes to other objects, provided that these other objects change
+according to their invariants.
+When we look at our \vcc{struct Reading}, its invariant cannot be broken when
+its counter increments, which is the only change allowed by counters invariant.
+On the other hand, an invariant like \vcc{r == n->v} or \vcc{r >= n->v}
+could be broken by such a change.
+But let us proceed with somewhat more precise definitions.
+
+First, assume that every object invariant holds when the object is not closed.
+This might sound counter-intuitive, but remember that closedness is controlled
+by a field.
+When that field is set to false, we want to \emph{effectively} disable the invariant,
+which is the same as just forcing it to be true in that case.
+Alternatively, you might try to think of all objects as being closed for a while.
+
+An atomic action, which updates state \vcc{S0} into \vcc{S1}, is \Def{legal} if and only if the invariants of
+objects that have changed between \vcc{S0} and \vcc{S1} hold over \vcc{S0, S1}.
+In other words, a legal action preservers invariants of updated objects.
+This should not come as a surprise: this is exactly what VCC checks
+for in atomic blocks.
+
+An invariant is \Def{stable} if and only if it cannot be broken by legal updates.
+More precisely, to prove that an invariant of \vcc{p} is stable,
+VCC needs to ``simulate'' an arbitrary legal update:
+\begin{itemize}
+\item Take two arbitrary states \vcc{S0} and \vcc{S1}.
+\item Assume that all invariants (including \vcc{p}'s) hold over \vcc{S0, S0}.
+\item Assume that for all objects, some fields of which are not the same in \vcc{S0} and \vcc{S1},
+their invariants hold over \vcc{S0, S1}.
+\item Assume that all fields of \vcc{p} are the same in \vcc{S0} and \vcc{S1}.
+\item Check that invariant of \vcc{p} holds over \vcc{S0, S1}.
+\end{itemize}
+The first assumption comes from the fact that all invariants are reflexive.
+The second assumption is legality.
+The third assumption follows from the second (if \vcc{p} did change, its invariant would
+automatically hold).
+
+An invariant is \Def{admissible} if and only if it is stable and reflexive.
+
+Let's see how our previous notion of admissibility relates to this one.
+If \vcc{p} owns \vcc{q}, then \vcc{q \in p->\owns}.
+By the third admissibility assumption, after the simulated action \vcc{p} still owns \vcc{q}.
+By the rules of ownership (\secref{wrap-unwrap}), only threads can own
+open objects, so we know that \vcc{q} is closed in both \vcc{S0}
+and \vcc{S1}.
+Therefore non-volatile fields of \vcc{q} do not change between \vcc{S0} and \vcc{S1},
+and thus the invariant of \vcc{p} can freely talk about their values:
+whatever property of them was true in \vcc{S0}, will also be true in \vcc{S1}.
+Additionally, if \vcc{q} owned \vcc{r} before the atomic action, and the \vcc{q->\owns} is non-volatile,
+it will keep owning \vcc{r}, and thus non-volatile fields of \vcc{r}
+will stay unchanged.
+Thus our previous notion of admissibility is a special case of this one.
+
+Getting back to our \vcc{foo()} example, to deduce that \vcc{x <= y}, after
+the first read we could create a ghost \vcc{Reading} object, and
+use its invariant in the second action.
+While we need to say that \vcc{x <= y} is what's required,
+using a full-fledged object might seem like an overkill.
+Luckily, definitions of claims themselves can specify additional invariants.
+
+\begin{note}
+The admissibility condition above is semantic: it will be checked by the theorem
+prover. 
+This allows construction of the derived concepts like claims and ownership,
+and also escaping their limitations if needed.
+It is therefore the most central concept of VCC verification methodology,
+even if it doesn't look like much at the first sight.
+\end{note}
+
+\subsection{Guaranteed properties in claims}
+\label{sect:claim-props}
+
+When constructing a claim, you can specify additional invariants to put on
+the imaginary definition of the claim structure.
+Let's have a look at annotated version of our previous \vcc{foo()} function.
+
+\vccInput[linerange={readtwice-endreadtwice}]{c/8.5.counter.c}
+
+\noindent
+Let's give a high-level description of what's going on.
+Just after reading \vcc{n->v} we create a claim \vcc{r}, which guarantees
+that in every state, where \vcc{r} is closed,
+the current value of \vcc{n->v} is no less than the value of \vcc{x}
+at the time when \vcc{r} was created.
+Then, after reading \vcc{n->v} for the second time, we tell VCC to
+make use of \vcc{r}'s guaranteed property, by asserting that it is ``active''.
+This makes VCC know \vcc{x <= n->v} in the current state, where also
+\vcc{y == n->v}.
+From these two facts VCC can conclude that \vcc{x <= y}.
+
+The general syntax for constructing a claim is:
+
+\begin{VCC}
+_(ghost c = \make_claim(S, P))
+\end{VCC}
+
+\noindent
+We already explained, that this requires that \vcc{s->\claim_count} is writable for \vcc{s \in S}.
+As for the property \vcc{P}, we pretend it forms the invariant of the claim.
+Because we're just constructing the claim, just like during regular object initialization,
+the invariant has to hold initially (\ie at the moment when the claim is created,
+that is wrapped).
+Moreover, the invariant has to be admissible, under the condition
+that all objects in \vcc{S} stay closed as long as the claim itself
+stays closed.
+The claimed property cannot use \vcc{\old(...)}, and therefore it's automatically
+reflexive, thus it only needs to be stable to guarantee admissibility.
+
+But what about locals?
+Normally, object invariants are not allowed to reference locals.
+The idea is that when the claim is constructed, all the locals that the
+claim references are copied into imaginary fields of the claim.
+The fields of the claim never change, once it is created.
+Therefore an assignment \vcc{x = UINT_MAX;} in between the atomic
+blocks would not invalidate the claim --- the claim would still
+refer to the old value of \vcc{x}.
+Of course, it would invalidate the final \vcc{x <= y} assert.
+
+\begin{note}
+For any expression \vcc{E} you can use \vcc{\at(\now(), E)} in \vcc{P}
+in order to have the value of \vcc{E} be evaluated in the state
+when the claim is created, and stored in the field of the claim.
+\end{note}
+
+This copying business doesn't affect initial checking of the \vcc{P},
+\vcc{P} should just hold at the point when the claim is created.
+It does however affect the admissibility check for \vcc{P}:
+\begin{itemize}
+\item Consider an arbitrary legal action, from \vcc{S0} to \vcc{S1}.
+\item Assume that all invariants hold over \vcc{S0, S0}, including assuming \vcc{P} in \vcc{S0}.
+\item Assume that fields of \vcc{c} didn't change between \vcc{S0} and \vcc{S1}
+(in particular locals referenced by the claim are the same as at the moment of its creation).
+\item Assume all objects in \vcc{S} are closed in both \vcc{S0} and \vcc{S1}.
+\item Assume that for all objects, fields of which are not the same in \vcc{S0} and \vcc{S1},
+their invariants hold over \vcc{S0, S1}.
+\item Check that \vcc{P} holds in \vcc{S1}.
+\end{itemize}
+
+To prove \vcc{\active_claim(c)} one needs to prove \vcc{c->\closed} and that
+the current state is a \Def{full-stop} state, \ie state where all invariants
+are guaranteed to hold.
+Any execution state outside of an atomic block is full-stop.
+The state right at the beginning of an atomic block is also full-stop.
+The states in the middle of it (\ie after some state updates) might not be.
+
+\begin{note}
+Such middle-of-the-atomic states are not observable by other threads, and therefore
+the fact that the invariants don't hold there does not create soundness problems.
+\end{note}
+
+The fact that \vcc{P} follows from \vcc{c}'s invariant after the construction
+is expressed using \vcc{\claims(c, P)}.
+It is roughly equivalent to saying:
+\begin{VCC}
+\forall \state s {\at(s, \active_claim(c))};
+  \at(s, \active_claim(c)) ==> \at(s, P)
+\end{VCC}
+Thus, after asserting \vcc{\active_claim(c)} in some state \vcc{s},
+\vcc{\at(s, P)} will be assumed, which means VCC will
+assume \vcc{P}, where all heap references are replaced by their values in
+\vcc{s}, and all locals are replaced by the values at the point
+when the claim was created.
+
+\itodo{I think we need more examples about that at() business,
+claim admissibility checks and so forth}
+
+\subsection{Dynamic claim management}
+\label{sect:dynamic-claims}
+
+So far we have only considered the case of creating claims to wrapped objects.
+In real systems some resources are managed dynamically:
+threads ask for ``handles'' to resources, operate on them,
+and give the handles back.
+These handles are usually purely virtual --- asking for a handle amounts to incrementing
+some counter.
+Only after all handles are given back the resource can be disposed.
+This is pretty much how claims work in VCC, and indeed they were modeled after this
+real-world scenario. 
+Below we have an example of prototypical reference counter.
+
+\vccInput[linerange={refcnt-init}]{c/8.6.rundown.c}
+
+\noindent
+Thus, a \vcc{struct RefCnt} owns a resource, and makes sure that the number of outstanding
+claims on the resource matches the physical counter stored in it.
+\vcc{\claimable(p)} means that the type of object pointed to by \vcc{p} was marked
+with \vcc{_(claimable)}.
+The lowest bit is used to disable giving out of new references
+(this is expressed in the last invariant).
+
+\vccInput[linerange={init-incr}]{c/8.6.rundown.c}
+
+\noindent
+Initialization shouldn't be very surprising:
+\vcc{\wrapped0(o)} means \vcc{\wrapped(o) && o->\claim_count == 0},
+and thus on initialization we require a resource without any outstanding
+claims.
+
+\vccInput[linerange={incr-decr}]{c/8.6.rundown.c}
+
+\noindent
+First, let's have a look at the function contract.
+The syntax \vcc{_(always c, P)} is equivalent to:
+\begin{VCC}
+  _(requires \wrapped(c) && \claims(c, P))
+  _(ensures \wrapped(c))
+\end{VCC}
+Thus, instead of requiring \vcc{\claims_obj(c, r)}, we require that the claim
+guarantees \vcc{r->\closed}.
+One way of doing this is claiming \vcc{r}, but another is claiming the owner
+of \vcc{r}, as we will see shortly.
+
+As for the body, we assume our reference counter will never overflow.
+This clearly depends on the running time of the system and usage patterns,
+but in general it would be difficult to specify this, and thus we just
+hand-wave it.
+
+The new thing about the body is that we make a claim on the resource,
+even though it's not wrapped.
+There are two ways of obtaining write access to \vcc{p->\claim_count}:
+either having \vcc{p} writable sequentially and wrapped,
+or in case \vcc{p->\owner} is a non-thread object, checking
+invariant of \vcc{p->\owner}.
+Thus, inside an atomic update on \vcc{p->\owner} (which will check the invariant of \vcc{p->\owner}) one can create
+claims on \vcc{p}.
+The same rule applies to claim destruction:
+
+\vccInput[linerange={decr-use}]{c/8.6.rundown.c}
+
+\noindent
+A little tricky thing here, is that we need to make use of the \vcc{handle} claim
+right after reading \vcc{r->cnt}. 
+Because this claim is valid, we know that the claim count on the resource
+is positive and therefore (by reference counter invariant) \vcc{v >= 2}.
+Without using the \vcc{handle} claim to deduce it we would get a complaint
+about overflow in \vcc{v - 2} in the second atomic block.
+
+Finally, let's have a look at a possible use scenario of our reference counter.
+
+\vccInput[linerange={use-enduse}]{c/8.6.rundown.c}
+
+\noindent
+The \vcc{struct B} contains a \vcc{struct A} governed by a reference counter.
+It owns the reference counter, but not \vcc{struct A} (which is owned by the reference
+counter).
+A claim guaranteeing that \vcc{struct B} is closed also guarantees
+that its counter is closed, so we can pass it to \vcc{try_incr()},
+which gives us a handle on \vcc{struct A}.
+
+Of course a question arises where one does get a claim on \vcc{struct B} from?
+In real systems the top-level claims come either from global objects that are
+always closed, or from data passed when the thread is created.
+

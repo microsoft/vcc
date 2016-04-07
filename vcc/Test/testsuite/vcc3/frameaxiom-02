@@ -1,0 +1,15 @@
+#include <vcc.h>
+
+_(ghost _(pure, frameaxiom, no_reads_check) \integer cVal(int *digits, \integer carry)
+  _(reads \array_range(digits,0))
+  )
+
+void test() {
+   _(assert cVal((int *) 4,  0) == 
+            cVal((int *) 4,  1))
+}
+
+`
+Verification of test failed.
+testcase(8,13) : error VC9500: Assertion 'cVal((int *) 4, 0) == cVal((int *) 4, 1)' did not verify.
+`

@@ -1,0 +1,28 @@
+#include <stdlib.h>
+#include "vcc.h"
+
+typedef unsigned __int8 byte;
+
+typedef struct C { int dummy; } C;
+
+typedef struct B { C c; } B;
+
+typedef struct A1 { B b; } A1;
+
+typedef struct gA { A1 g[10]; } gA;
+
+void two() {
+    _(ghost gA^ a;)
+    _(ghost a = \alloc<gA>();)
+    _(ghost a->g[0].b.c.dummy = 42;)
+}
+
+void three() {
+    gA* a;
+    a = (gA*) malloc(sizeof(gA));
+    if (a != NULL) a->g[0].b.c.dummy = 42;
+}
+`
+Verification of two succeeded.
+Verification of three succeeded.
+`

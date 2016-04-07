@@ -1,0 +1,9 @@
+#include <vcc.h>
+
+void f() {
+    __pragma(warning(push)) __pragma(warning(disable : 4548)) do {__noop(1);} while(0 __pragma(warning(pop)) );
+    //__pragma(warning(push)) __pragma(warning(disable : 4548)) do {__noop(1);} while((0,0) __pragma(warning(pop)) );
+}
+`
+Verification of f succeeded.
+`

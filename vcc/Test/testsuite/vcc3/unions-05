@@ -1,0 +1,27 @@
+#include <vcc.h>
+
+typedef unsigned int UINT32;
+
+typedef struct itype_instr_t {
+    int simm16:16;
+    unsigned rd:5;
+    unsigned rs1:5;
+    unsigned opc:6;
+} itype_instr_t;
+
+typedef union instr_t {
+    itype_instr_t itype;
+    _(backing_member) UINT32 uint32;
+} instr_t;
+
+int foo(instr_t I)
+{
+   UINT32 i = I.itype.rs1;
+   _(assert 0 <= i)
+   _(assert i < 32)
+   I.itype.rs1 = 17;
+   _(assert I.itype.rs1 == 17)
+}
+`
+Verification of foo succeeded.
+`

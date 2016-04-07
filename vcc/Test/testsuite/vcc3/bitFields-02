@@ -1,0 +1,22 @@
+#include <vcc.h>
+typedef struct _S {
+  int a : 16;
+  int b : 8;
+  int c : 8;
+} S, *PS;
+
+void foo() {
+  S s;
+  int *p = &s.a;
+}
+
+void bar() {
+  S s;
+  PS ps = &s;
+  int *p = &ps->a;
+}
+
+`
+testcase(10,12) : error VC0000: '&' on bit field ignored
+testcase(16,12) : error VC0000: '&' on bit field ignored
+`

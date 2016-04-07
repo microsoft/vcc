@@ -1,0 +1,58 @@
+#include <vcc.h>
+
+struct Foo {
+  volatile int x;
+  _(ghost volatile int y)
+};
+
+void foo_ok(struct Foo *f)
+  _(requires \wrapped(f))
+{
+
+  _(atomic f) {
+    f->x = 7;
+  }
+  _(ghost_atomic f {
+    _(assert f->x == 7)
+    f->y = 12;
+  })
+
+}
+  
+void foo_fail2(struct Foo *f)
+  _(requires \wrapped(f))
+{
+
+  _(atomic f) {
+    f->x = 7;
+  }
+  _(ghost _(atomic f) {
+    _(assert f->x == 7)
+    f->y = 12;
+  })
+
+}
+  
+  
+void foo_fail(struct Foo *f)
+  _(requires \wrapped(f))
+{
+
+  _(atomic f) {
+    f->x = 7;
+  }
+  _(atomic f) {
+    _(assert f->x == 7)
+    _(ghost f->y = 12)
+  }
+
+}
+  
+  
+`
+Verification of foo_ok succeeded.
+Verification of foo_fail2 failed.
+testcase(30,14) : error VC9500: Assertion 'f->x == 7' did not verify.
+Verification of foo_fail failed.
+testcase(45,14) : error VC9500: Assertion 'f->x == 7' did not verify.
+`

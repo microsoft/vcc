@@ -1,0 +1,23 @@
+#include <vcc.h>
+
+_(pure) int f1(int *x)
+  _(returns *x == 0)
+  _(reads x);
+
+
+_(ghost vcc_attr ("is_reads_check", "f1")
+void r_f1(int *x)
+{
+  _(reads_havoc)
+})
+
+void fux()
+{
+  int y;
+   _(ghost r_f1(&y);) 
+}
+`
+Verification of r_f1 succeeded.
+Verification of fux failed.
+testcase(17,12) : error VC8005: intercepted call to reads check (in call 'r_f1(&y)').
+`

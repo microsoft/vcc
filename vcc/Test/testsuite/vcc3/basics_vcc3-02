@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+_(\bool _vcc_full_stop();)
+
+struct foo {
+  int x;
+  _(invariant _vcc_full_stop())
+  _(invariant x > 0)
+};
+`
+Verification of foo#adm failed.
+testcase(7,15) : error VC8018: invariant(_vcc_full_stop()) of foo forbids unwrapping.
+testcase(7,15) : error VC8012: invariant(_vcc_full_stop()) of foo is not admissible.
+`

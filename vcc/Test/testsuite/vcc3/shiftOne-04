@@ -1,0 +1,15 @@
+#include <vcc.h>
+
+unsigned int test() {
+  unsigned int i = 0;
+  i += 1 << 31;
+  return i;
+}
+int foo(){
+  return (int)(test() - 0x80000000);
+}
+`
+Verification of test succeeded.
+Verification of foo failed.
+testcase(9,16) : error VC8004: test() - 0x80000000 might overflow.
+`

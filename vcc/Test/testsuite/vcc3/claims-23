@@ -1,0 +1,54 @@
+#include <vcc.h>
+
+#define NULL ((void *)0)
+
+typedef __int32 INT32;
+
+typedef _(claimable) _(volatile_owns) struct _RTL_SPIN_LOCK
+{
+    volatile INT32 Lock;
+    _(ghost volatile \object protected_obj)
+    _(invariant protected_obj!=NULL ==> (Lock == 0 || Lock == 1))
+    _(invariant \old(protected_obj)!=NULL ==> \unchanged(protected_obj))
+    _(invariant !Lock && protected_obj!=NULL ==> protected_obj \in \this->\owns)
+
+} RTL_SPIN_LOCK, *PRTL_SPIN_LOCK;
+
+void
+RtlAcquireSpinLock(
+    PRTL_SPIN_LOCK SpinLock
+    _(ghost \claim c)
+    )
+    _(always c,SpinLock->\closed && SpinLock->protected_obj!=NULL)
+    _(ensures \wrapped(SpinLock->protected_obj))
+    _(ensures \fresh(SpinLock->protected_obj))
+    ;
+
+
+struct S {
+  int a;
+};
+
+struct T {
+
+  struct S s;
+  RTL_SPIN_LOCK L;
+  _(ghost \claim Claim)
+  
+  _(invariant \mine(&L, Claim))
+  _(invariant \claims(Claim, (&L)->\closed && L.protected_obj == &s))
+};
+
+void foo(struct T *p _(ghost \claim c))
+  _(always c, p->\closed)
+{
+  _(assert \claims_claim(c, p->Claim))
+  RtlAcquireSpinLock(&p->L _(ghost c));
+}
+
+
+`
+Verification of _RTL_SPIN_LOCK#adm succeeded.
+Verification of T#adm succeeded.
+Verification of foo succeeded.
+`

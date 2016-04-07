@@ -1,0 +1,151 @@
+#include <vcc.h>
+
+_(claimable) struct Counter {
+  volatile int count;
+  _(invariant \unchanged(count) || count == \old(count) + 1)
+};
+
+int foo(struct Counter *cnt _(ghost \claim cl) _(out \claim res))
+  _(writes cl)
+  _(requires \wrapped0(cl) && \claims_object(cl, cnt))
+  _(ensures \wrapped(res) && \claims(res, cnt->count >= \result - 1) && \claims_object(res, cnt) && \fresh(res))
+{
+  int y;
+   _(ghost \claim x;) 
+
+  _(atomic cl,cnt) {
+    y = cnt->count;
+     _(ghost res = \upgrade_claim({cl}, cnt->count >= y))
+  }
+
+  return y;
+}
+
+int fooFail1(struct Counter *cnt _(ghost \claim cl) _(out \claim res))
+  _(writes cl)
+  _(requires \wrapped(cl) && \claims_object(cl, cnt))
+{
+  int y;
+   _(ghost \claim x;) 
+
+  _(atomic cl,cnt) {
+    y = cnt->count;
+     _(ghost res = \upgrade_claim({cl}, cnt->count >= y))
+  }
+
+  return y;
+}
+
+/*
+// This one doesn't work because we do not get to assume the claimed properties
+// of the upgraded claims in the transitivity check.
+int fooOk2(struct Counter *cnt spec(claim_t cl) spec(out claim_t res))
+  writes(cl)
+  requires(wrapped0(cl) && claims(cl, closed(cnt)))
+  ensures(wrapped0(res) && claims(res, cnt->count >= result - 1 ) && is_fresh(res))
+{
+  int y;
+  spec( claim_t x; )
+
+  atomic(cl,cnt) {
+    y = cnt->count;
+    spec( res = upgrade_claim(cl, cnt->count >= y);)
+  }
+
+  return y;
+}
+*/
+
+int fooFail2(struct Counter *cnt _(ghost \claim cl) _(out \claim res))
+  _(writes cl)
+  _(requires \wrapped0(cl) && \claims(cl, cnt->\closed))
+  _(ensures \wrapped0(res) && \claims(res, cnt->count >= \result - 1) && \fresh(res))
+{
+  int y;
+   _(ghost \claim x;) 
+
+  _(atomic cl,cnt) {
+    y = cnt->count;
+     _(ghost res = \upgrade_claim({cl}, cnt->count >= y))
+  }
+
+  _(assert \claims_object(res, cnt))
+
+  return y;
+}
+
+int fooFail3(struct Counter *cnt _(ghost \claim cl) _(out \claim res))
+  _(writes cl)
+  _(requires \wrapped(cnt))
+  _(requires \claims_object(cl, cnt))
+  _(ensures \wrapped(res) && \claims(res, cnt->count >= \result - 1) && \claims_object(res, cnt) && \fresh(res))
+{
+  int y;
+   _(ghost \claim x;) 
+
+  _(atomic cnt) {
+    y = cnt->count;
+     _(ghost res = \upgrade_claim({cl}, cnt->count >= y))
+  }
+
+  return y;
+}
+
+int fooFail4(struct Counter *cnt _(ghost \claim cl) _(out \claim res))
+  _(requires \wrapped0(cl) && \claims_object(cl, cnt))
+  _(ensures \wrapped(res) && \claims(res, cnt->count >= \result - 1) && \claims_object(res, cnt) && \fresh(res))
+{
+  int y;
+   _(ghost \claim x;) 
+
+  _(atomic cl,cnt) {
+    y = cnt->count;
+     _(ghost res = \upgrade_claim({cl}, cnt->count >= y))
+  }
+
+  return y;
+}
+
+void two(struct Counter *cnt1, struct Counter *cnt2 _(ghost \claim cl1) _(ghost \claim cl2) _(out \claim res))
+  _(writes cl1,cl2)
+  _(requires \wrapped0(cl1) && \claims_object(cl1, cnt1) && \claims(cl1, cnt1->count >= 0))
+  _(requires \wrapped0(cl2) && \claims_object(cl2, cnt2) && \claims(cl2, cnt2->count >= 0))
+  _(ensures \wrapped0(res) && \claims(res, cnt1->count + cnt2->count >= 0) && \claims_object(res, cnt1) && \claims_object(res, cnt2) && \fresh(res))
+{
+  int y;
+   _(ghost \claim x;) 
+
+   _(ghost res = \upgrade_claim({cl1, cl2}, cnt1->count + cnt2->count >= 0))
+}
+
+void twoFail1(struct Counter *cnt1, struct Counter *cnt2 _(ghost \claim cl1) _(ghost \claim cl2) _(out \claim res))
+  _(writes cl1,cl2)
+  _(requires \wrapped0(cl1) && \claims(cl1, cnt1->count >= 0))
+  _(requires \wrapped0(cl2) && \claims_object(cl2, cnt2) && \claims(cl2, cnt2->count >= 0))
+  _(ensures \wrapped0(res) && \claims(res, cnt1->count + cnt2->count >= 0) && \claims_object(res, cnt1) && \claims_object(res, cnt2) && \fresh(res))
+{
+  int y;
+   _(ghost \claim x;) 
+
+   _(ghost res = \upgrade_claim({cl1, cl2}, cnt1->count + cnt2->count >= 0))
+}
+
+`
+Verification of Counter#adm succeeded.
+Verification of foo succeeded.
+Verification of fooFail1 failed.
+testcase(33,20) : error VC8025: the claim cl has outstanding claims.
+Verification of fooFail2 failed.
+testcase(69,20) : error VC8521: Assertion 'chunk cnt->count >= y of the claim holds after a step of the machine' did not verify.
+testcase(72,12) : error VC9500: Assertion '\claims_object(res, cnt)' did not verify.
+Verification of fooFail3 failed.
+testcase(88,20) : error VC8024: the claim cl is not wrapped before upgrade.
+testcase(88,20) : error VC8025: the claim cl has outstanding claims.
+Verification of fooFail4 failed.
+testcase(103,20) : error VC8023: cl is non-writable and (and thus is impossible to upgrade).
+Verification of two succeeded.
+Verification of twoFail1 failed.
+testcase(130,18) : error VC8521: Assertion 'chunk cnt1->count + cnt2->count >= 0 of the claim holds after a step of the machine' did not verify.
+testcase(131,1) : error VC9501: Post condition '\wrapped0(res) && \claims(res, cnt1->count + cnt2->count >= 0) && \claims_object(res, cnt1) && \claims_object(res, cnt2) && \fresh(res)' did not verify.
+testcase(125,13) : error VC9599: (related information) Location of post condition.
+`

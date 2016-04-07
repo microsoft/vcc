@@ -1,0 +1,38 @@
+#include <vcc.h>
+
+typedef __int32 INT32;
+typedef unsigned __int8 UINT8;
+typedef unsigned __int16 UINT16;
+typedef unsigned __int32 UINT32;
+typedef unsigned __int64 UINT64;
+typedef void VOID;
+
+
+VOID foo()
+{
+  UINT64 i = 1;
+  UINT64 j = 0;
+  
+  do 
+  {
+    do {
+      _(unchecked)(i++);
+    } while (i != j);
+    
+    do 
+    {
+      _(unchecked)(j++);
+    } while (i != j);
+  } while (i != 0);
+ 
+ 
+  for (i = 0; i < 10; i++)
+  {
+    for (j = 0; j < 10; j++)
+    {
+    }
+  }
+}    
+`
+Verification of foo succeeded.
+`

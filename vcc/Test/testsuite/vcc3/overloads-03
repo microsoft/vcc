@@ -1,0 +1,9 @@
+#include <vcc.h>
+
+struct S { int a; };
+void overload(_(ghost struct S *s)) { };
+void overload(struct S *s) { };
+`
+Verification of overload#overload#void#spec_struct_S. succeeded.
+Verification of overload#overload#void#struct_S. succeeded.
+`

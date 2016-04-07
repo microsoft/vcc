@@ -1,0 +1,20 @@
+#include <vcc.h>
+
+struct A { int b; };
+
+void baz(struct A *a)
+  _(updates a)
+{
+
+  _(updates a)
+  _(ensures a->b == 42)
+  {
+    _(unwrap a)
+    a->b = 42;
+    _(wrap a)
+  }
+}
+`
+Verification of baz succeeded.
+Verification of baz#block#0 succeeded.
+`

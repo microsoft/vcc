@@ -1,0 +1,9 @@
+#include <vcc.h>
+
+void foo() 
+{
+  _(ghost \object p = &\me)
+}
+`
+testcase(5,23) : error VC9750: Cannot take address of '\me'
+`

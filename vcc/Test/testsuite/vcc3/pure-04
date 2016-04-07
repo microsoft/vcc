@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+int f1(int x);
+
+_(pure) int f2(int x)
+{
+  return f1(x);
+}
+`
+testcase(5,3) : error VC9637: the pure function 'f2' calls 'f1' which is not pure
+testcase(3,1) : error : (Location of symbol related to previous error.)
+`

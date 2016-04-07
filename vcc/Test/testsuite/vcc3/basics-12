@@ -1,0 +1,20 @@
+#include "vcc.h"
+
+typedef __int64 int64;
+typedef unsigned __int64 uint64;
+
+struct {
+    uint64 R[16];            
+} core;
+
+void foo() {
+    int64 a;
+    uint64 b;
+
+    a = (int64)(core.R[12]) < 0;
+}
+`
+Verification of foo failed.
+testcase(14,17) : error VC8518: Assertion 'core.R[12] fits range of int64_t' did not verify.
+testcase(14,17) : error VC8512: Assertion 'core.R[12] is thread local' did not verify.
+`

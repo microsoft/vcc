@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+struct B { int x,y; };
+
+struct A {
+  int x;
+  struct B b;
+
+  _(invariant x ==> \mine(&b))
+};
+`
+testcase(9,21) : warning VC9110: \mine(...) (or ... \in \owns(\this)) is not allowed here; annotate the type 'A' with _(dynamic_owns)
+Verification of A#adm succeeded.
+`

@@ -1,0 +1,23 @@
+#include <vcc.h>
+#include <limits.h>
+
+#define disj(da, la, db, lb) ((db > (da + la) || da > (db + lb)) && \arrays_disjoint(da,la,db,lb))
+
+void foo(int *q, size_t l)
+_(writes \array_range(q,l))
+;
+
+void test(int *p, int *q, size_t l) 
+_(requires disj(p,l,q,l))
+_(requires 0 < l)
+_(requires \mutable_array(q,l))
+_(requires \mutable_array(p,l))
+_(writes \array_range(q,l))
+{
+   _(assume p[0] == 0)
+   foo(q,l);
+   _(assert p[0] == 0)
+}
+`
+Verification of test succeeded.
+`

@@ -1,0 +1,18 @@
+#include "vcc.h"
+
+typedef union _T {
+  struct {unsigned dummy;};
+  _(backing_member) unsigned cnt;
+  _(ghost volatile \object container;)
+} T;
+
+
+void foo(T* t)
+    _(requires \wrapped(t))
+{
+   unsigned n;
+   n=t->cnt;
+}
+`
+Verification of foo succeeded.
+`

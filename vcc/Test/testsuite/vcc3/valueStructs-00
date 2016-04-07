@@ -1,0 +1,34 @@
+#include <vcc.h>
+
+struct A {
+  int x;
+  int y;
+};
+
+struct B {
+  struct A a;
+  int z;
+};
+
+_(pure) \bool foo(struct A a)
+  _(returns a.x == 0);
+
+_(pure) \bool bar(struct B b)
+  _(returns foo(b.a));
+
+void baz(struct B b)
+  _(requires bar(b))
+{
+  _(assert b.a.x == 0)
+}
+
+void baz2(struct B b)
+  _(requires bar(b))
+{
+  _(assert b.a.y == 0)
+}
+`
+Verification of baz succeeded.
+Verification of baz2 failed.
+testcase(28,12) : error VC9500: Assertion 'b.a.y == 0' did not verify.
+`

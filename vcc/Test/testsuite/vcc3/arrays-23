@@ -1,0 +1,46 @@
+#include "vcc.h"
+#define array_emb_unchanged(a,n) (\forall unsigned _i; _i < (n) ==> (\unchanged(\embedding((a)+_i))))
+
+void calc(int a[32], int b[32], int c[32])
+   _(writes \array_range(a,32))
+   _(maintains \mutable_array(a,32))
+   _(ensures array_emb_unchanged(a,32))
+   
+   _(maintains \mutable_array(b,32))
+   _(ensures array_emb_unchanged(b,32))
+   
+   _(maintains \mutable_array(c,32))
+   _(ensures array_emb_unchanged(c,32))
+{
+}
+
+void longrunner(int a[32])
+   _(writes \array_range(a,32))
+   _(maintains \mutable_array(a,32))
+   _(ensures array_emb_unchanged(a,32))
+{
+   int l1[32];
+   int l2[32];
+   int l3[32];
+   int l4[32];
+   int l5[32];
+   int l6[32];
+   calc(a, l1, l2);
+   calc(l1, l1, l2);
+   calc(l4, l1, l2);
+   calc(l3, a, l6);
+   calc(a, l1, l2);
+   calc(l1, a, l2);
+   calc(a, l5, l6);
+   calc(a, l1, l4);
+   if (1) {
+    int l7[32];
+    calc(a,l7,l7);
+   } else {
+     _(assert \false)
+   }
+}
+`
+Verification of calc succeeded.
+Verification of longrunner succeeded.
+`

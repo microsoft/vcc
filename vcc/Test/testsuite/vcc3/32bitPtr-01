@@ -1,0 +1,18 @@
+`/ps:32 
+
+
+#include <vcc.h>
+
+struct S {
+  int *p;
+  int i;
+};
+
+void foo(struct S *x) { 
+  size_t s = sizeof(struct S);
+  _(assert s == 8)
+  _(assert \addr_eq(&x->i, ((char *)x) + 4))
+}
+`
+Verification of foo succeeded.
+`

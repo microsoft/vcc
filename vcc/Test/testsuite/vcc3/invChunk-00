@@ -1,0 +1,23 @@
+#include <vcc.h>
+
+struct A {
+  int x;
+  int y;
+
+  _(invariant \this->x > 0 && \this->y > 0)
+};
+
+void foo(struct A *a)
+  _(writes a)
+  _(requires \wrapped(a))
+{
+  _(unwrap a)
+  a->y = -1;
+  _(wrap a)
+}
+`
+Verification of A#adm succeeded.
+Verification of foo failed.
+testcase(16,10) : error VC8014: invariant(\this->y > 0) of A fails on wrap.
+testcase(7,31) : error VC9599: (related information) location of the invariant.
+`

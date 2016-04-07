@@ -1,0 +1,19 @@
+#include <vcc.h>
+
+typedef void (*foo)();
+
+int bar(foo fum)
+   _(reads fum) _(requires fum->\valid)
+{
+  fum(); return 0;
+}
+
+int myn(){
+  return bar((foo)(void *)0);
+}
+`
+Verification of bar succeeded.
+Verification of myn failed.
+testcase(12,10) : error VC9502: Call 'bar((foo)(void *)0)' did not verify.
+testcase(6,28) : error VC9599: (related information) Precondition: 'fum->\valid'.
+`

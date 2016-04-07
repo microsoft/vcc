@@ -1,0 +1,17 @@
+
+#include <vcc.h>
+
+void fooShouldFail(int i) {
+	int j = i << 5;
+}
+
+void foo(int i) 
+	_(requires i >= 0)
+{
+	int j = i << 5;
+}
+`
+Verification of fooShouldFail failed.
+testcase(5,10) : error VC8539: Assertion 'i in not negative (in shift)' did not verify.
+Verification of foo succeeded.
+`

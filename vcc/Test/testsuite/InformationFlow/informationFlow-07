@@ -1,0 +1,49 @@
+#include <vcc.h>
+#include <stdlib.h>
+
+struct A
+{
+	int d1;
+	int d2;
+};
+
+void testStructure()
+{
+	struct A *foo;
+	spec(club_t pointerBuddies = new_club(seclabel_bot);)
+	
+	foo = malloc(sizeof(*foo));
+	assume(foo != NULL);
+	spec(add_member(&foo->d1, pointerBuddies);)
+	spec(add_member(&foo->d2, pointerBuddies);)
+
+	assert(is_member(&foo->d1, pointerBuddies));	// Remove this with intelligent patterns
+	assert(is_low(&foo->d1 == &foo->d2));
+
+	foo->d1 = 1;
+	assert(is_low(foo->d1));
+}
+
+void testStructures()
+{
+	struct A *foo, *bar;
+	
+	foo = malloc(sizeof(*foo));
+	bar = malloc(sizeof(*bar));
+	assume(foo != NULL && bar != NULL);
+
+	foo->d1 = 1;
+	bar->d2 = 2;
+	
+	assert(foo->d1 == 1);
+	assert(is_low(foo->d1));
+	assert(is_low(bar->d2));
+
+	foo = bar;	
+	assert(foo->d2 == 2);
+	assert(is_low(foo->d2));
+}
+`
+Verification of testStructure succeeded.
+Verification of testStructures succeeded.
+`

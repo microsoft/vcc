@@ -1,0 +1,74 @@
+#include <vcc.h>
+
+_(datatype List {
+       case Nil();
+       case Cons(List, List);
+})
+
+_(def List car(List l) {
+  switch (l) {
+  case Nil(): return l;
+  case Cons(x,y): return x;
+  }
+})
+
+_(def List cdr(List l) {
+  switch (l) {
+  case Nil(): return l;
+  case Cons(x,y): return y;
+  }
+})
+
+_(def List F(List k)
+  
+  _(decreases \size(k), \size(car(k)))
+{
+       switch (k) {
+              case Nil(): return k;
+              case Cons(h,z): 
+                 switch (h) {
+                   case Cons(x,y): return F(Cons(x,Cons(y,z)));
+                   case Nil(): return F(z);
+                 }
+                 _(assert \false)
+                 return Nil();
+       }
+})
+
+_(def List F_fail1(List k)
+  
+  _(decreases \size(k), \size(cdr(k)))
+{
+       switch (k) {
+              case Nil(): return k;
+              case Cons(h,z): 
+                 switch (h) {
+                   case Cons(x,y): return F_fail1(Cons(x,Cons(y,z)));
+                   case Nil(): return F_fail1(z);
+                 }
+                 return Nil();
+       }
+})
+
+_(def List F_fail2(List k)
+  
+{
+       switch (k) {
+              case Nil(): return k;
+              case Cons(h,z): 
+                 switch (h) {
+                   case Cons(x,y): return F_fail2(Cons(x,Cons(y,z)));
+                   case Nil(): return F_fail2(z);
+                 }
+                 return Nil();
+       }
+})
+`
+Verification of car succeeded.
+Verification of cdr succeeded.
+Verification of F succeeded.
+Verification of F_fail1 failed.
+testcase(46,43) : error VC8029: the call 'F_fail1(Cons(x,Cons(y,z)))' might not terminate.
+Verification of F_fail2 failed.
+testcase(60,43) : error VC8029: the call 'F_fail2(Cons(x,Cons(y,z)))' might not terminate.
+`

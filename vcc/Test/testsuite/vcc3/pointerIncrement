@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+typedef struct _PTE
+{
+  int a;
+  int b;
+} PTE, *PPTE;
+
+
+void foo(PPTE p)
+{
+  PPTE q; 
+  q = p;
+  q++;
+  q--;
+  p++;
+  p--;
+  _(assert p == q)
+}
+`
+Verification of foo succeeded.
+`

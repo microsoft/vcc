@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+typedef unsigned long long UINT64;
+
+void arrayBug() 
+{
+UINT64 p[2];
+UINT64 *q = p;
+_(wrap (UINT64[1]) p)
+}
+`
+Verification of arrayBug failed.
+testcase(9,3) : error VC8510: Assertion '(UINT64[1]) p is writable in call to wrap (UINT64[1]) p' did not verify.
+`

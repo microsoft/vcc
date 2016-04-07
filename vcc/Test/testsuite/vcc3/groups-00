@@ -1,0 +1,60 @@
+#include <vcc.h>
+
+struct S {
+
+  _(group G)
+
+  _(:G) int a;
+  int b;
+  _(:G) int c;
+  
+  _(invariant \mine((struct S::G *)\this))
+};
+
+void writeNonGroupField(struct S *s)
+  _(maintains \wrapped(s))
+  _(writes s)
+{
+  _(unwrap s)
+  s->b = 10;
+  _(wrap s)
+}
+
+void writeGroupFieldShouldFail(struct S *s)
+  _(maintains \wrapped(s))
+  _(writes s)
+{
+  _(unwrap s)
+  s->a = 10;
+  _(wrap s)
+}
+
+void writeGroupFieldShouldFail2(struct S *s)
+  _(maintains \wrapped(s))
+  _(writes s)
+{
+  _(unwrap s)
+  s->c = 10;
+  _(wrap s)
+}
+
+void writeGroupField(struct S *s)
+  _(maintains \wrapped(s))
+  _(writes s)
+{
+  _(unwrap s)
+  _(unwrap (struct S::G *)s)
+  s->a = 10;
+  _(wrap (struct S::G *)s)
+  _(wrap s)
+}
+
+`
+Verification of S#adm succeeded.
+Verification of writeNonGroupField succeeded.
+Verification of writeGroupFieldShouldFail failed.
+testcase(28,3) : error VC8507: Assertion 's->a is writable' did not verify.
+Verification of writeGroupFieldShouldFail2 failed.
+testcase(37,3) : error VC8507: Assertion 's->c is writable' did not verify.
+Verification of writeGroupField succeeded.
+`

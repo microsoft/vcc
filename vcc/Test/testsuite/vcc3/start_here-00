@@ -1,0 +1,56 @@
+#include <vcc.h>
+
+void fail1(int x)
+{
+  _(assert x > 0)
+}
+
+void fail2(int x)
+{
+  _(assume \start_here())
+  _(assert x > 0)
+}
+
+void ok1(int x)
+{
+  _(assert x > 0)
+  _(assume \start_here())
+}
+
+void ok2(int x)
+{
+  _(assume \start_here())
+  _(assume \false)
+  _(assert x > 0)
+}
+
+void ok3(int *x)
+{
+  *x = 10;
+  _(assume \start_here())
+}
+
+
+void ok4(int x)
+{
+  x = x + 1;
+  _(assume \start_here())
+}
+
+void fail4(int x)
+{
+  _(assume \start_here())
+  x = x + 1;
+}
+`
+Verification of fail1 failed.
+testcase(5,12) : error VC9500: Assertion 'x > 0' did not verify.
+Verification of fail2 failed.
+testcase(11,12) : error VC9500: Assertion 'x > 0' did not verify.
+Verification of ok1 succeeded.
+Verification of ok2 succeeded.
+Verification of ok3 succeeded.
+Verification of ok4 succeeded.
+Verification of fail4 failed.
+testcase(43,7) : error VC8004: x + 1 might overflow.
+`

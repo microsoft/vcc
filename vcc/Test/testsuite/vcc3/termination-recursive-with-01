@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+_(def \integer f(\integer x)
+{
+  if (x <= 0) return 7;
+  return g(x - 1) + 1;
+})
+
+_(def \integer g(\integer x)
+//  _(recursive_with f)
+{
+  if (x <= 0) return 1;
+  return f(x - 1) + 1;
+})
+`
+testcase(3,3) : error VC9743: function 'f' calls 'g' recursively, but they are not part of the same call group; please use _(recurses_with ...)
+testcase(13,10) : warning VC9319: [possible unsoundness]: calling function 'f' (level 3) from lower-level function ('g' at level 2)
+`

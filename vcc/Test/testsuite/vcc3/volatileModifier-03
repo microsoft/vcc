@@ -1,0 +1,38 @@
+#include <vcc.h>
+
+_(volatile_owns) struct VO {
+  int x;
+};
+
+struct NVO {
+  int x;
+};
+
+struct Ownee {
+  int x;
+};
+
+void foo(struct Ownee *o, struct VO *v)
+  _(requires \wrapped(v) && \wrapped(o))
+  _(writes o)
+{
+  _(atomic v) {
+    _(ghost  v->\owns += o);
+  }
+}
+
+void foo2(struct Ownee *o, struct NVO *v)
+  _(requires \wrapped(v) && \wrapped(o))
+  _(writes o)
+{
+  _(atomic v) {
+    _(ghost  v->\owns += o);
+  }
+}
+`
+Verification of foo succeeded.
+Verification of foo2 failed.
+testcase(29,14) : error VC9502: Call 'v->\owns += o' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the owner has volatile owns set'.
+testcase(28,12) : error VC8524: Assertion 'chunk of invariant of v holds after atomic' did not verify.
+`

@@ -1,0 +1,33 @@
+#include <vcc.h>
+
+typedef unsigned __int8     UINT8;
+typedef signed __int64      INT64;
+typedef unsigned __int64    UINT64;
+
+typedef struct S
+{
+    union
+    {
+        _(backing_member) 
+          UINT64 AsUINT64;  
+        struct
+        {
+            UINT64 Count:16;
+            INT64 Parameter:48;
+        };
+    };
+} S;
+
+
+void foo()
+{
+    S Template;
+
+    Template.Count = 4;
+    _(assert Template.Count < 7)
+    Template.Parameter = 8;
+    _(assert Template.Count < 7)
+}
+`
+Verification of foo succeeded.
+`

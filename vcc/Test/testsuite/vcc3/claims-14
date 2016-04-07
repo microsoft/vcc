@@ -1,0 +1,22 @@
+#include "vcc.h"
+
+typedef _(claimable) struct A {
+
+        volatile int a;
+        _(invariant a)
+} *PA;
+
+
+
+void foo2(PA x)
+_(writes x)
+_(requires \mutable(x))
+{
+        _(ghost \claim tmp)
+        _(ghost tmp = \make_claim({x}, x->a);)
+}
+`
+Verification of A#adm succeeded.
+Verification of foo2 failed.
+testcase(16,23) : error VC8528: Assertion 'object x is closed before claiming it' did not verify.
+`

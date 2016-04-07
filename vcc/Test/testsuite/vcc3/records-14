@@ -1,0 +1,29 @@
+#include <vcc.h>
+
+_(record) struct R
+{
+	int x;
+};
+
+struct S
+{
+	_(ghost volatile struct R r)
+	int dummy;
+
+	_(invariant \approves(\this->\owner,r))
+};
+
+
+void test(struct S *s)
+_(maintains \wrapped(s))
+_(writes s)
+{
+	_(atomic s)
+	{
+		_(bump_volatile_version s)
+		_(ghost s->r.x = 2)
+	}
+}
+`
+Verification of test succeeded.
+`

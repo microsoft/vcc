@@ -1,0 +1,20 @@
+#include "vcc.h"
+
+struct S {
+int x;
+int y;
+};
+
+struct T {
+struct S s;
+};
+
+void f(struct T* t)
+_(requires t->\valid)
+{
+    _(assert \exists struct S* s; s->\valid && (s == (struct S*) t))
+}
+`
+Verification of f failed.
+testcase(15,14) : error VC9500: Assertion '\exists struct S* s; s->\valid && (s == (struct S*) t))' did not verify.
+`

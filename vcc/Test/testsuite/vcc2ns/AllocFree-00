@@ -1,0 +1,26 @@
+#include <vcc.h>
+
+extern void* malloc(unsigned int);
+extern void free(void*);
+
+void AllocTestOk()
+{
+  int* px; 
+  int x;
+  px = (int*)malloc(sizeof(int)*10);
+  if (px != 0){
+    px[9] = 7;
+    x = px[0];
+  } 
+}
+
+void FreeTestOk()
+{ 
+  int* p; 
+  p = (int*) malloc(sizeof(int));
+  if (p != 0) free(p);
+}
+`
+Verification of AllocTestOk succeeded.
+Verification of FreeTestOk succeeded.
+`

@@ -1,0 +1,31 @@
+#include <vcc.h>
+
+struct Z {
+short xx;
+int a,b,c,d,e,f;
+};
+
+union A {
+  _(ghost int x;)
+  _(ghost int x2;)
+  struct { int y; } _(ys);
+  struct Z z;
+};
+
+void foo(union A *a)
+  _(writes \extent(a))
+  _(requires \union_active(&a->ys))
+{
+  _(ghost int tmp;)
+
+  a->y = 12;
+  _(ghost  a->x = 11;)
+  _(ghost  a->x2 = 42;)
+  _(assert a->y == 12 && a->x == 11 && a->x2 == 42)
+
+  _(ghost  tmp = a->x;)
+  _(ghost  tmp = a->y;)
+}
+`
+Verification of foo succeeded.
+`

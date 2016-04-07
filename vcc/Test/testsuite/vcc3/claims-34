@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+_(claimable) struct S {
+  int a;
+};
+
+void foo(struct S *s)
+  _(writes \extent(s))
+{
+  _(ghost \claim c;)
+  _(wrap s)
+  _(ghost c = \make_claim({},s))
+  _(ghost c = \make_claim({s},s))
+  _(assert (c->\valid && \ghost(c)))
+}
+`
+Verification of foo succeeded.
+`

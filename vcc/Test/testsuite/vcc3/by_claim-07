@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+struct S {
+  int x;
+};
+
+
+void foo( _(ghost \claim c) )
+  _(writes c) // doesn't really make sense but...
+  _(maintains \wrapped(c));
+
+void bar(struct S *s _(ghost \claim c))
+  _(always c, s->\closed)
+  _(writes c)
+{
+  int tmp = _(by_claim c)(s->x);
+  foo(_(ghost c));
+  _(assert tmp == _(by_claim c)(s->x))
+}
+`
+Verification of bar succeeded.
+`

@@ -1,0 +1,13 @@
+#include <vcc.h>
+
+void foo()
+{
+}
+
+void bar()
+{
+  return foo();
+}
+`
+testcase(9,3) : error VC9738: expressions of type void cannot be used as an argument to a return statement
+`

@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+typedef struct T {
+  int* p;
+  _(invariant \mine((int[10]) p))
+} T;
+
+void test(T * t)
+_(requires \wrapped(t))
+_(writes t)
+{
+    _(unwrap t)
+    _(unwrap((int[10]) t->p))
+}
+`
+Verification of T#adm succeeded.
+Verification of test succeeded.
+`

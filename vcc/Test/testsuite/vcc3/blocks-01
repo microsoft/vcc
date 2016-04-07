@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+void foo(int *i) 
+  _(writes i)
+  _(ensures *i == 10)
+{
+  int j = 5;
+  *i = 9;
+  
+    _(writes i)
+    _(requires *i < 10 && j < 10)
+    _(ensures *i == \old(*i) + 1 && j == \old(j + 1))
+  {
+    (*i)++; 
+    j++;
+  }
+  _(assert j == 6)
+}
+`
+Verification of foo succeeded.
+Verification of foo#block#0 succeeded.
+`

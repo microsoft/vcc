@@ -1,0 +1,36 @@
+#include <vcc.h>
+
+#define MAX 100
+
+typedef struct _S 
+{
+    unsigned dummy;
+} S;
+
+
+typedef struct _T
+{
+    S arr[MAX];
+} T;
+
+void foo(T* t)
+  _(maintains \forall \object p; \in_array(p,t->arr,MAX) ==> \wrapped(p))
+  _(writes &t->arr[5])
+{
+  _(unwrap &t->arr[5])
+  t->arr[5].dummy = 5;
+  _(wrap &t->arr[5])
+}
+
+void fooShouldFail(T* t)
+  _(maintains \forall \object p; \in_array(p,t->arr,MAX) ==> \wrapped(p))
+  _(writes t->arr)
+{
+  _(unwrap &t->arr[0])
+  _(assert \false)
+}
+`
+Verification of foo succeeded.
+Verification of fooShouldFail failed.
+testcase(30,12) : error VC9500: Assertion '\false' did not verify.
+`

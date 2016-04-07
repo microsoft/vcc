@@ -1,0 +1,13 @@
+#include "vcc.h"
+
+void foo()
+{
+  _(ghost int a[int]; )
+  _(ghost int b[int]; )
+
+  _(assume \forall int x; {a[x]} x > 0 ==> b[x] == x)
+  _(assert \forall int x; {:hint a[x]} x > 5 ==> b[x] == x)
+}
+`
+Verification of foo succeeded.
+`

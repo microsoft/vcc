@@ -1,0 +1,24 @@
+#include "vcc2test.h"
+
+
+void setk3(int *p, size_t sz)
+  _(requires \thread_local_array(p, sz))
+  _(writes \array_range(p, sz))
+{
+  size_t i;
+  int *x;
+
+  i = 0;
+  while (i < sz) 
+    _(writes \array_range(p, sz))
+    _(invariant i >= 0)
+  {
+    p[i] = _(unchecked)((int)i);
+    i = i + 1;
+    if(0) free(x);
+  }
+}
+
+`
+Verification of setk3 succeeded.
+`

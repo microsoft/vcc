@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{51887f99-3d65-4303-a4db-7609f9c23089}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SeparationLogic</RootNamespace>
+    <AssemblyName>SeparationLogic</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Name>SeparationLogic</Name>
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>3</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>3</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Optimize>true</Optimize>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Cci.CodeModel2Vcc2, Version=0.0.0.2, Culture=neutral, PublicKeyToken=null">
+      <Name>Microsoft.Cci.CodeModel2Vcc2</Name>
+      <AssemblyName>Microsoft.Cci.CodeModel2Vcc2.dll</AssemblyName>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\CodeModel2Vcc2\bin\Debug\Microsoft.Cci.CodeModel2Vcc2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Cci.CodeModel2Vcc2Helper, Version=0.0.0.2, Culture=neutral, PublicKeyToken=null">
+      <Name>Microsoft.Cci.CodeModel2Vcc2Helper</Name>
+      <AssemblyName>Microsoft.Cci.CodeModel2Vcc2Helper.dll</AssemblyName>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\CodeModel2Vcc2Helper\bin\Debug\Microsoft.Cci.CodeModel2Vcc2Helper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Cci.VerifiedC, Version=0.0.0.2, Culture=neutral, PublicKeyToken=736440c9b414ea16">
+      <Name>Microsoft.Cci.VerifiedC</Name>
+      <AssemblyName>Microsoft.Cci.VerifiedC.dll</AssemblyName>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\VerifiedC\bin\Debug\Microsoft.Cci.VerifiedC.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Z3, Version=1.2.3153.24708, Culture=neutral, PublicKeyToken=9c8d792caae602a2">
+      <Name>Microsoft.Z3</Name>
+      <AssemblyName>Microsoft.Z3.dll</AssemblyName>
+      <HintPath>..\Provers\Microsoft.Z3.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SepProver, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <Name>SepProver</Name>
+      <AssemblyName>SepProver.dll</AssemblyName>
+      <HintPath>..\Provers\SepProver.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition, Version=2008.11.24.0, Culture=neutral, PublicKeyToken=null">
+      <Name>System.ComponentModel.Composition</Name>
+      <AssemblyName>System.ComponentModel.Composition.dll</AssemblyName>
+      <HintPath>..\..\CodeModel2Vcc2Helper\System.ComponentModel.Composition.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CoreCAST.fs" />
+    <Compile Include="CAST2CoreCAST.fs" />
+    <Compile Include="TypeCoding.fs" />
+    <Compile Include="Logic.fs" />
+    <Compile Include="PureProver.fs" />
+    <Compile Include="SymbolicExecution.fs" />
+    <Compile Include="SeparationLogicPlugin.fs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+	     Other similar extension points exist, see Microsoft.Common.targets.
+	<Target Name="BeforeBuild">
+	</Target>
+	<Target Name="AfterBuild">
+	</Target>
+	-->
+  <PropertyGroup>
+    <PostBuildEvent>copy $(ProjectDir)$(OutDir)$(TargetName).dll $(ProjectDir)..\..\Plugins
+copy $(ProjectDir)$(OutDir)$(TargetName).pdb $(ProjectDir)..\..\Plugins
+copy $(ProjectDir)$(OutDir)Microsoft.Z3.dll $(ProjectDir)..\..\Plugins
+copy $(ProjectDir)$(OutDir)SepProver.dll $(ProjectDir)..\..\Plugins
+</PostBuildEvent>
+  </PropertyGroup>
+</Project>

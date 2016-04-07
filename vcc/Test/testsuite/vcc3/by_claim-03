@@ -1,0 +1,35 @@
+#include <vcc.h>
+
+
+_(claimable) struct A {
+  int x;
+  volatile int vol_x;
+};
+
+
+void fail1(struct A*a _(ghost \claim c))
+  _(always c, a->\closed)
+  _(writes c)
+  _(requires c->\claim_count == 0)
+{ 
+  int z;
+
+  _(ghost \destroy_claim(c, {}));
+  z = a->x;
+  _(assume \false)
+}
+
+void fail2(struct A*a,struct A*b _(ghost \claim c))
+  _(always c, b->\closed)
+  _(requires \always_by_claim(c, a))
+{ 
+  int z;
+  z = a->x;
+}
+
+`
+Verification of fail1 failed.
+testcase(18,7) : error VC8508: Assertion 'c is a valid claim (in by_claim(c, a))' did not verify.
+Verification of fail2 failed.
+testcase(27,7) : error VC8509: Assertion 'object a is claimed by c (in by_claim(c, a))' did not verify.
+`

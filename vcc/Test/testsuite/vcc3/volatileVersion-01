@@ -1,0 +1,90 @@
+#include <vcc.h>
+
+struct VS {
+  volatile int x;
+  volatile int y;
+  _(ghost volatile \object yappr;)
+  volatile int z;
+  _(ghost \object zappr;)
+  volatile int w;
+  int nv;
+
+  _(invariant \approves(\this->\owner, x))
+  _(invariant \approves(yappr, y))
+  _(invariant \approves(yappr, yappr))
+  _(invariant \approves(zappr, z))
+};
+
+struct A { int x; }; 
+
+void writeVS(struct VS *vs)
+  _(maintains \wrapped(vs))
+  _(writes vs);
+
+void writeA(struct A *a)
+  _(maintains \wrapped(a))
+  _(writes a);
+
+void foo1(struct VS *vs)
+  _(requires \wrapped(vs))
+  _(requires vs->x == 10)
+{
+  struct A a;
+  _(wrap &a)
+  writeA(&a);
+  _(assert vs->x == 10)
+  _(unwrap &a)
+}
+
+void foo2(struct VS *vs)
+  _(requires \wrapped(vs))
+  _(requires vs->y == 10)
+  _(requires vs->yappr == \me)
+{
+  struct A a;
+  _(wrap &a)
+  writeA(&a);
+  _(assert vs->y == 10)
+  _(unwrap &a)
+}
+
+void foo1fail(struct VS *vs)
+  _(requires \wrapped(vs))
+  _(requires vs->x == 10)
+  _(writes vs)
+{
+  writeVS(vs);
+  _(assert vs->x == 10)
+}
+
+// the axioms about versions should only hold for closed objects:
+void foo1fail2(struct VS *vs)
+  _(requires \mutable(vs))
+  _(writes &vs->x)
+  _(requires vs->x == 10)
+{
+  vs->x = 12;
+  _(assert vs->x == 10)
+}
+
+void foo1fail3(struct VS *vs)
+  _(requires \mutable(vs))
+  _(writes &vs->y)
+  _(requires vs->y == 10)
+  _(requires vs->yappr == \me)
+{
+  vs->y = 12;
+  _(assert vs->y == 10)
+}
+
+`
+Verification of VS#adm succeeded.
+Verification of foo1 succeeded.
+Verification of foo2 succeeded.
+Verification of foo1fail failed.
+testcase(57,12) : error VC9500: Assertion 'vs->x == 10' did not verify.
+Verification of foo1fail2 failed.
+testcase(67,12) : error VC9500: Assertion 'vs->x == 10' did not verify.
+Verification of foo1fail3 failed.
+testcase(77,12) : error VC9500: Assertion 'vs->y == 10' did not verify.
+`

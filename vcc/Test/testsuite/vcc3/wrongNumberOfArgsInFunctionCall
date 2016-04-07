@@ -1,0 +1,21 @@
+#include "vcc.h"
+
+typedef unsigned int UINT32;
+
+_(ghost \bool _(pure) pf_reason(\bool w) 
+_(returns w);)
+
+
+int do_memory_operation(UINT32 *mm_4, UINT32 max_ppx,
+             UINT32 a, int write, UINT32 din, UINT32 *dout, int t, UINT32 pto, UINT32 ptl)
+ _(requires \mutable_array(mm_4, (max_ppx + 1)*1024))
+ 
+ _(ensures \result == pf_reason(mm_4, a, pto, ptl, max_ppx, write))
+         {
+             return 1;
+         }
+
+
+`
+testcase(13,23) : error VC0000: No overload for method '__Globals__.pf_reason' takes '6' arguments.
+`

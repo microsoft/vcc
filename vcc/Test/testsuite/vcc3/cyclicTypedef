@@ -1,0 +1,21 @@
+#include <vcc.h>
+#include <sal.h>
+
+enum _vcHintKind {
+  _vcMemorySafety,
+  _vcStructuralIntegrity,
+  _vcFunctionalCorrectness
+};
+
+
+
+typedef struct C {
+  __int64 a;
+} C;
+
+void foo(__in C p) {
+}
+
+`
+Verification of foo succeeded.
+`

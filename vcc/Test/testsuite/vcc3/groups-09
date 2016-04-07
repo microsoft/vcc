@@ -1,0 +1,47 @@
+#include <vcc.h>
+
+struct S {
+
+  _(group G)
+  _(invariant :G \this->a == \this->c)
+  _(:G) int a;
+  int b;
+  _(:G) int c;
+  
+  _(invariant \mine(\this::G))
+};
+
+void maintainGroupInvariant(struct S *s)
+  _(maintains \wrapped(s))
+  _(writes s)
+{
+  int tmp;
+  _(unwrap s)
+  _(unwrap s::G)
+  tmp = s->a;
+  s->a = s->c;
+  s->c = tmp;
+  _(wrap s::G)
+  _(wrap s)
+}
+
+void destroyGroupInvariantShouldFail(struct S *s)
+  _(maintains \wrapped(s))
+  _(writes s)
+{
+  //indomain((struct _S::G *)s, s);
+  _(unwrap s)
+  _(unwrap s::G)
+  s->a = 10;
+  s->c = 11;
+  _(wrap s::G)
+  _(wrap s)
+}
+`
+Verification of S#adm succeeded.
+Verification of S##G#adm succeeded.
+Verification of maintainGroupInvariant succeeded.
+Verification of destroyGroupInvariantShouldFail failed.
+testcase(37,10) : error VC8014: invariant(\this->a == \this->c) of S##G fails on wrap.
+testcase(6,18) : error VC9599: (related information) location of the invariant.
+`

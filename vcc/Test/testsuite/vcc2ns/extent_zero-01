@@ -1,0 +1,41 @@
+#include <vcc.h>
+
+struct S { 
+  int a; 
+  unsigned int b;
+  short c;
+  unsigned short d;
+  char e;
+  unsigned char f;
+  void *p;
+};
+
+void foo(struct S *s) 
+  _(requires s->\valid && \thread_local(s))
+  _(requires \extent_zero(s))
+{
+  _(assert s->a == 0)
+  _(assert s->b == 0)
+  _(assert s->c == 0)
+  _(assert s->d == 0)
+  _(assert s->e == 0)
+  _(assert s->f == 0)
+  _(assert s->p == (void *)0)
+}
+
+void bar() {
+  struct S s;
+  s.a = 0;
+  s.b = 0;
+  s.c = 0;
+  s.d = 0;
+  s.e = 0;
+  s.f = 0;
+  s.p = (void *)0;
+  _(assert \extent_zero(&s))
+}
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

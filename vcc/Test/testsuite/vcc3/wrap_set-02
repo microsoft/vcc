@@ -1,0 +1,129 @@
+`
+#include <vcc.h>
+
+struct S
+{
+  int x;
+};
+
+_(dynamic_owns) struct Td
+{
+  struct S* s;
+  _(invariant \mine(s))
+};
+
+struct Ts
+{
+  struct S* s;
+  _(invariant \mine(s))
+};
+
+
+void fails1d(struct Td* p, struct Td* q)
+  _(requires \mutable(p) && \mutable(q))
+  _(requires \wrapped(p->s) && \wrapped(q->s))
+  _(writes \span(p), p->s, \span(q), q->s)
+  _(ensures \wrapped(p))
+  _(ensures \wrapped(q))
+{
+  _(ghost p->\owns = {p->s})
+  _(ghost q->\owns = {q->s})
+  _(wrap p)
+  _(wrap q)
+}
+
+void succeeds2d(struct Td* p, struct Td* q)
+  _(requires \mutable(p) && \mutable(q))
+  _(requires \wrapped(p->s) && \wrapped(q->s))
+  _(writes \span(p), p->s, \span(q), q->s)
+  _(ensures \wrapped(p))
+  _(ensures \wrapped(q))
+{
+  _(ghost p->\owns = {p->s})
+  _(ghost q->\owns = {q->s})
+  _(wrap p, q)
+}
+
+void fails3d(struct Td* p, struct Td* q)
+  _(requires \wrapped(p) && \wrapped(q))
+  _(writes p, q)
+  _(ensures \mutable(p))
+  _(ensures \mutable(q))
+{
+  _(unwrap p)
+  _(unwrap q)
+  _(assert p->s \in p->\owns && q->s \in q->\owns)
+}
+
+void succeeds4d(struct Td* p, struct Td* q)
+  _(requires \wrapped(p) && \wrapped(q))
+  _(writes p, q)
+  _(ensures \mutable(p))
+  _(ensures \mutable(q))
+{
+  _(unwrap p, q)
+  _(assert p->s \in p->\owns && q->s \in q->\owns)
+}
+
+
+void fails1s(struct Ts* p, struct Ts* q)
+  _(requires \mutable(p) && \mutable(q))
+  _(requires \wrapped(p->s) && \wrapped(q->s))
+  _(writes \span(p), p->s, \span(q), q->s)
+  _(ensures \wrapped(p))
+  _(ensures \wrapped(q))
+{
+  _(wrap p)
+  _(wrap q)
+}
+
+void succeeds2s(struct Ts* p, struct Ts* q)
+  _(requires \mutable(p) && \mutable(q))
+  _(requires \wrapped(p->s) && \wrapped(q->s))
+  _(writes \span(p), p->s, \span(q), q->s)
+  _(ensures \wrapped(p))
+  _(ensures \wrapped(q))
+{
+  _(wrap p, q)
+}
+
+void fails3s(struct Ts* p, struct Ts* q)
+  _(requires \wrapped(p) && \wrapped(q))
+  _(writes p, q)
+  _(ensures \mutable(p))
+  _(ensures \mutable(q))
+{
+  _(unwrap p)
+  _(unwrap q)
+  _(assert p->s \in p->\owns && q->s \in q->\owns)
+}
+
+void succeeds4s(struct Ts* p, struct Ts* q)
+  _(requires \wrapped(p) && \wrapped(q))
+  _(writes p, q)
+  _(ensures \mutable(p))
+  _(ensures \mutable(q))
+{
+  _(unwrap p, q)
+  _(assert p->s \in p->\owns && q->s \in q->\owns)
+}
+
+`
+Verification of Td#adm succeeded.
+Verification of Ts#adm succeeded.
+Verification of fails1d failed.
+testcase(31,5) : error VC8510: Assertion 'o->\owns is writable in call to wrap q' did not verify.
+testcase(31,5) : error VC9502: Call 'wrap q' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the object being wrapped is mutable'.
+testcase(0,0) : error VC9599: (related information) Precondition: 'everything in the owns set is wrapped'.
+Verification of succeeds2d succeeded.
+Verification of fails3d failed.
+testcase(53,12) : error VC8016: 'q' is not wrapped before unwrap.
+Verification of succeeds4d succeeded.
+Verification of fails1s failed.
+testcase(76,10) : error VC8018: 's' is not wrapped before wrapping 'q' (its owner).
+Verification of succeeds2s succeeded.
+Verification of fails3s failed.
+testcase(96,12) : error VC8016: 'q' is not wrapped before unwrap.
+Verification of succeeds4s succeeded.
+`

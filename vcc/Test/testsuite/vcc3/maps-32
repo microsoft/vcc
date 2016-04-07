@@ -1,0 +1,10 @@
+#include "vcc.h"
+
+typedef struct _S {
+  int j;
+  _(ghost \state state[int])
+  _(invariant state[1]==state[2])
+};
+`
+Verification of _S#adm succeeded.
+`

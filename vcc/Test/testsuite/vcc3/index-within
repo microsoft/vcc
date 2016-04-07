@@ -1,0 +1,67 @@
+#include "vcc.h"
+
+_(typedef \bool objmap[\object])
+_(ghost _(pure) \objset objmap_to_objset(objmap m))
+_(axiom \forall \object p; objmap m; {p \in objmap_to_objset(m)}
+  p \in objmap_to_objset(m) <==> m[p])
+
+_(logic \objset mapped_range(\object arr, \integer sz, \objset arrayIdx[\integer]) =
+  objmap_to_objset(
+    \lambda \object p;
+      0 <= \index_within(p, arr) &&
+      \index_within(p, arr) < sz &&
+      p \in arrayIdx[\index_within(p, arr)]))
+
+_(logic \objset trw(struct T *t) =
+  objmap_to_objset(
+    \lambda \object p;
+      0 <= \index_within(p, t->Configurations) &&
+      \index_within(p, t->Configurations) < 10 &&
+      p \in \full_extent(&t->Configurations[\index_within(p, t->Configurations)].rw)))
+
+struct S {
+                struct RO { int x_ro; } ro;
+                struct RW { int x_rw; } rw;
+};
+
+struct T {
+                struct S Configurations[10];
+};
+
+
+void foo(struct T *t)
+  _(writes trw(t))
+  _(requires \forall unsigned i; i < 10 ==> \mutable(&t->Configurations[i].rw))
+{
+  t->Configurations[1].rw.x_rw = 7;
+}
+
+void foo2(struct T *t)
+  _(writes mapped_range(t->Configurations, 10, \lambda \integer i; \full_extent(&t->Configurations[i].rw)))
+  _(requires \forall unsigned i; i < 10 ==> \mutable(&t->Configurations[i].rw))
+{
+  t->Configurations[1].rw.x_rw = 7;
+}
+
+int nondet() { return 0; }
+
+void bar(struct T *t)
+  _(writes \extent(t))
+{
+  _(assume t->Configurations[1].ro.x_ro == 3)
+  _(assume t->Configurations[2].ro.x_ro == 3)
+
+  if (nondet())
+    foo(t);
+  else
+    foo2(t);
+
+  _(assert t->Configurations[1].ro.x_ro == 3)
+  _(assert t->Configurations[2].ro.x_ro == 3)
+}
+`
+Verification of foo succeeded.
+Verification of foo2 succeeded.
+Verification of nondet succeeded.
+Verification of bar succeeded.
+`

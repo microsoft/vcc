@@ -1,0 +1,15 @@
+#include <vcc.h>
+
+_(abstract \integer size() { return 42; })
+
+_(typedef _(record) struct {
+    \integer type;
+} Public;)
+
+_(datatype Object {
+    case External(Public);
+})
+
+`
+Verification of size succeeded.
+`

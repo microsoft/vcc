@@ -1,0 +1,13 @@
+#include "vcc.h"
+
+struct X { unsigned __int64 Y : 42; };
+
+unsigned foo();
+
+void bar() {
+    struct X x;
+    x.Y = foo();
+}
+`
+Verification of bar succeeded.
+`

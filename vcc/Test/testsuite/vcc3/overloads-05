@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+struct S { int a ; };
+struct T { int a ; };
+
+_(pure) _(no_reads_check) int foo(int i _(ghost struct S *p)) 
+	_(reads p)
+	_(requires \thread_local(p))
+	_(returns p->a);
+	
+
+int foo(int i _(ghost struct T *p)) 
+	_(ensures i == 0 ==> \result == p->a)
+	;
+	
+void baz() {
+	struct T t;
+	int i = foo(0 _(ghost &t));
+}
+`
+Verification of baz succeeded.
+`

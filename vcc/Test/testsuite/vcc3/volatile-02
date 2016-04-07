@@ -1,0 +1,28 @@
+#include <vcc.h>
+
+typedef struct Goo {
+      volatile int f[10];
+      _(invariant f[0] == \old(f[0]))
+} Goo;
+
+void foo(Goo *g _(ghost \claim c))
+  _(always c, g->\closed)
+{
+  _(atomic c, g) {
+    g->f[1] = 1;
+  }
+}
+
+void fooShouldFail(Goo *g _(ghost \claim c))
+  _(always c, g->\closed)
+{
+  _(atomic c, g) {
+    g->f[0] = 1;
+  }
+}
+`
+Verification of Goo#adm succeeded.
+Verification of foo succeeded.
+Verification of fooShouldFail failed.
+testcase(19,15) : error VC8524: Assertion 'chunk f[0] == \old(f[0]) of invariant of g holds after atomic' did not verify.
+`

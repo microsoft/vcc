@@ -1,0 +1,17 @@
+#include "vcc.h"
+
+typedef struct _s {
+  int dummy;
+  _(invariant dummy==5)
+} s, *ps;
+
+struct t {
+  int dummy2;
+  volatile s x;
+  _(invariant dummy2==5)
+};
+
+`
+Verification of _s#adm succeeded.
+Verification of t#adm succeeded.
+`

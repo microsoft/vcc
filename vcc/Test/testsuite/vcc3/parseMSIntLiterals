@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+const __int32 i32 = 0xFFFFF801I32;
+const unsigned __int32 u32 = 0xFFFFF801UI32;
+const __int16 i16 = 0xF80CI16;
+const unsigned __int16 u16 = 0xFF80UI16;
+const __int8 i8 = 0xFFI8;
+const unsigned __int8 u8 = 0x80UI8;
+`
+`

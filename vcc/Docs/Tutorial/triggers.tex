@@ -1,0 +1,282 @@
+\section{Triggers}
+
+The triggers are likely the most difficult part of this tutorial.
+VCC tries to infer appropriate triggers automatically, so 
+trigger annotations were not needed for the examples in the tutorial.
+However, you may need them to deal with more complex VCC verification
+tasks.
+
+This appendix gives some background on the usage of triggers in the 
+SMT solvers, the underlying VCC theorem proving technology.
+
+SMT solvers
+prove that the program is correct by looking for possible counterexamples,
+or \Def{models}, where your program goes wrong (\eg by violating an assertion).
+Once the solver goes through \emph{all} possible counterexamples, and finds them
+all to be inconsistent (\ie impossible),
+it considers the program to be correct.
+Normally, it would take virtually forever, for there is very large number of
+possible counterexamples, one per every input to the function (values stored in
+the heap also count as input).
+To workaround this problem, the SMT solver considers
+\Def{partial models}, \ie 
+sets of statements about the state of the program.
+For example, the model description may say \vcc{x == 7}, \vcc{y > x}
+and \vcc{*p == 12}, which describes all the concrete models, where
+these statements hold. There is great many such models,
+for example one for each different value of \vcc{y} and other program variables,
+not even mentioned in the model.
+
+It is thus useful to think of the SMT solver as sitting there with
+a possible model, and trying to find out whether the model is consistent or not.
+For example, if the description of the model says that \vcc{x > 7} and
+\vcc{x < 3}, then the solver can apply rules of arithmetic, conclude this is
+impossible, and move on to a next model.
+The SMT solvers are usually very good in finding inconsistencies in models
+where the statements describing them do not involve universal quantifiers.
+With quantifiers things tend to get a bit tricky.
+
+For example, let's say the model description states that the two
+following facts are true:
+\begin{VCC}
+\forall unsigned i; i < 10 ==> a[i] > 7
+a[4] == 3
+\end{VCC}
+The meaning of the universal quantifier is that it should hold
+not matter what we substitute for \vcc{i}, for example
+the universal quantifier above implies the following facts (which
+are called \Def{instances} of the quantifier):
+\begin{VCC}
+ 4 < 10 ==>  a[4] > 7  // for i == 4
+\end{VCC}
+which happens to be the one needed to refute our model,
+\begin{VCC}
+11 < 10 ==> a[11] > 7  // for i == 11
+\end{VCC}
+which is trivially true, because false implies everything, and
+\begin{VCC}
+ k < 10 ==>  a[k] > 7  // for i == k
+\end{VCC}
+where \vcc{k} is some program variable of type \vcc{unsigned}.
+
+However, there is potentially infinitely many such instances, and certainly too many
+to enumerate them all.
+Still, to prove that our model candidate is indeed contradictory
+we only need the first one, not the other two.
+Once the solver adds it to the model description,
+it will simplify \vcc{4 < 10} to true,
+and then see that \vcc{a[4] > 7} and \vcc{a[4] == 3} cannot hold
+at the same time.
+
+The question remains: how does the SMT solver decide that the first
+instance is useful, and the other two are not?
+This is done through so called \Def{triggers}.
+Triggers are either specified by the user or inferred automatically
+by the SMT solver or the verification tool.
+In all the examples before we relied on the automatic trigger
+inference, but as we go to more complex examples, we'll need to consider
+explicit trigger specification.
+
+A trigger for a quantified formula is usually some subexpression 
+of that formula, which contains all the variables that the formula
+quantifies over.
+For example, in the following formula:
+\begin{VCC}
+\forall int i; int p[int]; is_pos(p, i) ==> f(i, p[i]) && g(i)
+\end{VCC}
+possible triggers include the following expressions
+\vcc|is_pos(p, i)|, \vcc|p[i]|, and also \vcc|f(i, p[i])|,
+whereas \vcc|g(i)| would not be a valid trigger, because
+it does not contain \vcc|p|.
+
+Let's assume that \vcc|is_pos(p, i)| is the trigger. 
+The basic idea is that when the SMT solvers considers a model,
+which mentions \vcc|is_pos(q, 7)| (where \vcc|q| is, \eg a local variable), then the formula
+should be instantiated with \vcc|q| and \vcc|7| substituted
+for \vcc|p| and \vcc|i| respectively.
+
+Note that the trigger \vcc|f(i, p[i])| is \Def{more restrictive} than
+\vcc|p[i]|: if the model contains \vcc|f(k, q[k])| it also contains \vcc|q[k]|.
+Thus, a ``bigger'' trigger will cause the formula to be instantiated less often,
+generally leading to better proof performance (because the solver has
+less formulas to work on), but also possibly preventing
+the proof altogether (when the solver does not get the instantiation needed for the proof).
+
+Triggers cannot contain boolean operators or the equality operator.
+As of the current release, arithmetic operators are allowed, but cause warnings
+and work unreliably, so you should avoid them.
+
+A formula can have more than one trigger.
+It is enough for one trigger to match in order for the formula
+to be instantiated.
+
+\begin{note}
+\textbf{Multi-triggers}:
+Consider the following formula:
+\begin{VCC}
+\forall int a, b, c; P(a, b) && Q(b, c) ==> R(a, c)
+\end{VCC}
+There is no subexpression here, which would contain all the variables
+and not contain boolean operators.
+In such case we need to use a \Def{multi-trigger}, which
+is a set of expressions which together cover all variables.
+An example trigger here would be \vcc|{P(a, b), Q(b, c)}|.
+It means that for any model, which has both \vcc|P(a, b)|
+and \vcc|Q(b, c)| (for the same \vcc|b|!), the quantifier
+will be instantiated.
+In case a formula has multiple multi-triggers, \emph{all}
+expressions in at least \emph{one} of multi-triggers
+must match for the formula to be instantiated.
+
+If it is impossible to select any single-triggers in the formula,
+and none are specified explicitly, Z3 will select \emph{some}
+multi-trigger, which is usually not something that you want.
+\end{note}
+
+\subsection{Matching loops}
+
+Consider a model description
+\begin{VCC}
+\forall struct Node *n; {\mine(n)} \mine(n) ==> \mine(n->next)
+\mine(a)
+\end{VCC}
+Let's assume the SMT solver will instantiate the quantifier with \vcc{a}, yielding:
+\begin{VCC}
+\mine(a) ==> \mine(a->next)
+\end{VCC}
+It will now add \vcc{\mine(a->next)} to the set of facts
+describing the model.
+This however will lead to instantiating the quantifier again,
+this time with \vcc{a->next}, and in turn again with
+\vcc{a->next->next} and so forth.
+Such situation is called a \Def{matching loop}.
+The SMT solver would usually cut such loop at a certain depth,
+but it might make the solver run out of time, memory, or both.
+
+Matching loops can involve more than one quantified formula. 
+For example consider the following, where \vcc{f} is a user-defined function.
+\begin{VCC}
+\forall struct Node *n; {\mine(n)} \mine(n) ==> f(n)
+\forall struct Node *n; {f(n)} f(n) ==> \mine(n->next)
+\mine(a)
+\end{VCC}
+
+
+\subsection{Trigger selection}
+\label{sect:trigger-inference}
+
+The explicit triggers are listed in \vcc|{...}|, after the quantified variables.
+They don't have to be subexpressions of the formula. 
+We'll see some examples of that later.
+When there are no triggers specified explicitly, VCC selects the triggers for you.
+These are always subexpressions of the quantified formula body.
+To select default triggers VCC first considers all subexpressions which contain all the quantified variables,
+and then it splits them into four categories:
+\begin{itemize}
+\item level 0 triggers, which are mostly ownership-related. 
+These are \vcc{\mine(E)}, \vcc{E1 \in \owns(E2)}, and also \vcc{E1 \in0 E2} (which, except for triggering, is the same as \vcc{E1 \in E2}).
+\item level 1 triggers: set membership and maps, that is expressions of 
+the form \vcc{E1 \in E2} and \vcc{E1[E2]}.
+\item level 2 triggers: default, \ie everything not mentioned elsewhere. 
+It is mostly heap dereferences, like \vcc{*p}, \vcc{&a[i]} or \vcc{a[i]}, as well as bitwise arithmetic operators.
+\item level 3 triggers: certain ``bad triggers'', which use internal VCC encoding functions.
+\item level 4 triggers: which use interpreted arithmetic operations (\vcc{+}, \vcc{-}, and \vcc{*} on integers).
+\end{itemize}
+
+Expressions, which contain \vcc{<=}, \vcc{>=}, \vcc{<}, \vcc{>}, \vcc{==},
+\vcc{!=}, \vcc{||}, \vcc{&&}, \vcc{==>}, \vcc{<==>}, and \vcc{!} are not
+allowed in triggers.
+
+Each of these expressions is then tested for immediate matching loop,
+that is VCC checks if instantiating the formula with that trigger
+will create a bigger instance of that very trigger.
+Such looping triggers are removed from their respective categories.
+This protects against matching loops consisting of a single
+quantified formula, but matching loops with multiple formulas
+are still possible.
+
+To select the triggers, VCC iterates over levels, starting with 0.
+If there are some triggers at the current level, these triggers are selected
+and iteration stops.
+This means that, \eg if there are set-membership triggers then heap dereference
+triggers will not be selected.
+
+If there are no triggers in levels lower than 4, VCC tries to select a multi-trigger.
+It will only select one, with possibly low level, and some overlap between variables
+of the subexpressions of the trigger.
+Only if no multi-trigger can be found, VCC will try to use level 4 trigger.
+Finally, if no triggers can be inferred VCC will print a warning.
+
+As a post-processing step, VCC looks at the set of selected triggers, and if
+any there are two triggers X and Y, such that X is a subexpression of Y, then Y
+is removed, as it would be completely redundant.
+
+You can place a \vcc@{:level N}@ annotation in place of a trigger.
+It causes VCC to use all triggers from levels 0 to N inclusive.
+If this results in empty trigger set, the annotation is silently ignored.
+
+The flag \texttt{/dumptriggers:K} (or \texttt{/dt:K}) can be used to display inferred
+triggers.
+\texttt{/dt:1} prints the inferred triggers,
+\texttt{/dt:2} prints what triggers would be inferred if \vcc@{:level ...}@ annotation
+was supplied.
+\texttt{/dt:3} prints the inferred triggers even when there are explicit triggers
+specified. 
+It does not override the explicit triggers, it just print what would happen if you
+removed the explicit trigger.
+
+Let's consider an example:
+\begin{VCC}
+int *buf;
+unsigned perm[unsigned];
+\forall unsigned i; i < len ==> perm[i] == i ==> buf[i] < 0
+\end{VCC}
+The default algorithm will infer \vcc@{perm[i]}@, and with \vcc@{:level 1}@
+it will additionally select \vcc@{&buf[i]}@.
+Note the ampersand.
+This is because in C \vcc{buf[i]} is equivalent to \vcc{*(&buf[i])}, and thus
+the one with ampersand is simpler.
+You can also equivalently write it as \vcc@{buf + i}@.
+Note that the plus is not integer arithmetic addition, and can thus be safely used
+in triggers.
+
+Another example would be:
+\begin{VCC}
+\forall struct Node *n; n \in q->\owns ==> perm[n->idx] == 0
+\end{VCC}
+By default we get level 0 \vcc@{n \in q->\owns}@, with level 1 we also get
+\vcc@{perm[n->idx]}@ and with level 2 additionally \vcc@{&n->idx}@.
+
+\subsection{Hints}
+\label{sect:trigger-hints}
+
+Consider a quantified formula \vcc|\forall T x; {:hint H} E|.
+Intuitively the hint annotation states that the expression \vcc{H} (which can
+refer to \vcc{x}) might have something to do with proving \vcc{E}.
+A typical example, where you might need it is the following:
+\begin{VCC}
+\forall struct Node *n; \mine(n) ==> \mine(n->next) && n->next->prev == n
+\end{VCC}
+The default trigger selection will pick \vcc@{\mine(n->next)}@, which is also
+the ``proper'' trigger here. 
+However, when proving admissibility, to know that \vcc{n->next->prev} did not
+change in the legal action, we need to know \vcc{\mine(n->next)}.
+This is all good, it's stated just before, but the SMT solver
+might try to prove \vcc{n->next->prev == n} first,
+and thus miss the fact that \vcc{\mine(n->next)}.
+Therefore, we will need to add \vcc@{:hint \mine(n->next)}@.
+For inferred level 0 triggers, these are added automatically.
+
+
+%\subsection{Typical triggers}
+%
+%\itodo{maybe we want a section like that?}
+%
+%\begin{VCC}
+%\forall unsigned i; {a[i]} i < 100 ==> a[i] > 0
+%\forall unsigned i, j; {f(i, j)} f(i, j) == i + j * 2
+%\end{VCC}
+%
+
+
+

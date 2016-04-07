@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+void foo()
+{
+	int result;
+	_(ensures result ==0)
+	{
+		result = 0;
+	}
+}
+`
+Verification of foo succeeded.
+Verification of foo#block#0 succeeded.
+`

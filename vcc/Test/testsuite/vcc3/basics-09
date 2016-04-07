@@ -1,0 +1,19 @@
+#include "vcc.h"
+
+typedef struct _FOO
+{
+	int dummy;
+	_(ghost \bool Map[AAA])
+	_(invariant Map[dummy])
+} FOO;
+
+
+_(admissibility) 
+void funcname(FOO *p)
+{ 
+	_(havoc_others p)
+}
+
+`
+testcase(6,20) : error VC0000: The name 'AAA' does not exist in the current context.
+`

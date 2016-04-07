@@ -1,0 +1,55 @@
+#include <vcc2test.h>
+
+
+struct A {
+  short x, y;
+};
+
+struct B {
+  int x,y;
+};
+
+union U {
+  _(as_array) struct A a[2];
+  struct B b;
+};
+
+_(dynamic_owns) struct Tagged {
+  int tag;
+  union U u;
+  _(invariant tag == 1 ==> \mine(&u.b))
+  _(invariant tag == 0 ==> \mine((struct A[2])&u.a) && \mine(&u.a[0]) && \mine(&u.a[1]))
+  _(invariant tag == 0 || tag == 1)
+};
+
+void operate(struct Tagged *t)
+  _(updates t)
+{
+  _(unwrapping t) {
+    if (t->tag == 0) {
+      _(unwrapping (struct A[2])&t->u.a, &t->u.a[1]) {
+        t->u.a[1].x = _(unchecked)((short) ( t->u.a[1].y ^ 1 ));
+      }
+    } else {
+      _(unwrapping &t->u.b) {
+        t->u.b.y ^= 1;
+      }
+    }
+  }
+}
+
+void init(struct Tagged *t)
+  _(writes \extent(t))
+{
+  t->tag = 1;
+  _(union_reinterpret &t->u.b)
+  _(wrap &t->u.b)
+  _(ghost t->\owns = { &t->u.b })
+  _(wrap t)
+}
+
+`
+Verification of Tagged#adm succeeded.
+Verification of operate succeeded.
+Verification of init succeeded.
+`

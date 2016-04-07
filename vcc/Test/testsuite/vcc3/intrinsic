@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+void __int2c(void);
+
+#pragma intrinsic(__int2c)
+
+void f() {
+    do { if (0) (__annotation(L"Debug", L"AssertFail", L"Pls->Number == CpuGetCurrentProcessorNumber()"), __int2c()); } while (0);
+}
+`
+Verification of f succeeded.
+`

@@ -1,0 +1,21 @@
+#include <stdlib.h>
+#include "vcc.h"
+
+void bar()
+{
+    int *a;
+    a = (int*) malloc(sizeof(*a) * 42);
+    if (a != NULL) free((void[42])a);
+}
+
+
+_(ghost void barSafe()
+{
+    int ^a;
+    a = \alloc_array<int>(42);
+    free((void[42])a);
+})
+`
+Verification of bar succeeded.
+Verification of barSafe succeeded.
+`

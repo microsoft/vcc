@@ -1,0 +1,122 @@
+#include "vcc2test.h"
+
+void setk2(int *p, size_t sz)
+  _(requires \thread_local_array(p, sz))
+  _(writes \array_range(p, sz))
+{
+  size_t i;
+
+  i = 0;
+  while (i < sz) 
+    _(writes \array_range(p, sz))
+    _(invariant i >= 0)
+  {
+    p[i] = _(unchecked)((int)i);
+    i = i + 1;
+  }
+}
+
+int sumup(int *p, size_t sz)
+  _(requires \thread_local_array(p, sz))
+{
+  size_t i;
+  int sum;
+
+  sum = 0;
+  i = 0;
+  while (i < sz) 
+    _(invariant i >= 0)
+  {
+    sum = _(unchecked)(sum + p[i]);
+    i = i + 1;
+  }
+
+  return sum;
+}
+
+void setk(int *p, size_t sz)
+  _(requires \thread_local_array(p, sz))
+  _(writes \array_range(p, sz))
+{
+  size_t i;
+
+  i = 0;
+  while (i < sz) 
+    // writes inherited from the function
+    _(invariant i >= 0)
+  {
+    p[i] = _(unchecked)((int)i);
+    i = i + 1;
+  }
+}
+
+void setk3(int *p, size_t sz)
+  _(requires \thread_local_array(p, sz))
+  _(writes \array_range(p, sz))
+  _(requires sz > 0)
+{
+  size_t i;
+
+  i = 0;
+  while (i < sz - 1) 
+    _(writes \array_range(p, sz - 1))
+    _(invariant i >= 0)
+  {
+    p[i] = _(unchecked)((int)i);
+    i = i + 1;
+  }
+}
+
+void setk4(int *p, size_t sz, int **q)
+  _(requires \thread_local_array(p, sz) && q->\valid && \mutable(q))
+  _(writes \array_range(p, sz), q)
+  _(requires sz > 0)
+{
+  size_t i;
+
+  *q = (int*)NULL;
+
+  i = 0;
+  while (i < sz - 1) 
+    _(writes \array_range(p, sz - 1))
+    _(invariant i >= 0)
+  {
+    p[i] = _(unchecked)((int)i);
+    i = i + 1;
+  }
+
+  _(assert *q == NULL)
+}
+
+int foo()
+{
+  int *a;
+  
+  a = (int*)malloc(sizeof(int) * 10);
+  if ( a != 0 ) {
+    a[3] = 12;
+    return _(unchecked)(a[0] + a[1]);
+  }
+  return 0;
+}
+
+
+_(ghost int fooSafe()
+{
+  int ^a; 
+  a = \alloc_array<int>(10);
+  a[3] = 12;
+  return _(unchecked)(a[0] + a[1]);
+})
+`
+testcase(30,24) : warning VC9326: [possible unsoundness]: signed overflow (of '+') has undefined behavior in C
+testcase(98,25) : warning VC9326: [possible unsoundness]: signed overflow (of '+') has undefined behavior in C
+testcase(109,23) : warning VC9326: [possible unsoundness]: signed overflow (of '+') has undefined behavior in C
+Verification of setk2 succeeded.
+Verification of sumup succeeded.
+Verification of setk succeeded.
+Verification of setk3 succeeded.
+Verification of setk4 succeeded.
+Verification of foo succeeded.
+Verification of fooSafe succeeded.
+`

@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+
+_(ghost typedef int Perm[1][int])
+_(ghost \bool f(Perm p) _(ensures \forall int i; p[0][i] == i))
+
+`
+testcase(4,17) : error VC0000: Cannot declare array of type 'System.Diagnostics.Contracts.CodeContract.Map<int, int>' because it has size 0.
+testcase(5,50) : error VC0000: Illegal index.
+testcase(5,50) : error VC0000: The name 'p' does not exist in the current context.
+`

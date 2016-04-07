@@ -1,0 +1,22 @@
+#include "vcc.h"
+struct T;
+_(ghost _(pure) \bool not_inv(\object o)
+    _(reads \universe())
+    _(returns !\inv(o)))
+
+_(ghost _(pure) \bool _inv(\object o)
+    _(reads \universe())
+    _(returns \inv(o)))
+
+struct T {
+    int a;
+    _(invariant not_inv(\this))
+};
+
+struct S {
+    int a;
+    _(invariant _inv(\this))
+};
+`
+testcase(5,16) : error VC9712: Use of '\inv(...)' or '\inv2(...)' with negative polarity.
+`

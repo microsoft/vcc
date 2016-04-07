@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+int mul(int i)
+  _(requires 0 < i && i < 100)
+{
+  return i * 1000;
+}
+`
+Verification of mul succeeded.
+`

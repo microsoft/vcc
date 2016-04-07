@@ -1,0 +1,15 @@
+
+#include <vcc.h>
+
+int zero() _(returns 0);
+
+int foo() {
+    if (_(known \false) zero()) {
+        return 0;
+    } else {
+        return 1;
+    }
+}
+`
+Verification of foo succeeded.
+`

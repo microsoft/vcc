@@ -1,0 +1,15 @@
+//`/a /f:foo
+#include "vcc.h"
+
+_(def \bool X(int y)
+{
+    return !y;
+})
+
+void foo() {
+    _(assert X(0))
+}
+
+`
+Verification of foo succeeded.
+`

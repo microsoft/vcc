@@ -1,0 +1,18 @@
+#include "vcc.h"
+
+_(abstract int foo(int x)
+  _(requires x < 1000)
+  _(ensures \result > x))
+
+_(abstract int foo(int x) { return x + 1; })
+
+void bar(int x)
+    _(requires x < 100)
+    _(requires foo(x) == 7)
+{
+  _(assert 7 > x)
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

@@ -1,0 +1,47 @@
+#include "vcc2test.h"
+
+union A {
+  int x;
+  _(backing_member) unsigned int y;
+};
+
+void fooShouldFail(union A *a)
+  _(requires \wrapped(a))
+{
+  _(assert a->x >= 0)
+}
+
+union B {
+  _(backing_member) int x;
+  unsigned int y;
+};
+
+void barShouldFail(union B *a)
+  _(requires \wrapped(a))
+{
+  _(assert a->y < 3000000000)
+}
+
+void foo(union A *a)
+  _(requires \mutable(a))
+  _(writes \extent(a))
+{
+  a->x = -5;
+  _(assert a->x == -5)
+}
+
+void bar(union B *a)
+  _(requires \mutable(a))
+  _(writes \extent(a))
+{
+  a->y = 3000000000;
+  _(assert a->y == 3000000000)
+}
+`
+Verification of fooShouldFail failed.
+testcase(11,12) : error VC9500: Assertion 'a->x >= 0' did not verify.
+Verification of barShouldFail failed.
+testcase(22,12) : error VC9500: Assertion 'a->y < 3000000000' did not verify.
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

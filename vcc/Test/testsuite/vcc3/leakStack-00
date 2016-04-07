@@ -1,0 +1,44 @@
+#include "vcc.h"
+
+struct S { int x, y; };
+struct T { int a, b; };
+
+struct S *foo()
+    _(ensures \wrapped(\result))
+    _(ensures \fresh(\result))
+    _(ensures \result->x==42)
+{
+    struct S s;
+    s.x = 42;
+    _(wrap &s)
+    return &s;
+}
+
+struct T *xyz() 
+    _(ensures \wrapped(\result))
+    _(ensures \fresh(\result))
+    _(ensures \result->a==42)
+{
+    struct T t;
+    t.a = 42;
+    _(wrap &t)
+    return &t;
+}
+
+void bar() {
+    struct S *a, *b;
+    struct T *t;
+    a = foo();
+    _(assert a \in \domain(a))
+    t = xyz();
+    _(assert a->x==42)
+}
+`
+Verification of foo failed.
+testcase(6,8) : error VC9502: Call 'stack_free(&s)' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the extent of the object being reclaimed is mutable'.
+Verification of xyz failed.
+testcase(17,8) : error VC9502: Call 'stack_free(&t)' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the extent of the object being reclaimed is mutable'.
+Verification of bar succeeded.
+`

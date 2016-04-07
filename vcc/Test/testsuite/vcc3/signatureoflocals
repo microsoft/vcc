@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+// A fixed bug that causes incorrect signature in binaries.
+void foo(int x) {
+  }
+
+int main(){
+  int x=0;
+  int y=0;
+  foo(x =y+1);
+  foo(x =y+2);
+}
+`
+Verification of foo succeeded.
+Verification of main succeeded.
+`

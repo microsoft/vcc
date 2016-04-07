@@ -1,0 +1,29 @@
+#include <vcc.h>
+
+typedef int (*foo)(int i)
+  _(requires i > 0)
+  _(ensures \result > 0);
+
+int test(int i)
+  _(requires i > 0)
+{
+  return i;
+}
+
+int bar(foo fum)
+  _(reads fum) _(requires fum->\valid)
+{
+  return fum(1);
+}
+
+int myn(){
+  return bar((foo)&test);
+}
+`
+Verification of test succeeded.
+Verification of bar succeeded.
+Verification of myn succeeded.
+Verification of myn#fnptr#test_to_foo#1 failed.
+testcase(20,19) : error VC9501: Post condition '\result > 0' did not verify.
+testcase(5,13) : error VC9599: (related information) Location of post condition.
+`

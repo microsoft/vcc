@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+#define NULL    ((void *) 0)
+
+struct A { int *x; };
+
+void foo(struct A* p)
+_(requires p->x != NULL)
+{
+    
+    _(requires p->x != NULL)
+    {;
+    }        
+}
+`
+Verification of foo succeeded.
+Verification of foo#block#0 succeeded.
+`

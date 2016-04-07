@@ -1,0 +1,23 @@
+#include <vcc.h>
+
+#ifdef VERIFY 
+typedef int MAP[int];
+#endif
+
+struct S {
+  int i;
+  _(ghost MAP m)
+};
+
+void foo(struct S *s, int j)
+  _(writes s)
+  _(maintains \wrapped(s))
+  _(ensures \forall int i; s->m[i] == (\lambda int n; (n == j ? 0 : \old(s->m)[n]))[i])
+{
+  _(unwrapping s) {
+    _(ghost s->m[j] = 0)
+  }
+}
+`
+Verification of foo succeeded.
+`

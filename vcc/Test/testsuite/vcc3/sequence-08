@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+int foo(int i, int j) {
+		return i;
+}
+
+void bar() {
+	int i;
+	int *p = &i;
+	foo(*p,
+		*p);
+}
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

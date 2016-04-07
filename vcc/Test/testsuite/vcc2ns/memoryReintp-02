@@ -1,0 +1,78 @@
+#include <vcc2test.h>
+
+void fooFail1(int *arr)
+  _(requires \mutable((void[100])arr))
+  _(writes \extent((void[100])arr))
+{
+  _(split_array (void[100])arr, 50)
+}
+
+void fooFail2(int *arr)
+  _(requires \mutable((void[100])arr))
+  _(requires \object_root((void[100])arr))
+  _(writes \extent((void[100])arr))
+{
+ // impossible to get split-point-negative error
+  _(split_array (void[100])arr, (unsigned __int64) -1)
+}
+
+void fooFail3(int *arr)
+  _(requires \mutable((void[100])arr))
+  _(requires \object_root((void[100])arr))
+//  writes(extent(as_array(arr, 100)))
+{
+  _(split_array (void[100])arr, 50)
+}
+
+
+void fooFail4(int *arr)
+  _(requires \mutable((void[100])arr))
+  _(requires \object_root((void[100])arr))
+  _(writes \extent((void[100])arr))
+{
+  _(split_array (void[100])arr, 100)
+}
+
+void fooFail5(int *arr)
+  _(requires \mutable((void[100])arr))
+  _(requires \object_root((void[100])arr))
+  _(writes \extent((void[100])arr))
+{
+  _(split_array (void[100])arr, 110)
+}
+
+void fooFail6(int *arr)
+  _(requires \mutable((void[100])arr))
+  _(requires \object_root((void[100])arr))
+  _(writes \extent((void[100])arr))
+{
+  _(split_array (void[100])arr, 0)
+}
+
+void fooOK(int *arr)
+  _(requires \mutable((void[100])arr))
+  _(requires \object_root((void[100])arr))
+  _(writes \extent((void[100])arr))
+{
+  _(split_array (void[100])arr, 50)
+}
+`
+Verification of fooFail1 failed.
+testcase(7,5) : error VC9502: Call 'split_array (void[100])arr, 50' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the array to split is not embedded inside of another object'.
+Verification of fooFail2 failed.
+testcase(16,5) : error VC9502: Call 'split_array (void[100])arr, (unsigned __int64) -1' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the split-point is within the array'.
+Verification of fooFail3 failed.
+testcase(24,5) : error VC8510: Assertion '\extent(arr) is writable in call to split_array (void[100])arr, 50' did not verify.
+Verification of fooFail4 failed.
+testcase(33,5) : error VC9502: Call 'split_array (void[100])arr, 100' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the split-point is within the array'.
+Verification of fooFail5 failed.
+testcase(41,5) : error VC9502: Call 'split_array (void[100])arr, 110' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the split-point is within the array'.
+Verification of fooFail6 failed.
+testcase(49,5) : error VC9502: Call 'split_array (void[100])arr, 0' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the array is split at positive index'.
+Verification of fooOK succeeded.
+`

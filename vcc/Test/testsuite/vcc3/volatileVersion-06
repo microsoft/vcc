@@ -1,0 +1,55 @@
+#include <vcc.h>
+
+struct t{
+    _(group  _(claimable) A)
+
+    _(:A) volatile int a;
+    _(invariant :A \approves(\this->\owner, a))
+
+    int b;
+    _(invariant b == a)
+
+    _(group  _(claimable) C)
+    _(:C) volatile int c;
+
+    int d;
+
+    _(invariant \mine(\this::A, \this::C))
+};
+
+void test(struct t *p)
+_(requires \wrapped(p))
+_(writes p)
+{
+    _(unwrap p)
+
+    p->b = 0;
+    _(atomic p::A)
+    {
+
+        _(begin_update)
+        _(ghost _(bump_volatile_version p::A))
+        p->a = 0;
+    }
+    _(wrap p)
+}
+
+
+void test1(struct t *p)
+_(requires \wrapped(p))
+_(writes p)
+{
+    _(unwrap p)
+
+    _(atomic p::C)
+    {
+        _(begin_update)
+        p->c = 0;
+    }
+    _(wrap p)
+}
+`
+Verification of t#adm succeeded.
+Verification of test succeeded.
+Verification of test1 succeeded.
+`

@@ -1,0 +1,10 @@
+#include "vcc.h"
+
+struct S {
+    int dummy;
+    _(ghost volatile \object a)
+    _(invariant \old(a==(void*)0) ==> 42)
+};
+`
+Verification of S#adm succeeded.
+`

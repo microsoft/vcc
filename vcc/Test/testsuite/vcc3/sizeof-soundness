@@ -1,0 +1,14 @@
+#include<vcc.h>
+
+int main(void) 
+{ 
+        
+ char a[1]; 
+ size_t n = sizeof(a); 
+ _(assert \false) 
+ return 0; 
+}
+`
+Verification of main failed.
+testcase(8,11) : error VC9500: Assertion '\false' did not verify.
+`

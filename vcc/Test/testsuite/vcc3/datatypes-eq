@@ -1,0 +1,25 @@
+#include <vcc.h>
+
+_(datatype D1 {
+  case A();
+  case B(int);
+})
+
+_(def
+int foo0(D1 d)
+{
+  D1 dd = A();
+  _(assert dd == A())
+  _(assert dd != B(7))
+  _(assert B(7) != B(8))
+  if(d == dd) {
+    return 0;
+  } else {
+    return 1;
+  }
+
+})
+
+`
+Verification of foo0 succeeded.
+`

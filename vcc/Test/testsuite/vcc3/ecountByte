@@ -1,0 +1,11 @@
+#include <vcc.h>
+#include <sal.h>
+
+typedef unsigned __int8 UINT8;
+
+void foo(__in_ecount(n) int *p, UINT8 n) {
+}
+
+`
+Verification of foo succeeded.
+`

@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+struct A {
+  int x;
+  _(invariant \this->x>0)
+};
+
+
+_(ghost _(admissibility)
+void adm_A(struct A* x))
+
+void qux()
+{
+   _(ghost adm_A((struct A*)0);) 
+}
+`
+testcase(9,11) : error VC9644: the admissibility check is required to have a body
+`

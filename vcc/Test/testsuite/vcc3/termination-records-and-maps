@@ -1,0 +1,42 @@
+#include <vcc.h>
+
+typedef unsigned char BYTE;
+
+_(ghost
+typedef _(record) struct {
+    BYTE bytes[\integer];
+    \integer length;
+
+} ByteString;
+)
+
+_(logic \bool valid(ByteString s) = s.length >= 0 && (\forall \integer i; (i < 0 || s.length <= i) ==> (s.bytes[i] == (BYTE) 0)))
+
+
+
+_(def ByteString empty()
+{
+  return 
+    (ByteString) { 
+        .length = 0,
+        .bytes = \lambda \integer i; (BYTE) 0
+        };
+})
+                
+_(def ByteString cons(ByteString s, BYTE b)
+    _(requires valid(s))
+{
+  return (ByteString) { 
+        .length = s.length + 1,
+        .bytes = \lambda \integer i; 
+            i == 0                      ?   b : 
+            1 <= i && i < s.length + 1  ?   s.bytes[i - 1] :
+                                            (BYTE) 0
+        };
+})
+
+
+`
+Verification of empty succeeded.
+Verification of cons succeeded.
+`

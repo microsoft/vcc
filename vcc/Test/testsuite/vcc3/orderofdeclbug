@@ -1,0 +1,21 @@
+#include <vcc.h>
+
+// An unset memberbinding's Type causes wrong IL to be generated. For the repro, 
+// the order of foo1 and bla mattered. 
+void foo1(void);
+struct smb {char c;}  b1a;
+
+int __cdecl main() {
+  foo1();	
+  return 0;
+}
+
+void foo1()
+{   /* Simple assignment */
+   b1a.c = 'a';	
+}
+`
+Verification of foo1 failed.
+testcase(15,4) : error VC8507: Assertion 'b1a.c is writable' did not verify.
+Verification of main succeeded.
+`

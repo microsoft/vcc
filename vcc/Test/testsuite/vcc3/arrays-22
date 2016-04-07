@@ -1,0 +1,26 @@
+#include <vcc.h>
+
+void foo()
+{
+  int *p;
+  _(assume \forall \integer x; 0 <= x && x < 10 ==> p[x] == 12)
+  _(assert \forall \integer x; 0 <= x && x < 10 ==> p[x] == 12)
+}
+
+void bar()
+{
+  int p[];
+  _(assume \forall \integer x; 0 <= x && x < 10 ==> p[x] == 12)
+  _(assert \forall \integer x; 0 <= x && x < 10 ==> p[x] == 12)
+}
+
+void baz()
+{
+  int p[10] = { 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, };
+  _(assert \forall \integer x; 0 <= x && x < 10 ==> p[x] == 12)
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+Verification of baz succeeded.
+`

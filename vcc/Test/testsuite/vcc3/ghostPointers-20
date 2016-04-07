@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+typedef struct T {
+  int b[10];
+} T;
+
+void foo(int *v);
+
+void test() {
+  _(ghost T t)
+  _(ghost foo(& t.b[0]))
+} 
+`
+testcase(11,11) : error VC0000: The best overloaded method match for '__Globals__.foo(int*)' has some invalid arguments.
+testcase(11,15) : error VC0000: Argument '1': cannot convert from 'int^' to 'int*'.
+`

@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+void main()
+{
+  int x = 10;
+  _(assert \exists int i; i = 10)
+}
+`
+testcase(6,27) : error VC0000: Evaluating this expression has the side effect of modifying memory, which is not permitted in this context.
+`

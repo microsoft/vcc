@@ -1,0 +1,95 @@
+#include "vcc.h"
+
+
+// Some preliminaries:
+
+typedef union _Union
+{
+    _(backing_member) unsigned value;
+
+    struct
+    {
+        unsigned A : 5;
+        unsigned B : 7;
+        unsigned C : 1;
+        unsigned   : 19;
+    };
+} Union;
+
+
+_(record AbsUnion
+{
+    \natural A;
+    \natural B;
+    \bool C;
+})
+
+
+_(def AbsUnion AbstractUnion(Union u)
+{
+    return (AbsUnion) {
+        .A = u.A,
+        .B = u.B,
+        .C = u.C};
+})
+
+
+typedef struct _Bunch
+{
+    Union u1;
+    Union u2;
+
+    unsigned xs[10];
+
+    _(invariant \mine(&u1))
+    _(invariant \mine(&u2))
+} Bunch;
+
+
+// This is redundant, but the corresponding abstraction function will also need to access the state, I suppose.
+
+_(record AbsArray
+{
+    \natural A0;
+    \natural Ar[\natural];
+})
+
+
+_(def AbsArray AbstractArray(Bunch* b)
+{
+    return (AbsArray) {
+        .A0 = b->xs[0],
+        .Ar = \lambda \natural n; (0 < n && n < 10) ? b->xs[n] : (\natural)0};
+})
+
+
+// Now for the problematic case:
+
+_(record AbsU1U2
+{
+    AbsUnion u1;
+    AbsUnion u2;
+})
+
+/*
+// This causes a Boogie trigger error:
+//
+// (0,0) : error : trigger must mention all quantified variables, but does not mention: Q#__vcc_state$1^76.1#tc1#401
+// (0,0) : error : trigger must mention all quantified variables, but does not mention: Q#__vcc_state$1^76.1#tc1#402
+// (0,0) : error : trigger must mention all quantified variables, but does not mention: Q#__vcc_state$1^76.1#tc1#403
+*/
+
+_(def AbsU1U2 AbstractU1U2(Bunch* b)
+//  _(reads b)
+  _(requires \wrapped(b))
+{
+    return (AbsU1U2) {
+        .u1 = AbstractUnion(b->u1),
+        .u2 = AbstractUnion(b->u2)};
+})
+`
+Verification of _Bunch#adm succeeded.
+Verification of AbstractUnion succeeded.
+Verification of AbstractArray succeeded.
+Verification of AbstractU1U2 succeeded.
+`

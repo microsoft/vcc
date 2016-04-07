@@ -1,0 +1,61 @@
+#include <vcc.h>
+
+_(ghost _(pure, no_reads_check, frameaxiom) int val(int *p, size_t len)
+  _(reads \array_range(p,len))
+  )
+
+void nothing() {}
+
+void something(int *p, size_t len)
+  _(writes \array_range(p, len)) {}
+
+void test() {
+    int *p;
+    size_t len;
+    _(assume \mutable_array(p,len) && val(p, len) == 0)
+    nothing();
+    _(assert val(p,len) == 0)
+}
+
+void test2() {
+    int *p;
+    size_t len;
+    _(assume val(p, len) == 0)
+    nothing();
+    _(assert val(p,len) == 0) // error
+}
+
+void test3(int *p, size_t len) 
+  _(writes \array_range(p, len))
+  _(requires \mutable_array(p, len))
+  _(requires len > 100)
+  _(requires val(p + 20, 20) == 7)
+{
+    nothing();
+    _(assert val(p + 20, 20) == 7);
+    something(p + 10, 10);
+    _(assert val(p + 20, 20) == 7);
+}
+
+void test4(int *p, size_t len) 
+  _(writes \array_range(p, len))
+  _(requires \mutable_array(p, len))
+  _(requires len > 100)
+  _(requires val(p + 20, 20) == 7)
+{
+    nothing();
+    _(assert val(p + 20, 20) == 7);
+    something(p + 10, 11);
+    _(assert val(p + 20, 20) == 7); // error
+}
+
+`
+Verification of nothing succeeded.
+Verification of something succeeded.
+Verification of test succeeded.
+Verification of test2 failed.
+testcase(25,14) : error VC9500: Assertion 'val(p,len) == 0' did not verify.
+Verification of test3 succeeded.
+Verification of test4 failed.
+testcase(49,14) : error VC9500: Assertion 'val(p + 20, 20) == 7' did not verify.
+`

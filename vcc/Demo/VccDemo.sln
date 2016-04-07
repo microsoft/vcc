@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CCD987B7-0B84-4B11-B80C-E4467756E558}"
+	ProjectSection(SolutionItems) = preProject
+		ReadMe.txt = ReadMe.txt
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VccDemo", "VccDemo.vcxproj", "{088355D4-8379-479C-9736-E4C1AE099A29}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{088355D4-8379-479C-9736-E4C1AE099A29}.Debug|Win32.ActiveCfg = Debug|Win32
+		{088355D4-8379-479C-9736-E4C1AE099A29}.Debug|Win32.Build.0 = Debug|Win32
+		{088355D4-8379-479C-9736-E4C1AE099A29}.Release|Win32.ActiveCfg = Release|Win32
+		{088355D4-8379-479C-9736-E4C1AE099A29}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

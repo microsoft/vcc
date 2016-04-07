@@ -1,0 +1,15 @@
+#include <vcc.h>
+
+typedef union A {
+ _(backing_member) int x;
+ _(backing_member) char y;
+} A;
+
+void foo(A *a)
+{
+}
+
+`
+testcase(4,4) : error VC9747: More than one field marked as backing_member
+testcase(5,4) : error : (Location of symbol related to previous error.)
+`

@@ -1,0 +1,46 @@
+#include <vcc.h>
+
+void foo() { }
+
+void bar() { }
+
+void baz() {
+  void *f1 = &foo;
+  void *f2 = &foo;
+  void *b = &bar;
+  _(assert f1 == f2)
+  _(assert b != f1)
+}
+
+typedef void (*c1)(int x)
+  _(requires x > 0);
+
+typedef void (*c2)(int x)
+  _(requires x > 1);
+
+void f1(int x) {}
+void f2(int x) {}
+
+void baz2()
+{
+  c1 pf1 = &f1;
+  c1 pf2 = &f2;
+  c2 xf1 = &f1;
+  c2 xf2 = &f2;
+
+  _(assert pf1 == xf1)
+  _(assert pf1 != pf2)
+  _(assert pf1 != xf2)
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+Verification of baz succeeded.
+Verification of f1 succeeded.
+Verification of f2 succeeded.
+Verification of baz2 succeeded.
+Verification of baz2#fnptr#f2_to_c2#2 succeeded.
+Verification of baz2#fnptr#f1_to_c2#2 succeeded.
+Verification of baz2#fnptr#f2_to_c1#1 succeeded.
+Verification of baz2#fnptr#f1_to_c1#1 succeeded.
+`

@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+// specifiers together with func ptr typedef
+typedef int (__cdecl *func_type)(void);
+
+int main() {
+  return 0;
+}
+
+`
+Verification of main succeeded.
+`

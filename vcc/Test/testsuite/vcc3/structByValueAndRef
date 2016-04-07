@@ -1,0 +1,36 @@
+#include <vcc.h>
+#include <sal.h>
+
+typedef long long __vcI8;
+typedef unsigned long long __vcU8;
+
+
+typedef unsigned __int32 UINT32;
+
+typedef struct { 
+  UINT32 a;
+  UINT32 b;
+} S, *PS;
+
+void initS(PS s) 
+  _(writes \extent(s))
+  _(ensures \thread_local(s))
+  _(maintains \mutable(s) && \object_root(s))
+{
+  s->a = 0;
+  s->b = 0;
+}
+
+void useS(S s) { }
+
+void foo() {
+  S s;
+  initS(&s);
+  useS(s);
+}
+
+`
+Verification of initS succeeded.
+Verification of useS succeeded.
+Verification of foo succeeded.
+`

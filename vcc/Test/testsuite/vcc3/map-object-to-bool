@@ -1,0 +1,20 @@
+#include <vcc.h>
+#include <stdlib.h>
+_(dynamic_owns) typedef struct Node {
+struct Node *next;
+void *data;
+} Node;
+_(dynamic_owns) struct List {
+Node *head;
+_(ghost \bool typ[\object];)
+_(ghost \bool node[Node*];)
+_(invariant head != NULL ==> \mine(head))
+_(invariant \forall Node *n;
+node[n] ==> n->data && typ[n->data] /* && (((\object)n->data) \in n->\owns) */)
+_(invariant \forall Node *n;
+\mine(n) ==> n->next == NULL || \mine(n->next))
+};
+`
+Verification of List#adm failed.
+testcase(12,13) : error VC8012: invariant(\forall Node *n; node[n] ==> n->data && typ[n->data] )) of List is not admissible.
+`

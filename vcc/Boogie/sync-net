@@ -1,0 +1,44 @@
+#!/bin/sh
+
+if [ "X$1" = X ] ; then
+  src=//emicvccbld/drops/boogie/latest
+else
+  src="$1"
+fi
+
+echo "Syncing from $src"
+
+rm -rf cache
+mkdir cache
+
+all=
+
+for f in * ; do
+  all="$all $src/$f"
+done
+cp -v $all cache || : 
+
+src=cache
+for f in * ; do
+  test -f $src/$f || continue
+  cmp -s $src/$f $f && continue
+  # chmod +rwX $f
+  echo "SYNC $f"
+  cp $src/$f $f
+  if [ "$f" = "z3.exe" ] ; then 
+    PATH=$PATH:/cygdrive/c/Program\ Files/Microsoft\ Visual\ Studio\ 9.0/Common7/IDE:/cygdrive/c/Program\ Files/Microsoft\ Visual\ Studio\ 9.0/VC/BIN
+    PATH=$PATH:/cygdrive/c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio\ 9.0/Common7/IDE:/cygdrive/c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio\ 9.0/VC/BIN
+    editbin.exe -stack:0x8000000 $f -nologo
+  fi
+  if [ "$f" = "Boogie.exe" ] ; then 
+    PATH=$PATH:/cygdrive/c/Program\ Files/Microsoft\ Visual\ Studio\ 9.0/Common7/IDE:/cygdrive/c/Program\ Files/Microsoft\ Visual\ Studio\ 9.0/VC/BIN
+    PATH=$PATH:/cygdrive/c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio\ 9.0/Common7/IDE:/cygdrive/c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio\ 9.0/VC/BIN
+    PATH=$PATH:/cygdrive/c/Program\ Files/Microsoft\ SDKs/Windows/v6.0A/bin
+    PATH=$PATH:/cygdrive/c/Program\ Files\ \(x86\)/Microsoft\ SDKs/Windows/v6.0A/bin
+    editbin.exe -stack:0x8000000 "$f" -nologo
+    sn -R "$f" ../Common/InterimKey.snk
+  fi
+done
+
+
+rm -rf cache

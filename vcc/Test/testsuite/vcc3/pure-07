@@ -1,0 +1,42 @@
+#include <vcc.h>
+
+_(pure) int f1(int *x)
+  _(returns *x)
+  _(reads x);
+
+_(pure) int f2(int *x)
+  _(returns *x)
+  _(reads x);
+
+_(pure) int f3(int *x)
+  _(returns *x)
+  _(reads x);
+
+#ifdef VERIFY
+vcc_attr ("is_reads_check", "f1")
+void reads_f1()
+{
+  _(reads_havoc)
+}
+
+
+vcc_attr ("is_reads_check", "f2")
+void reads_f2(int *x)
+{
+  _(reads_havoc)
+}
+
+
+vcc_attr ("is_reads_check", "f3")
+void reads_f3(int *y)
+{
+  _(reads_havoc)
+}
+
+
+#endif
+`
+Verification of reads_f1 succeeded.
+Verification of reads_f2 succeeded.
+Verification of reads_f3 succeeded.
+`

@@ -1,0 +1,43 @@
+﻿{
+module SyntaxHighlighting.Lexer
+open System
+open Microsoft.FSharp.Text.Lexing
+open SyntaxHighlighting.FsParser
+}
+
+// Base regular expressions
+let whitespace = [' ' '\t' '\r' '\n']
+
+let digit = ['0'-'9']
+let idbeg = (['A' - 'Z'] | ['a'-'z'])
+let idbody = (idbeg | digit | '_')
+
+let id = idbeg idbody* | '_' idbody+
+
+let guarded = '\\' id 
+
+rule tokenize = parse
+
+| "ghost"								                { GHOST(lexbuf.StartPos, lexbuf.EndPos) }
+
+| id                                    { if Ast.isKeyword(lexbuf.Lexeme)
+                                            then KEYWORD(lexbuf.StartPos, lexbuf.EndPos) 
+                                            else tokenize lexbuf }
+
+| guarded                               { if Ast.isGuardedKeyword( lexbuf.Lexeme)
+                                            then GUARDED(lexbuf.StartPos, lexbuf.EndPos) 
+                                            else tokenize lexbuf }
+
+| '_' '('                               { OPENSPEC(lexbuf.StartPos) }
+| '('                                   { LPAREN(lexbuf.StartPos) }
+| ')'                                   { RPAREN(lexbuf.StartPos) }
+
+| whitespace+                           { tokenize lexbuf }
+
+| "'" ([^ '\\'] | '\\' [^ '\'']+ ) "'"  { tokenize lexbuf }
+| '"' ([^ '\\' '"'] | '\\' _)* '"'      { tokenize lexbuf }
+
+| "//" [^ '\r' '\n']*                   { tokenize lexbuf }
+| "/*" ([^ '*'] | '*' [^ '/'])* "*/"    { tokenize lexbuf }
+| eof                                   { EOF }
+| _                                     { tokenize lexbuf }

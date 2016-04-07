@@ -1,0 +1,15 @@
+#include "vcc.h"
+
+_(record) struct Y {
+  unsigned state;
+};
+
+_(record) struct Z {
+  int dummy;
+  _(ghost struct Y X)
+  _(invariant X.state==0)
+};
+`
+testcase(7,11) : error VC9698: type 'Z' is marked as a record type and thus must not declare invariants
+testcase(10,15) : error : (Location of symbol related to previous error.)
+`

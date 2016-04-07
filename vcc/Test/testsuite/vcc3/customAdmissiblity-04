@@ -1,0 +1,23 @@
+#include <vcc.h>
+
+struct B {
+  int y;
+};
+
+struct A {
+  int x;
+  
+  _(invariant \this->x > 0)
+};
+
+_(ghost _(admissibility)
+void adm_A(struct A* x)
+{
+  _(havoc_others x)
+  _(assert x->x > 0)
+})
+
+`
+Verification of A#adm succeeded.
+Verification of adm_A succeeded.
+`

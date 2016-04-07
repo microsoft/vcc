@@ -1,0 +1,92 @@
+#include <vcc.h>
+#include <limits.h>
+
+void foo()
+  _(decreases 1)
+{
+  int i, n;
+
+  while (i < n) 
+    _(decreases n - i)
+  {
+    i++;
+  }
+}
+
+_(void foo_fail1()
+  _(decreases 1)
+{
+  \integer i, n;
+
+  while (i < n) 
+    _(decreases n - i)
+  {
+    i -= 1;
+  }
+})
+
+_(void foo_fail2()
+  _(decreases 1)
+{
+  \integer i, n;
+
+  while (i < n) 
+    _(decreases n - i)
+  {
+  }
+})
+
+_(void foo_fail3()
+  _(decreases 1)
+{
+  \integer i, n;
+
+  while (1) 
+  {
+    i = i + 1;
+  }
+})
+
+void bar()
+  _(decreases 1)
+{
+  int i = 1000;
+
+  while (_(unchecked)(i--))
+    _(invariant i >= 0)
+    _(decreases i)
+  {
+  }
+}
+
+void bar_funky()
+  _(decreases 1)
+{
+  int i;
+
+  int k = INT_MIN;
+
+  // assume wrap-around for signed integer
+  // note that this is undefined by the C standard, and actually the compiler can optimize assuming signed underflow never happens!
+  // http://lists.gforge.inria.fr/pipermail/frama-c-discuss/2009-June/001235.html
+  // http://stackoverflow.com/questions/4240748/allowing-signed-integer-overflows-in-c-c
+  _(assume _(unchecked)(k - 1) == INT_MAX)
+
+  while (_(unchecked)(i--))
+    _(decreases i < 0 ? (\integer)i + UINT_MAX + 1 : i)
+  {
+  }
+}
+`
+testcase(55,23) : warning VC9326: [possible unsoundness]: signed overflow (of '-') has undefined behavior in C
+testcase(75,23) : warning VC9326: [possible unsoundness]: signed overflow (of '-') has undefined behavior in C
+testcase(44,3) : warning VC9323: [possible unsoundness]: failed to infer _(decreases ...) clause for the loop; please supply one
+Verification of foo succeeded.
+Verification of foo_fail1 failed.
+testcase(21,3) : error VC8033: the loop fails to decrease termination measure.
+Verification of foo_fail2 failed.
+testcase(33,3) : error VC8033: the loop fails to decrease termination measure.
+Verification of foo_fail3 succeeded.
+Verification of bar succeeded.
+Verification of bar_funky succeeded.
+`

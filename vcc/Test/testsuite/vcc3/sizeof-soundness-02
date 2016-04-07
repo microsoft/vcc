@@ -1,0 +1,10 @@
+#include <vcc.h>
+void f() {
+               int a[1];
+               size_t result = sizeof(a) + sizeof(a[0]);
+               _(assert \false);
+}
+`
+Verification of f failed.
+testcase(5,25) : error VC9500: Assertion '\false' did not verify.
+`

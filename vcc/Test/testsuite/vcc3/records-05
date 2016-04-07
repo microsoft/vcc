@@ -1,0 +1,40 @@
+#include <vcc.h>
+
+_(record) struct S {
+  int a;
+  int b;
+};
+
+_(ghost struct S foo(struct S s0) 
+  _(ensures \result == s0 / { .a = 10 })
+{
+  return s0 / { .a = 10 };
+})
+
+void bar() {
+  _(ghost struct S s = { 1, 2 })
+  _(ghost s = foo(s))
+  _(assert s.a == 10)
+  _(assert s.b == 2)
+}
+
+_(ghost void baz(struct S s)
+{
+  _(assert s.a <= 0x7fffffff)
+})
+
+
+_(ghost struct S foo2(int k, struct S s0) 
+  _(ensures \result == (k ? s0 / { .a = 10 } : s0 / { .b = 10 }))
+{
+  if (k)
+    return s0 / { .a = 10 };
+  else
+    return s0 / { .b = 10 };
+})
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+Verification of baz succeeded.
+Verification of foo2 succeeded.
+`

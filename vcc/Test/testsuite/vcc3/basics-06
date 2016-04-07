@@ -1,0 +1,32 @@
+#include <vcc.h>
+
+_(volatile_owns) struct Foo {
+  int x;
+};
+
+_(dynamic_owns) struct FooNV {
+  int x;
+};
+
+struct Baz { int x; };
+
+struct Bar {
+  struct Foo foo;
+  struct Baz baz;
+
+  _(invariant \mine(&foo))
+  _(invariant &baz \in (&foo)->\owns)
+};
+
+struct BarOK {
+  struct FooNV foo;
+  struct Baz baz;
+
+  _(invariant \mine(&foo))
+  _(invariant &baz \in (&foo)->\owns)
+};
+`
+Verification of Bar#adm failed.
+testcase(18,15) : error VC8012: invariant(&baz \in (&foo)->\owns) of Bar is not admissible.
+Verification of BarOK#adm succeeded.
+`

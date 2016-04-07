@@ -1,0 +1,34 @@
+#include <vcc.h>
+
+typedef unsigned int UINT32;
+
+typedef struct proc_t {
+	UINT32 gpr[32];	
+	UINT32 spr[17];	
+	UINT32 dpc;		
+	UINT32 pcp;		
+} proc_t;
+
+proc_t PCB[8];
+
+void forall_test(UINT32 i)
+_(requires i < 8)
+_(requires (&PCB[i])->\valid)
+_(writes &PCB[i])
+{
+	UINT32 j;
+
+	for (j = 0; j < 17; j++)
+		_(invariant 0<=j && j <=17)
+		_(invariant \forall int k; k <= 0 && k < j ==> PCB[i].spr[k] == 0)
+		PCB[i].spr[j] = 0;
+
+	_(assert \forall int k; 0 <= k && k < 17 ==> PCB[i].spr[k] == 0)
+
+	_(assert PCB[i].spr[9] == 0)
+
+}
+
+`
+testcase(23,40) : error VC0000: Operator '<' cannot be applied to operands of type '__int32' and 'unsigned __int32'.
+`

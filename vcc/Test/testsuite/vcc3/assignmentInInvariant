@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+void foo(unsigned int n) {
+  unsigned int i;
+  int x;
+  
+  for (i = 0; i < n; i++)
+    _(invariant i = 10) { x = 1;}
+}
+`
+testcase(8,17) : error VC0000: Evaluating this expression has the side effect of modifying memory, which is not permitted in this context.
+`

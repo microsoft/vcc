@@ -1,0 +1,21 @@
+#include "vcc.h"
+
+struct S {
+    volatile int x;
+    _(ghost volatile int y)
+};
+
+_(ghost _(atomic_inline)
+void SetX(struct S *s) {
+    s->y = 1;
+})
+
+void foo(struct S *s)
+    _(requires \wrapped(s))
+{
+    _(atomic s) { s->x = 1; _(ghost s->y = 1) } // no warning
+    _(atomic s) { s->x = 1; _(ghost SetX(s)) } // warning
+}
+`
+Verification of foo succeeded.
+`

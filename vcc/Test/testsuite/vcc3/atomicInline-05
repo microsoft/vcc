@@ -1,0 +1,71 @@
+#include <vcc.h>
+
+#define RTL_MAXIMUM_EXCESSIVE_SPIN_COUNT 10000
+
+typedef unsigned __int64 UINT64;
+typedef __int32 INT32;
+
+#define NULL ((void*)0)
+
+typedef _(claimable) _(volatile_owns) struct _RTL_SPIN_LOCK
+{
+    volatile INT32 Lock;
+    _(ghost volatile \object protected_obj)
+    _(invariant protected_obj!=NULL ==> (Lock == 0 || Lock == 1))
+    _(invariant \old(protected_obj)!=NULL ==> \unchanged(protected_obj))
+    _(invariant !Lock && protected_obj!=NULL ==> protected_obj \in \this->\owns)
+
+} RTL_SPIN_LOCK, *PRTL_SPIN_LOCK;
+
+
+	
+_(ghost _(atomic_inline)
+int
+RtlpGiveupSpinLockOwner(
+    int r,
+    PRTL_SPIN_LOCK SpinLock)
+{
+    if (!r) _(ghost SpinLock->\owns -= SpinLock->protected_obj);
+    return 1;
+};)
+
+
+_(atomic_inline) int InterlockedBitTestAndSet(volatile INT32 *v, INT32 pos) {
+  int result = (((*v) >> pos) & 1) == 1;
+  *v |= (1 << pos);
+  return result;
+}
+
+UINT64
+RtlpWaitForSpinLockAndAcquire(
+    __inout PRTL_SPIN_LOCK SpinLock
+    _(ghost \claim c)
+    )   
+    _(always c,SpinLock->\closed && SpinLock->protected_obj!=NULL)
+    _(ensures \wrapped(SpinLock->protected_obj))
+    _(ensures \fresh(SpinLock->protected_obj))
+    _(ensures \result<=RTL_MAXIMUM_EXCESSIVE_SPIN_COUNT)
+{
+    UINT64 spinCount;
+
+    spinCount = 0;	
+
+    do
+        _(invariant spinCount<=RTL_MAXIMUM_EXCESSIVE_SPIN_COUNT)
+        _(invariant \mutable(&spinCount))
+    {
+        do 
+            _(invariant spinCount<=RTL_MAXIMUM_EXCESSIVE_SPIN_COUNT)
+            _(invariant \mutable(&spinCount))
+        {
+        } while (_(atomic_read  c, SpinLock)(SpinLock->Lock) != 0);
+    } while (_(atomic_op 
+        c, SpinLock, RtlpGiveupSpinLockOwner(\result, SpinLock))(InterlockedBitTestAndSet(&SpinLock->Lock, 0)));
+
+    return spinCount;
+}
+
+`
+Verification of _RTL_SPIN_LOCK#adm succeeded.
+Verification of RtlpWaitForSpinLockAndAcquire succeeded.
+`

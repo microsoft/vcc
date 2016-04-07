@@ -1,0 +1,27 @@
+#include <vcc.h>
+
+union U {
+	_(backing_member) int x;
+	
+	struct {
+		int a:16;
+		int b:16;
+	};
+};
+
+struct S {
+	_(inline) union U u;
+};
+
+void foo(struct S *s, struct S *t) 
+	_(requires \wrapped(t))
+	_(updates s)
+	
+{ 
+	_(unwrapping s) {
+		*s = *t;
+	}
+}
+`
+Verification of foo succeeded.
+`

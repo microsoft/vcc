@@ -1,0 +1,18 @@
+#include <vcc.h>
+_(ghost 
+\natural plus(\natural x, \natural y)
+  _(ensures \result == x + y)
+{
+  _(ghost \natural z = x+y;)
+  while (x>(\natural)0)
+    _(invariant x + y == z)
+    {
+      x-= (\natural)1;
+      y+= (\natural)1;
+    }
+  return y;
+}) 
+`
+testcase(7,3) : warning VC9323: [possible unsoundness]: ghost loop not checked for termination
+Verification of plus succeeded.
+`

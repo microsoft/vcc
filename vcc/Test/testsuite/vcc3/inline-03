@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+_(primitive)
+struct S {
+	int i;
+	_(invariant i == 0)
+	
+};
+
+void foo(struct S *s) 
+	_(writes s)
+	_(ensures s->i == 0)
+{
+	s->i = 0;
+}
+`
+testcase(4,1) : error VC9741: type 'S' has invariants and thus cannot be marked 'primitive'
+`

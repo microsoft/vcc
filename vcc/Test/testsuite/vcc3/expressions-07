@@ -1,0 +1,38 @@
+#include <vcc.h>
+
+void foo(unsigned a, unsigned b)
+{
+  unsigned r = _(unchecked)(a + b);
+  _(assert r >= a)
+}
+
+void bar(int x)
+{
+  x = -x;
+}
+
+void foobar(int x)
+{
+  _(assert _(unchecked)(-x) == _(unchecked)(0 - x))
+}
+
+void foobar2(int x)
+{
+  _(assume 0 <= x && x <= 100)
+  _(assert _(unchecked)(-x) == _(unchecked)(0 - x))
+}
+
+void baz(unsigned x, unsigned y)
+{
+  if (y != 0)
+    x = x / y;
+}
+`
+Verification of foo failed.
+testcase(6,12) : error VC9500: Assertion 'r >= a' did not verify.
+Verification of bar failed.
+testcase(11,7) : error VC8004: -x might overflow.
+Verification of foobar succeeded.
+Verification of foobar2 succeeded.
+Verification of baz succeeded.
+`

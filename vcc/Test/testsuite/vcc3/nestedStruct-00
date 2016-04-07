@@ -1,0 +1,21 @@
+#include <vcc.h>
+
+struct Core {
+  unsigned __int64 a;
+  unsigned __int64 b;
+};
+
+struct Outer {
+  struct Core core;
+};
+
+
+_(pure) struct Outer foo();
+
+void bar()
+  _(requires foo().core.a == 0) {
+}
+
+`
+Verification of bar succeeded.
+`

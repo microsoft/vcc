@@ -1,0 +1,15 @@
+#include <vcc.h>
+
+#define ULLONG_MAX (unsigned __int64)-1
+
+_(logic \bool overflow_on_add_with_carry(unsigned __int64 a, unsigned __int64 b, unsigned __int64 c) = c == a + b ? a > ULLONG_MAX - b : a > ULLONG_MAX - b)
+_(logic unsigned __int64 MAJ(unsigned __int64 a, unsigned __int64 b, unsigned __int64 c) = ((a | b) ^ ((a ^ b) & ~c)))
+
+_(pure) void foo()
+{
+  _(assert {:bv} \forall unsigned __int64 a,b,c; overflow_on_add_with_carry(a,b,c) && a+b == c ==> (MAJ(a,b,~c) >> 63) == 1)
+}
+`
+Verification of foo succeeded.
+Verification of foo#bv_lemma#0 succeeded.
+`

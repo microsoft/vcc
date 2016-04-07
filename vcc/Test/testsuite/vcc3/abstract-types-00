@@ -1,0 +1,25 @@
+#include <vcc.h>
+
+_(type foobar)
+_(type \baz)
+
+_(datatype buz {
+  case a1(foobar x);
+  case a2(buz bb);
+})
+
+_(typedef _(record) struct _blah {
+  int x;
+  foobar fb;
+  buz bz;
+} blah;)
+
+
+_(ghost void f(foobar f, \baz b, blah bb)
+{
+  int k = bb.x;
+})
+
+`
+Verification of f succeeded.
+`

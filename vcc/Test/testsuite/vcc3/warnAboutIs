@@ -1,0 +1,15 @@
+#include <vcc.h>
+
+typedef struct _S {
+  int a;
+} S, *PS;
+
+struct T {
+  void *p;
+  _(invariant p == (void*)0 || (p \is PS && p->\valid))
+};
+
+`
+testcase(9,33) : warning VC9107: '\is' applied to a pointer type; this is probably not what you intended
+Verification of T#adm succeeded.
+`

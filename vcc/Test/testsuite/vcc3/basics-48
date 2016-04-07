@@ -1,0 +1,16 @@
+#include <vcc2test.h>
+
+struct S { int a; };
+
+_(claimable) struct T
+{
+    struct S c;
+};
+
+void foo() {
+  struct T *t = (struct T *)malloc(sizeof(struct T));
+  _(assert t == NULL || \claimable(t))
+}
+`
+Verification of foo succeeded.
+`

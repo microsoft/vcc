@@ -1,0 +1,20 @@
+#include <vcc.h>
+
+_(dynamic_owns) union U {
+  struct C { int c; } c;
+  struct D { unsigned int d; } d;
+};
+
+struct T {
+  union U u1,u2;
+  
+  _(invariant \mine(&u1, &u2))
+  _(invariant \mine(\active_member(&u1)))
+  _(invariant \mine(\active_member(&u2)))
+  _(invariant \deep_eq(u1, u2))
+};
+
+
+`
+Verification of T#adm succeeded.
+`

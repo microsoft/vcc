@@ -1,0 +1,23 @@
+#include <vcc.h>
+
+typedef struct itype_instr_t {
+	unsigned opc;
+	unsigned rs1;
+} itype_instr_t;
+
+_(pure) _Bool one_or_two(itype_instr_t i)
+  _(ensures \result == (i.opc==1 || i.opc==2))
+{
+  return i.opc==1 || i.opc==2;
+}
+
+_Bool one_or_two_alternative(itype_instr_t i)
+  _(ensures \result == (one_or_two(i))) 
+{
+  return one_or_two(i);
+}
+
+`
+Verification of one_or_two succeeded.
+Verification of one_or_two_alternative succeeded.
+`

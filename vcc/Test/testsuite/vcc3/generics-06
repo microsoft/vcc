@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+template<typename T> void foo(T* t);
+
+void bar(int **p) {
+  foo(p);
+}
+`
+Verification of bar succeeded.
+`

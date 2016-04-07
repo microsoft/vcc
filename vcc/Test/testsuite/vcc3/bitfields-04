@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+typedef struct {
+unsigned short x;
+unsigned y: 16;
+unsigned z: 16;
+} S;
+
+void foo(struct S *s)
+{
+} 
+`
+Verification of foo succeeded.
+`

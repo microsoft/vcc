@@ -1,0 +1,23 @@
+#include <vcc.h>
+
+typedef struct _S {
+  unsigned __int64 x;
+  struct {
+    struct {
+      int dummy;
+    };
+    int *p;
+  };
+  unsigned __int64 y;
+} S;
+
+void foo(int *p) {
+  S s;
+  s.x = 0;
+  s.p = p;
+  _(assert s.x == 0)
+}
+
+`
+Verification of foo succeeded.
+`

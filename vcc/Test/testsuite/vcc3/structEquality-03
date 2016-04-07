@@ -1,0 +1,82 @@
+#include "vcc.h"
+
+struct A { int a; };
+
+struct B { struct A a; int b; };
+
+struct C { struct B b; int c; };
+
+void owns1(struct A *o, struct A *p)
+	_(requires \wrapped(o) && \wrapped(p))
+	_(requires \deep_eq(*o,*p))
+{
+	_(assert o->\owns==p->\owns)
+}
+
+void owns2(struct A *o, struct A *p)
+	_(requires \wrapped(o) && \wrapped(p))
+	_(requires \shallow_eq(*o,*p))
+{
+	_(assert o->\owns==p->\owns)
+}
+
+void f1(struct A *o, struct A *p)
+	_(requires \wrapped(o) && \wrapped(p))
+	_(requires \deep_eq(*o,*p))
+{
+	_(assert o->a==p->a)
+}
+
+void f2(struct A *o, struct A *p)
+	_(requires \wrapped(o) && \wrapped(p))
+	_(requires \shallow_eq(*o,*p))
+{
+	_(assert o->a==p->a)
+}
+
+void g1(struct B *o, struct B *p)
+	_(requires \wrapped(o) && \wrapped(p))
+	_(requires \deep_eq(*o,*p))
+{
+	_(assert o->b==p->b)
+	_(assert o->a.a==p->a.a)
+}
+
+void g2(struct B *o, struct B *p)
+	_(requires \wrapped(o) && \wrapped(p))
+	_(requires \shallow_eq(*o,*p))
+{
+	_(assert o->b==p->b)
+	_(assert o->a.a==p->a.a)
+}
+
+void h1(struct C *o, struct C *p)
+	_(requires \wrapped(o) && \wrapped(p))
+	_(requires \deep_eq(*o,*p))
+{
+	_(assert o->c==p->c)
+	_(assert o->b.b==p->b.b)
+	_(assert o->b.a.a==p->b.a.a)
+}
+
+void h2(struct C *o, struct C *p)
+	_(requires \wrapped(o) && \wrapped(p))
+	_(requires \shallow_eq(*o,*p))
+{
+	_(assert o->c==p->c)
+	_(assert o->b.b==p->b.b)
+	_(assert o->b.a.a==p->b.a.a)
+}
+`
+Verification of owns1 succeeded.
+Verification of owns2 succeeded.
+Verification of f1 succeeded.
+Verification of f2 succeeded.
+Verification of g1 succeeded.
+Verification of g2 failed.
+testcase(50,11) : error VC9500: Assertion 'o->a.a==p->a.a' did not verify.
+Verification of h1 succeeded.
+Verification of h2 failed.
+testcase(67,11) : error VC9500: Assertion 'o->b.b==p->b.b' did not verify.
+testcase(68,11) : error VC9500: Assertion 'o->b.a.a==p->b.a.a' did not verify.
+`

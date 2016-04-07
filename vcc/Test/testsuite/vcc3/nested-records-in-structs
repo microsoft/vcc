@@ -1,0 +1,41 @@
+#include <vcc.h>
+
+_(typedef _(record) struct {
+  \bool bar;
+} inner;)
+
+_(typedef _(record) struct {
+  inner in;
+} someRecord;)
+
+_(struct {
+  inner in;
+} Container;)
+
+_(ghost void foo()
+  _(writes \extent(&Container))
+{
+  someRecord rec;
+  inner in = rec.in;
+  
+  Container.in = rec.in;
+})
+
+
+_(struct {
+  someRecord rec;
+} Container2;)
+
+_(ghost void foo2()
+  _(writes \extent(&Container2))
+{
+  someRecord rec;
+  
+  Container2.rec.in = rec.in;
+})
+  
+  
+`
+Verification of foo succeeded.
+Verification of foo2 succeeded.
+`

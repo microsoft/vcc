@@ -1,0 +1,31 @@
+#include <vcc.h>
+
+_(ghost
+
+_(record) struct S {
+int f0; int f1; int f2; int f3; int f4; int f5; int f6; int f7; int f8; int f9;
+int f10; int f11; int f12; int f13; int f14; int f15; int f16; int f17; int f18; int f19;
+int f20; int f21; int f22; int f23; int f24; int f25; int f26; int f27; int f28;
+int f29; int f30; int f31;
+};
+
+void foo() {
+struct S r
+= (struct S) {
+.f0 = 0, .f1 = 1, .f2 = 2, .f3 = 3, .f4 = 4, .f5 = 5, .f6 = 6, .f7 = 7, .f8 = 8, .f9 = 9, .f10 = 10,
+.f11 = 11, .f12 = 12, .f13 = 13, .f14 = 14, .f15 = 15, .f16 = 16, .f17 = 17, .f18 = 18, .f19 = 19,
+.f20 = 20, .f21 = 21, .f22 = 22, .f23 = 23, .f24 = 24, .f25 = 25, .f26 = 26, .f27 = 27, .f28 = 28,
+.f29 = 29, .f30 = 30, .f31 = 31 };
+
+_(assert r.f0 == 0) _(assert r.f1 == 1) _(assert r.f2 == 2) _(assert r.f3 == 3) _(assert r.f4 == 4) _(assert r.f5 == 5)
+_(assert r.f6 == 6) _(assert r.f7 == 7) _(assert r.f8 == 8) _(assert r.f9 == 9) _(assert r.f10 == 10)
+_(assert r.f11 == 11) _(assert r.f12 == 12) _(assert r.f13 == 13) _(assert r.f14 == 14) _(assert r.f15 == 15)
+_(assert r.f16 == 16) _(assert r.f17 == 17) _(assert r.f18 == 18) _(assert r.f19 == 19) _(assert r.f20 == 20) _(assert r.f21 == 21)
+_(assert r.f22 == 22) _(assert r.f23 == 23) _(assert r.f24 == 24) _(assert r.f25 == 25) _(assert r.f26 == 26)
+_(assert r.f27 == 27) _(assert r.f28 == 28) _(assert r.f29 == 29) _(assert r.f30 == 30) _(assert r.f31 == 31)
+}
+
+)
+`
+Verification of foo succeeded.
+`

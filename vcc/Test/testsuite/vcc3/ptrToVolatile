@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+typedef volatile int *PVINT;
+
+PVINT foo(PVINT p)
+{
+  return p;
+}
+
+volatile int *bar(volatile int *p)
+{
+  return foo(p);
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

@@ -1,0 +1,34 @@
+#include <vcc.h>
+
+typedef struct itype_instr_t {
+    int simm16:16;
+    unsigned rd:5;
+    unsigned rs1:5;
+    unsigned opc:6;
+} itype_instr_t;
+
+typedef union _U{
+itype_instr_t a;
+_(backing_member) unsigned int b;
+} U;
+
+
+_(ghost _(pure) U sf(unsigned int i)
+      _(ensures \result.b == i);)
+
+void test1()
+{
+unsigned int i;
+i = 5;
+_(assert sf(i).b == 5)
+}
+
+void test3(unsigned int *i)
+_(requires \mutable(i) && *i == 5)
+{
+_(assert sf(*i).b == 5)
+}
+`
+Verification of test1 succeeded.
+Verification of test3 succeeded.
+`

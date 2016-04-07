@@ -1,0 +1,8 @@
+#!/bin/sh
+
+VCC_SCRIPTS=${VCC_SCRIPTS:-$(/bin/pwd | sed -e 's@\(.*/Test/\).*@\1/scripts@i')}
+vcc2 -smoke -s "$@" > output.log
+$VCC_SCRIPTS/cmpout output.log
+echo -n "enter: "
+read line
+$VCC_SCRIPTS/fixoutput.pl output.log "$@"

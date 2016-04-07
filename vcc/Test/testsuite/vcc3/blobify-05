@@ -1,0 +1,15 @@
+#include <vcc.h>
+
+void bar(short *p) { }
+
+void foo()
+{
+    _(as_array) short opcode[2] = {0, 0};
+    _(blobify _(short[2])&opcode[0])
+    bar(_(unblobify) _(short[2])&opcode[0]);
+}
+
+`
+Verification of bar succeeded.
+Verification of foo succeeded.
+`

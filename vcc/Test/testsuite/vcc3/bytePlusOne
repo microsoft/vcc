@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+/******************************************************
+ Repro for
+
+ e:\viridian\base\vm\hv\dm\vmx\VmxExec.c(1395,34)-(1395,62): error: Cannot implic
+ itly convert type 'int' to 'byte'. An explicit conversion exists (are you missin
+ g a cast?)
+
+*******************************************************/
+
+typedef unsigned __int8 UINT8;
+
+void foo()
+{
+  UINT8 size = 0;
+  size = size + 1;
+}
+
+`
+Verification of foo succeeded.
+`

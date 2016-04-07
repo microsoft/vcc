@@ -1,0 +1,10 @@
+`/ignoreincludes:vcc3\ignoreIncludes.h 
+
+#include <vcc.h>
+#include "ignoreIncludes.h"
+
+void foo() { }
+`
+Verification of S#adm succeeded.
+Verification of bar succeeded.
+`

@@ -1,0 +1,15 @@
+#include <vcc.h>
+
+struct S {
+  volatile int x;
+};
+
+struct S2 {
+  struct S s;
+  _(invariant :lemma (&s)->\owner == \this)
+  _(invariant \mine(&s))
+};
+`
+Verification of S2#adm failed.
+testcase(9,22) : error VC8018: invariant((&s)->\owner == \this) of S2 forbids unwrapping.
+`

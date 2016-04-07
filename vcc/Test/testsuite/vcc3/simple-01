@@ -1,0 +1,30 @@
+#include <vcc.h>
+
+_(dynamic_owns) struct A {
+  int x;
+  _(invariant x > 0)
+};
+
+_(dynamic_owns) struct B {
+  struct A *a;
+  int y;
+  _(invariant \mine(a))
+  _(invariant a->x > y)
+};
+
+_(dynamic_owns) struct C {
+  struct A *a;
+  int y;
+  _(invariant a->x > y)
+};
+
+
+void foo(struct B *a, struct C *c) {
+}
+`
+Verification of A#adm succeeded.
+Verification of B#adm succeeded.
+Verification of C#adm failed.
+testcase(18,15) : error VC8012: invariant(a->x > y) of C is not admissible.
+Verification of foo succeeded.
+`

@@ -1,0 +1,25 @@
+
+%% Can the following section move to the appendix? -E
+
+%% I don't think the following example is worth the trouble -E
+%% Let's have a look at another example:
+%% \vccInput[linerange={begin-}]{c/02_rand.c}
+%% \noindent
+%% The reason we needed to use unchecked cast here, is that the C library
+%% \vcc{rand()} function is specified to return a signed integer.
+
+%% \begin{note}
+%% In fact, the C standard, mandates the following specification:
+%% \begin{VCC}
+%% int rand(void)
+%%   _(ensures 0 <= \result && \result <= RAND_MAX);
+%% \end{VCC}
+%% Thus, in principle the \vcc{_(unchecked)} shouldn't be required in the
+%% example above. 
+%% However,
+%% VCC currently does not come with specifications for C standard library functions.
+%% We plan to setup a open-source project, where you'll be able to contribute such
+%% specifications.
+%% It is indeed unclear why does it return a signed integer, only to ensure that the return value
+%% is never negative.
+%% \end{note}

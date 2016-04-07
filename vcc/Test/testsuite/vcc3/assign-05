@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+unsigned int rax;
+
+void foo() {
+  *(char*)rax = 42;
+  ((char*)rax) = ((char*)rax+8);
+  *(char*)rax = 5;
+}
+void main(){}
+`
+Verification of foo failed.
+testcase(6,4) : error VC8507: Assertion '(char*)rax is writable' did not verify.
+testcase(6,11) : error VC8512: Assertion 'rax is thread local (accessing field data)' did not verify.
+testcase(7,11) : error VC8507: Assertion 'rax is writable' did not verify.
+testcase(8,4) : error VC8507: Assertion '(char*)rax is writable' did not verify.
+Verification of main succeeded.
+`

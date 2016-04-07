@@ -1,0 +1,6 @@
+#include <vcc.h>
+
+typedef __int64 S1;
+typedef __int64 S1, *PS1;
+`
+`

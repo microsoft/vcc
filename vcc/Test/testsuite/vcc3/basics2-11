@@ -1,0 +1,10 @@
+#include "vcc.h"
+struct T { int a; };
+struct S { struct T t; } x;
+
+void foo() {
+    _(assert x.t[42])
+}
+`
+testcase(6,14) : error VC0000: Illegal index.
+`

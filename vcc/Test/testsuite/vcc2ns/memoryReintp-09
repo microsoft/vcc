@@ -1,0 +1,33 @@
+#include "vcc.h"
+
+typedef struct A_str {
+
+    unsigned int real;
+    _(ghost unsigned int ghost) 
+
+} A_t;
+
+void test (A_t *a) 
+_(requires a->ghost == 7)
+_(maintains \wrapped(a))
+_(writes a)
+_(requires \object_root(a))
+{
+
+    _(assert a->ghost == 7) 
+    _(unwrap a)    
+    _(to_bytes a)
+    _(from_bytes a, \false)
+    _(wrap a)
+    _(assert a \in \domain(a))
+    _(assert \object_root(a))
+    // This used to work, but was relying on unsoundness in
+    // the prelude. We need a better solution for preserving
+    // values of reinterpretation anyhow.
+    _(assert a->ghost == 7) 
+
+}
+`
+Verification of test failed.
+testcase(27,14) : error VC9500: Assertion 'a->ghost == 7' did not verify.
+`

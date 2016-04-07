@@ -1,0 +1,171 @@
+#include <vcc.h>
+
+_(logic \bool fresh_object(\object ptr) = \object_root(ptr) && \mutable(ptr) && \fresh(ptr))
+
+_(abstract \object ticket_blob(\claim c)
+{
+  // in reality it would be something along the lines of:
+  // choose(\lambda \object blob; \claims(c, (_(root)(MM_BLOCK*)((char*)blob - 4))->size == \sizeof_object(blob)), 0)
+  // it's unclear how exactly that would work
+  return 0;
+})
+
+void *alloc(unsigned __int64 sz  _(out \claim ticket))
+  _(ensures fresh_object(_(blob sz)(\result)) && ticket_blob(ticket) == _(blob sz)(\result))
+  _(ensures \in_range_phys_ptr(_(blob sz)(\result)))
+  _(ensures \fresh(ticket) && \wrapped(ticket))
+  ;
+
+void mfree(void *p _(ghost \claim ticket))
+  _(requires ticket_blob(ticket) == _(blob \sizeof_object(ticket_blob(ticket)))p)
+  _(requires \wrapped(ticket))
+  _(writes \extent(_(blob \sizeof_object(ticket_blob(ticket)))p))
+  _(writes ticket)
+  ;
+
+_(logic \object emb(\object e) = \embedding(e))
+
+struct B {
+  unsigned size;
+  // int buf[0];
+#define BUFADDR(b) ((int*)((char*)(b)+sizeof(struct B))) // this is what b->buf would evaluate to
+#define BUF(b) (_(root_index (b)->size) BUFADDR(b))  // this is is syntactic sugar expansion
+#define BUFA(b) (emb(BUF(b)))
+
+  _(invariant \mine(BUFA(\this)))
+};
+
+void f2_fail0(unsigned sz)
+  _(requires 10 < sz && sz < 1000)
+{
+  _(ghost \claim t)
+  unsigned total = sizeof(struct B) + sz * sizeof(int);
+  struct B * b = (struct B*)alloc(total _(out t));
+
+  _(split_blob _(blob total)b, -20)
+}
+
+void f2_fail1(unsigned sz)
+  _(requires 10 < sz && sz < 1000)
+{
+  _(ghost \claim t)
+  unsigned total = sizeof(struct B) + sz * sizeof(int);
+  struct B * b = (struct B*)alloc(total _(out t));
+
+  _(split_blob _(blob total)b, 300)
+}
+
+
+void f2_fail3(unsigned sz)
+  _(requires 10 < sz && sz < 1000)
+{
+  _(ghost \claim t)
+  unsigned total = sizeof(struct B) + sz * sizeof(int);
+  struct B * b = (struct B*)alloc(total _(out t));
+
+  _(split_blob b, 0)
+}
+
+void fail_write(void *p)
+  _(requires \mutable(_(blob 5)p))
+{
+  _(split_blob _(blob 5)p, 2)
+}
+
+void ok_write(void *p)
+  _(requires \mutable(_(blob 5)p))
+  _(writes _(blob 5)p)
+{
+  _(split_blob _(blob 5)p, 2)
+}
+
+void ok_owns(void *p)
+  _(requires \mutable(_(blob 5)p))
+  _(writes _(blob 5)p)
+{
+  _(split_blob _(blob 5)p, 2)
+  _(assert (_(blob 2) p)->\owns == {})
+  _(assert (_(blob 3) (((char*) p) + 2))->\owns == {})
+}
+
+void ok_align()
+{
+  _(ghost \claim t)
+  char *p = alloc(20 _(out t));
+
+  _(split_blob _(blob 20)p, 10)
+  _(split_blob _(blob 10)p, 5)
+  _(join_blobs _(blob 5)p, _(blob 5)(p + 5))
+  _(join_blobs _(blob 10)p, _(blob 10)(p + 10))
+}
+
+void fail1_align()
+{
+  _(ghost \claim t)
+  char *p = alloc(20 _(out t));
+
+  _(split_blob _(blob 20)p, 10)
+  _(split_blob _(blob 10)p, 5)
+  _(join_blobs _(blob 5)p, _(blob 10)(p + 10))
+}
+
+void fail2_align()
+{
+  _(ghost \claim t)
+  char *p = alloc(20 _(out t));
+
+  _(split_blob _(blob 20)p, 10)
+  _(split_blob _(blob 10)p, 5)
+  _(join_blobs _(blob 10)p, _(blob 10)(p + 10))
+}
+
+void fail3_align()
+{
+  _(ghost \claim t)
+  char *p = alloc(20 _(out t));
+
+  _(split_blob _(blob 20)p, 10)
+  _(split_blob _(blob 10)p, 5)
+  _(join_blobs t, _(blob 5)(p + 5))
+}
+
+void fail4_align()
+{
+  _(ghost \claim t)
+  char *p = alloc(20 _(out t));
+
+  _(split_blob _(blob 20)p, 10)
+  _(split_blob _(blob 10)p, 5)
+  _(join_blobs _(blob 5)(p + 5), t)
+}
+
+`
+Verification of B#adm succeeded.
+Verification of ticket_blob succeeded.
+Verification of f2_fail0 failed.
+testcase(45,5) : error VC9502: Call 'split_blob _(blob total)b, -20' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'split position is positive'.
+Verification of f2_fail1 failed.
+testcase(55,5) : error VC9502: Call 'split_blob _(blob total)b, 300' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'pointer passed is big enough for split'.
+Verification of f2_fail3 failed.
+testcase(66,5) : error VC8510: Assertion 'b is writable in call to split_blob b, 0' did not verify.
+testcase(66,5) : error VC9502: Call 'split_blob b, 0' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'pointer passed is a blob'.
+Verification of fail_write failed.
+testcase(72,5) : error VC8510: Assertion '_(blob 5)p is writable in call to split_blob _(blob 5)p, 2' did not verify.
+Verification of ok_write succeeded.
+Verification of ok_owns succeeded.
+Verification of ok_align succeeded.
+Verification of fail1_align failed.
+testcase(109,5) : error VC9502: Call 'join_blobs _(blob 5)p, _(blob 10)(p + 10)' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the blobs are aligned properly in memory'.
+Verification of fail2_align failed.
+testcase(119,5) : error VC8510: Assertion '_(blob 10)p is writable in call to join_blobs _(blob 10)p, _(blob 10)(p + 10)' did not verify.
+Verification of fail3_align failed.
+testcase(129,5) : error VC9502: Call 'join_blobs t, _(blob 5)(p + 5)' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the left pointer passed is a blob'.
+Verification of fail4_align failed.
+testcase(139,5) : error VC9502: Call 'join_blobs _(blob 5)(p + 5), t' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the right pointer passed is a blob'.
+`

@@ -1,0 +1,19 @@
+#include <vcc.h>
+
+struct S {
+  int a;
+  int b;
+  int c;
+};
+
+void foo() {
+  _(ghost struct S a[int])
+  struct S s = {1,2,3};
+  _(ghost a[1] = s)
+  _(assert a[1].a == 1)
+  _(assert a[1].b == 2)
+  _(assert a[1].c == 3)
+}
+`
+Verification of foo succeeded.
+`

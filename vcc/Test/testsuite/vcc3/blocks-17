@@ -1,0 +1,35 @@
+#include <vcc.h>
+
+void foo() {
+
+	int i = 5;
+	
+	_(requires i > 0)
+	_(ensures i > 0) 
+	{
+		if (i == 7) goto Cleanup;
+		if (i == 8) goto Cleanup;
+		if (i == 9) goto Cleanup1;
+	}
+
+	_(requires i > 0)
+	_(ensures i > 0) 
+	{
+		if (i == 7) goto Cleanup;
+		if (i == 8) goto Cleanup;
+		if (i == 9) goto Cleanup1;
+	}
+	
+Cleanup:
+;
+
+Cleanup1:
+;
+
+}	
+
+`
+Verification of foo succeeded.
+Verification of foo#block#0 succeeded.
+Verification of foo#block#1 succeeded.
+`

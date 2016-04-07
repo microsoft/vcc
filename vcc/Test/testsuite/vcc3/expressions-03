@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+int sub(int i, int j)
+{
+  return i - j;
+}
+`
+Verification of sub failed.
+testcase(5,10) : error VC8004: i - j might overflow.
+`

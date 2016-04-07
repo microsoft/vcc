@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+_(pure) int f1(int *x)
+  _(reads x);
+
+
+_(ghost vcc_attr ("is_reads_check", "f1")
+void r_f1(int *x);)
+
+
+void fux()
+{
+  int y;
+   _(ghost r_f1(&y);) 
+}
+`
+testcase(7,9) : error VC9646: the reads check is required to have a body
+`

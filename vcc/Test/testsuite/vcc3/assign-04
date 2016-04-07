@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+void foo ()
+{
+  int* p;
+  int SizeInBytes;
+  p[SizeInBytes - 1] &= 0x1f;
+}
+void main(){}
+`
+Verification of foo failed.
+testcase(7,5) : error VC8004: SizeInBytes - 1 might overflow.
+testcase(7,3) : error VC8512: Assertion 'p[SizeInBytes - 1] is thread local' did not verify.
+testcase(7,3) : error VC8507: Assertion 'p[SizeInBytes - 1] is writable' did not verify.
+Verification of main succeeded.
+`

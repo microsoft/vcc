@@ -1,0 +1,85 @@
+#include <vcc.h>
+
+typedef unsigned int UINT32;
+
+typedef union pte_t {
+    struct {
+        unsigned reserved_9_0:10;    /* bits [9:0] */
+        unsigned p:1;    /* bit [10] */
+        unsigned v:1;    /* bit [11] */
+        unsigned ppx:20;    /* bits [31:12] */
+    };            /* PTE fields */
+    _(backing_member) 
+        UINT32 uint32;    /* complete word */
+} pte_t;
+
+
+void test1(pte_t *arr)
+{
+    pte_t pte;
+    UINT32 n;
+    n = 0;
+    
+    while(n < 100)
+      _(invariant \mutable(&pte.uint32))
+//      writes(&pte.uint32)
+    {
+        pte.ppx = n;
+        n++;
+    }
+}
+
+void test2(pte_t *arr)
+_(requires \mutable_array(arr, 100))
+_(writes \array_range(arr, 100))
+{
+    pte_t pte;
+    UINT32 n;
+    n = 0;
+    
+    while(n < 100)
+    _(invariant \mutable_array(arr, 100))
+    _(writes \array_range(arr, 100))
+      _(writes &pte.uint32)
+    {
+        pte.ppx = n;
+        n++;
+    }
+}
+
+void test3(pte_t *arr)
+_(requires \mutable_array(arr, 100))
+_(writes \array_range(arr, 100))
+{
+    UINT32 n;
+    n = 0;
+    while(n < 100)
+    _(invariant \mutable_array(arr, 100))
+    _(writes \array_range(arr, 100))
+    {
+        arr[n].uint32 = n;
+        n++;
+    }
+}
+
+
+void test4(UINT32 *arr)
+_(requires \mutable_array(arr, 100))
+_(writes \array_range(arr, 100))
+{
+    UINT32 n;
+    n = 0;
+    while(n < 100)
+    _(invariant \mutable_array(arr, 100))
+    _(writes \array_range(arr, 100))
+    {
+        arr[n] = n;
+        n++;
+    }
+}
+`
+Verification of test1 succeeded.
+Verification of test2 succeeded.
+Verification of test3 succeeded.
+Verification of test4 succeeded.
+`

@@ -1,0 +1,45 @@
+#include "vcc2test.h"
+
+void foo(int *p) 
+  _(writes p) {}
+
+void setk2(int *p, size_t sz)
+  _(requires \thread_local_array(p, sz))
+  _(writes \array_range(p, sz))
+{
+  size_t i;
+
+  i = 0;
+  while (i < sz) 
+    _(writes \array_range(p, sz))
+    _(invariant i >= 0)
+  {
+    p[i] = _(unchecked)((int)i);
+    foo(&p[i]);
+    i = i + 1;
+  }
+}
+
+void setk4(int *p, size_t sz)
+  _(requires \thread_local_array(p, sz))
+  _(writes \array_range(p, sz))
+{
+  size_t i;
+  _(ghost \claim c)
+
+
+  i = 0;
+  while (i < sz) 
+    _(writes \array_range(p, sz))
+    _(invariant i >= 0)
+  {
+    p[i] = _(unchecked)((int)i);
+    i = i + 1;
+    if(0) _(ghost \destroy_claim(c, {}));
+  }
+}
+`
+Verification of foo succeeded.
+Verification of setk2 succeeded.
+Verification of setk4 succeeded.
+`

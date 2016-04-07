@@ -1,0 +1,152 @@
+\section{Loop invariants}
+
+For the most part, VCC computes what it knows at a control point from
+what it knows at earlier control points. This works even if there are
+\vcc{goto}s from earlier control points; VCC just takes the disjunction of 
+what it knows for each of the possible places it came from. 
+But when the control flow contains a loop, VCC faces a
+chicken-egg problem, since what it knows at the top of the loop (i.e.,
+at the beginning of each loop iteration) depends not only on what it
+knew just before the loop, but also on what it knew just before it
+jumped back to the top of the loop from the loop body.
+
+Rather than trying to guess what it should know at the top of a loop,
+VCC lets you tell it what it should know, by providing \Def{loop
+  invariants}. To make sure that loop invariants indeed hold 
+whenever control reaches the top
+of the loop, VCC asserts that the invariants hold wherever control
+jumps to the top of the loop -- namely, on loop entry and at the end of
+the loop body.
+
+Let's look at an example:
+\vccInput[linerange={begin-}]{c/5.1.div.c}
+\noindent
+
+The \vcc{divide()} function computes the quotient and remainder of
+integer division of \vcc{x} by \vcc{d} using the classic division
+algorithm.  The loop invariant says that we have a suitable answer,
+except with a remainder that is possibly too big. VCC translates this
+example roughly as follows:
+\vccInput[linerange={begin-end}]{c/5.2.div_assert.c}
+
+\noindent
+Note that this translation has removed all cycles from the control
+flow graph of the function (even though it has gotos); this means that
+VCC can use the rules of the previous sections to reason about the
+program. In VCC, all program reasoning is reduced to reasoning about
+acyclic chunks of code in this way.
+
+Note that the invariant is asserted wherever control moves to the top of the
+loop (here, on entry to the loop and at the end of the loop body). On
+loop entry, VCC forgets the value of each variable modified in the
+loop (in this case just the local variables \vcc{lr} and \vcc{ld}),
+%% \footnote{ Because of aliasing, it is not always obvious to VCC that a
+%%   variable is not modified in the body of the loop. However, VCC can
+%%   check it syntactically for a local variable if you never take the
+%%   address of that variable.}
+and assumes the invariant (which places some constraints on these
+variables).  VCC doesn't have to consider the actual jump from the end
+of the loop iteration back to the top of the loop (since it has
+already checked the loop invariant), so further consideration of that
+branch is cut off with \vcc{_(assume \false)}.  Each loop exit is
+translated into a \vcc{goto} that jumps to just beyond the loop (to
+\vcc{loopExit}). At this control point, we know the loop invariant
+holds and that \vcc{lr < d}, which together imply that we have
+computed the quotient and remainder.
+
+For another, more typical example of a loop, consider 
+the following function that uses linear search to determine if a value
+occurs within an array:
+
+\vccInput[linerange={begin-}]{c/5.3.lsearch_full.c}
+
+\noindent
+The postconditions say that the returned value is the minimal array
+index at which \vcc{elt} occurs (or \vcc{UINT_MAX} if it does not occur).
+The loop invariant says that \vcc{elt}  does not occur in \vcc{ar[0]}\dots
+\vcc{ar[i - 1]}.
+
+\subsection{Termination measures for loops}
+\label{sect:loopTermination}
+To prove that a loop terminates, it can be given a \vcc{_(decreases)}
+clause, just as a function can. Before control returns from inside the
+loop to the top of the loop, there is an implicit assertion that the
+measure on the loop has gone down from its value at the beginning of
+the iteration. (Note that if the loop body contains a function call,
+its measure is checked against the measure assigned to the function,
+not to the loop.)
+
+For example, in the \vcc{divide} function, we could specify that the
+loop terminates by adding the specification \vcc{_(decreases lr)} to
+the loop specification. This would then allow us to add the
+specification \vcc{_(decreases 0)} to the divide function itself.
+
+If a function with a termination measure contains a \vcc{for} loop
+without a termination measure, VCC tries to guess one from syntactic
+form of the loop header. Thus, most boilderplate \vcc{for} loops do
+not require explicit termination measures.
+
+Here's an example, a function that sorts an array using
+bubblesort. VCC infers a termination measure for the outer loop, but 
+currently needs to be given one for the inner loop:
+
+\vccInput[linerange={begin-out}]{c/5.4.sort.c}
+
+The specification that we use is that the output of the sorting routine is sorted.
+However, it doesn't say that the output is a permutation of the input.
+We'll show how to do that in \secref{sorting-perm}.
+
+\subsection{Writes clauses for loops}
+\label{sect:sorting}
+
+Loops are in many ways similar to recursive functions.
+Invariants work as the combination of pre- and post-conditions.
+Similarly to functions loops can also have writes clauses.
+You can provide a writes clause using exactly the same syntax
+as for functions.
+When you do not write any heap location in the loop (which has been
+the case in all examples so far), VCC will automatically infer
+an empty writes clause.
+Otherwise, it will take the writes clause that is specified on
+the function.
+So by default, the loop is allowed to write everything that the function
+can.
+Here is an example of such implicit writes clause,
+a reinterpretation of \vcc{my_memcpy()} from \secref{arrays}.
+
+\vccInput[linerange={begin-end}]{c/5.5.copy_array.c}
+(Note that VCC also inferred an appropriate
+termination measure for the \vcc{for} loop.)
+
+If a loop does not write everything the function can write
+you will often want to provide explicit write clauses.
+Here's a variation of \vcc{memcpy()}, which clears (maybe for security reasons)
+the source buffer after copying it.
+
+\vccInput[linerange={begin-end}]{c/5.6.copy_and_clear_array.c}
+
+\noindent
+If the second loops did not provide a writes clause,
+we couldn't prove the first postcondition---VCC 
+would think that the second loop could have overwritten \vcc{dst}.
+
+\subsection*{Exercises}
+Specify and verify iterative implementations of the following functions:
+\begin{enumerate}
+\item
+a function that takes two arrays and checks whether
+the arrays are equal (\ie whether they contain the same sequence of
+elements); 
+\item
+a function that checks whether two sorted arrays
+contain a common element;
+\item
+a function that checks whether a sorted array contains a given value;
+\item
+a function that takes an array and checks whether it
+contains any duplicate elements;
+\item
+a function that takes an array and reverses it.
+\end{enumerate}
+
+Solutions can be found in the file \vcc{5.7.solutions.c} in the tutorial directory.

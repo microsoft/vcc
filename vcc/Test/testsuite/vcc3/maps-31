@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+void foo() {
+    _(ghost int x[int], y[int])
+    _(ghost x = (\lambda int i; 42))
+    _(ghost y = (\lambda int i; (42)))
+    _(assert x==y)
+}
+`
+Verification of foo succeeded.
+`

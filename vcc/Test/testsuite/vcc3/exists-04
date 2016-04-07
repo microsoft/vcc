@@ -1,0 +1,28 @@
+#include <vcc.h>
+
+void foo(int *p)
+  _(requires \thread_local_array(p,11))
+  _(requires \forall int x; 0 <= x && x <= 10 ==> p[x] > 0)
+{
+  _(assert !\exists int x; !(0 <= x && x <= 5 ==> p[x] > 0))
+}
+
+void bar(int *p)
+  _(requires \thread_local_array(p,11))
+  _(requires !\exists int x; !(0 <= x && x <= 10 ==> p[x] > 0))
+  _(ensures \forall int x; 0 <= x && x <= 5 ==> p[x] > 0)
+{
+}
+
+_(pure) int baz(int x);
+
+int qux(int z)
+  _(ensures \result ==> \exists int p; baz(p))
+{
+  return baz(z/2);
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+Verification of qux succeeded.
+`

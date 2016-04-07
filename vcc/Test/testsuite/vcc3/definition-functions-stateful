@@ -1,0 +1,26 @@
+#include <vcc.h>
+
+_(typedef int imap[int])
+
+_(def imap rd(int ^p)
+{
+  return \lambda int k; p[k];
+})
+
+_(ghost void foo()
+{
+  int x;
+  int y = rd(&x)[0];
+  _(assert x == y)
+  x = 12;
+  _(assert rd(&x)[0] == 12)
+  x = 13;
+  _(assert rd(&x)[0] == 13)
+  _(assert \false)
+})
+
+`
+Verification of rd succeeded.
+Verification of foo failed.
+testcase(19,12) : error VC9500: Assertion '\false' did not verify.
+`

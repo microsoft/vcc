@@ -1,0 +1,35 @@
+#include <vcc.h>
+
+struct S {
+  int a;
+};
+
+struct T {
+  int b;
+};
+
+_(dynamic_owns) union U {
+  struct S *s;
+  struct T *t;
+  _(backing_member) unsigned __int64 i;
+  _(invariant i == 0 ||
+    \this->s \in \this->\owns ||
+    \this->t \in \this->\owns)
+};
+
+void foo() {
+  union U u;
+  struct S *s;
+  struct T *t;
+  unsigned __int64 i;
+  u.s = (void *)0;
+  u.t = (void *)0;
+  u.i = 5;
+  s = u.s;
+  t = u.t;
+  i = u.i;
+}
+`
+Verification of U#adm succeeded.
+Verification of foo succeeded.
+`

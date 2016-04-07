@@ -1,0 +1,27 @@
+#include <vcc.h>
+
+struct S { int a; };
+
+struct T { 
+  struct S s; 
+  unsigned int b;
+};
+
+void foo(struct S *s) 
+  _(requires s->\valid && \thread_local(s))
+  _(requires \extent_zero(s))
+{
+  _(assert s->a == 0)
+}
+
+void bar(struct T *t) 
+  _(requires t->\valid && \thread_local(t))
+  _(requires \extent_zero(t))
+{
+  _(assert t->s.a == 0)
+  _(assert t->b == 0)
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

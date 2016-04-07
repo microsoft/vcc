@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+_(ghost int foo()
+{
+  int ^a;
+  if (a == (void *)0) { 
+  }
+  
+  if (a != (void *)0) { 
+  }
+})
+`
+Verification of foo succeeded.
+`

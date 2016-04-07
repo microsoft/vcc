@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+struct S {
+  int a;
+};
+
+_(ghost void foo(\object obj) {
+  struct S *p = (struct S *)obj;
+  struct S ^p = (struct S ^)obj;
+};)
+
+
+`
+Verification of foo failed.
+testcase(8,29) : error VC8535: Assertion 'obj is in physical pointer range (in cast)' did not verify.
+testcase(9,29) : error VC8534: Assertion 'obj is in spec pointer range (in cast)' did not verify.
+`

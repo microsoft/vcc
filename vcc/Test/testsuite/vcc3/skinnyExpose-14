@@ -1,0 +1,32 @@
+#include "vcc.h"
+
+struct S {
+	_(group G)
+	_(:G)  int dummy;
+	_(group SubG)
+	_(invariant :G \mine(\this::SubG))
+	_(:SubG) int g;
+};
+
+
+void blah(struct S *s)
+	_(maintains \wrapped(s::SubG))
+	_(writes s::SubG)
+	_(ensures \domain_updated_at(s::SubG, {&s->g}))
+;
+
+void foo(struct S *s)
+	_(maintains \wrapped(s::G))
+	_(writes s::G)
+	_(ensures \domain_updated_at(s::G, {&s->g}))
+{
+	_(unwrapping s::G)
+		_(writes &s->g, s::SubG)
+	{
+		blah(s);
+	}
+}
+`
+Verification of S##G#adm succeeded.
+Verification of foo succeeded.
+`

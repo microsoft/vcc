@@ -1,0 +1,46 @@
+\usepackage{listings}
+\definecolor{vccOutColor}{rgb}{0.0,0.0,0.3}
+\definecolor{vccDotsColor}{rgb}{0.3,0.3,0.3}
+\lstloadlanguages{C}
+\lstdefinelanguage{VCC}[ANSI]{C}{%
+  morekeywords={axiom,requires,ensures,reads,writes,
+                assert,assume,invariant,unwrapping,wrap,unwrap,atomic,
+		unchecked,NULL,ghost,
+		__vcc_spec,bool,logic,always,
+		},
+%  morekeywords={\true,\false,\proper,\old,\writable,\thread_local,
+%                \object,\thread,\owner,\me,\closed,\consistent,\wrapped,\unwrapped,\inv,\span,
+%		\result,\mine,\any,\this,\forall,\exists,\lambda,\in,\owns,\diff,\inter,\set,\domain,
+%                \union_with,\diff_with,\fresh,
+%                \claim,\claim_struct,\claim_count,\claims_object,\claims,\make_claim,\destroy_claim,
+%		\wrapped0,\at,\active_claim,\state,\valid,},
+  moretexcs={true,false,proper,old,writable,thread_local,
+                object,thread,owner,me,closed,consistent,wrapped,mutable,inv,span,
+		result,mine,any,this,forall,exists,lambda,in,owns,diff,inter,set,domain,
+                union_with,diff_with,fresh,
+                claim,claim_struct,claim_count,claims_object,claims,make_claim,destroy_claim,
+		wrapped0,at,active_claim,state,valid,},
+  moredelim=[is][\fontfamily{cmtt}\selectfont\textcolor{vccOutColor}]{/*`}{`*/},
+  morecomment=[is]{//--}{//--},
+}[tex]
+
+\lstnewenvironment{VCC}[1][]{%
+  \lstset{%
+    floatplacement={tbp},
+    captionpos=b,language=VCC,#1
+    }}{}%
+
+\lstnewenvironment{VCC2}[1][0.45]
+    {\global\let\lst@intname\@empty
+     \gdef\lst@sample{}%
+    \setbox0=\hbox\bgroup
+         \setkeys{lst}{floatplacement={tbp},captionpos=b,language=VCC}
+         }
+    {\egroup%
+      \noindent\begin{minipage}{#1\linewidth}\hbox to\linewidth{\box0\hss}\end{minipage}}
+
+\def\vcc{%
+    \lstinline[language=VCC,keywordstyle=]}
+
+\newcommand\vccInput[2][]{{\lstset{language=VCC}\lstinputlisting[#1]{#2}}}
+\newcommand\vccInputSC[2][]{{\lstset{language=VCC,morecomment=[is]{/*}{*/}}\lstinputlisting[#1]{#2}}}

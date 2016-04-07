@@ -1,0 +1,8 @@
+#include <vcc.h>
+void foo() {
+  int i, ^p;
+  p = &i;
+}
+`
+testcase(4,7) : error VC0000: Cannot implicitly convert type 'int*' to 'int^'.
+`

@@ -1,0 +1,23 @@
+#include <vcc.h>
+
+_(datatype List {
+case Nil();
+case Cons(struct LB lb)
+})
+
+_(typedef _(record) struct LB {
+  \integer h;
+  List t;
+} LB)
+
+_(def \integer len(List l, void *x)
+{
+	switch(l) {
+	case Nil(): return 0;
+	case Cons(xx): return len(xx.t,x) + 1;
+	}
+}
+)
+`
+Verification of len succeeded.
+`

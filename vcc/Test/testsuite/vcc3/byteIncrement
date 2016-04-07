@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+void foo() {
+  __int8 i = 0;
+  i++;
+  i--;
+  ++i;
+  --i;
+}
+
+void bar() {
+  unsigned __int8 i = 0;
+  i++;
+  i--;
+  ++i;
+  --i;
+}
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

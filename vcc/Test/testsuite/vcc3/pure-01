@@ -1,0 +1,13 @@
+#include <vcc2test.h>
+
+// TODO we want a better error message for that
+_(pure)
+void donothing_pure_fail()
+{
+  int *p = malloc(sizeof(int));
+  *p = 20;
+}
+`
+testcase(7,12) : error VC9703: Memory allocation in pure context is not allowed.
+testcase(8,3) : error VC9703: Writing memory location 'p' in pure context is not allowed.
+`

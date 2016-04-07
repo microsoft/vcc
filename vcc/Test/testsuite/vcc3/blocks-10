@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+void foo(int x) {
+  int i = 1;  
+  if (x > 0) {
+     
+      _(requires i == 1)
+    {
+      return;
+    }
+  }
+  _(assert x <= 0)
+}
+`
+testcase(9,7) : error VC9705: Block with explicit contract must not contain return statement.
+`

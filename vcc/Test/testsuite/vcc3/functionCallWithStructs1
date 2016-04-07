@@ -1,0 +1,49 @@
+#include <vcc.h>
+
+typedef struct itype_instr_t {
+	unsigned opc : 6;
+	unsigned rs1 : 5;
+	unsigned rd : 5;
+	int simm16 : 16;
+} itype_instr_t;
+
+typedef struct rtype_instr_t {
+	unsigned opc : 6;
+	unsigned rs1 : 5;
+	unsigned rs2 : 5;
+	unsigned rd : 5;
+	unsigned sa : 5;
+	unsigned fu : 6;
+} rtype_instr_t;
+
+typedef struct jtype_instr_t {
+	unsigned opc : 6;
+	int simm26 : 26;
+} jtype_instr_t;
+
+typedef union instr_t {
+	rtype_instr_t rtype;
+	itype_instr_t itype;
+	jtype_instr_t jtype;
+	_(backing_member) unsigned uint32;
+} instr_t;
+
+_(pure) int one_or_two(instr_t i)
+	_(reads {}) 
+	_(ensures \result == (i.rtype.opc==1 || i.rtype.opc==2))
+{
+	return i.rtype.opc==1 || i.rtype.opc==2;
+}
+
+int one_or_two_alternative(instr_t i)
+	_(ensures \result == (one_or_two(i))) 
+	
+{
+	return one_or_two(i);
+}
+
+`
+Verification of one_or_two succeeded.
+Verification of one_or_two_alternative succeeded.
+Verification of one_or_two#reads succeeded.
+`

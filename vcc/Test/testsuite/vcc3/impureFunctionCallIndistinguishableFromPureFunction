@@ -1,0 +1,28 @@
+#include <vcc.h>
+struct S {
+  int a;
+};
+
+struct S *foo(struct S *s)
+    _(reads s);
+    
+void bar(struct S *s) 
+{
+  struct S *t;
+  int x;
+  if (x == 5) {
+    t = foo(s);
+  }
+  else {
+    t = s;
+  }
+}
+struct S *foo(struct S *s)
+{
+  return s;
+}
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

@@ -1,0 +1,16 @@
+`/functions:bar2 /a 
+
+#include "vcc.h"
+
+int baz(int a) { return a[0]; /* just some syntax error */ }
+
+int foo1(int a) _(returns a+1) _(requires a<5) { return a+1; }
+
+int bar1(int a) _(returns a+1) _(requires a<5) { return foo1(a); }
+
+int foo2(int a) _(returns a+1) _(requires a<5) { return a[0] /* just some syntax error */; }
+
+int bar2(int a) _(returns a+1) _(requires a<5) { return foo2(a); }
+`
+Verification of bar2 succeeded.
+`

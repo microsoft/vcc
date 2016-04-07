@@ -1,0 +1,34 @@
+#include <vcc.h>
+
+typedef unsigned __int64 UINT64;
+typedef unsigned __int8 PAGE[4096];
+typedef void *PVOID;
+
+static PAGE PhysicalPages[512];
+
+typedef union _PTE {
+  _(backing_member) UINT64 AsUINT64;
+  struct {
+    UINT64 Present:1;
+    UINT64 ReadWrite:1;
+    UINT64 Pfn:9;
+    UINT64 Reserved:52;
+  };
+} PTE, *PPTE;
+
+_(ghost _(pure) \bool InvSelfmapping()
+  _(reads \universe())
+  _(ensures  \result == 
+    ((((PPTE)PhysicalPages[23]) + 0x1FE)->Pfn == 23 && 
+    (((PPTE)PhysicalPages[23]) + 0x1FE)->Present == 1 &&      
+    (((PPTE)PhysicalPages[23]) + 0x1FE)->ReadWrite == 1)))
+
+void foo()
+  _(requires InvSelfmapping())
+  _(ensures InvSelfmapping())
+  {
+  }
+  
+`
+Verification of foo succeeded.
+`

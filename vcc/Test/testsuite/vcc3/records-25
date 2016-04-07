@@ -1,0 +1,16 @@
+#include "vcc.h"
+
+_(ghost typedef \bool M[\bool])
+
+_(ghost typedef _(record) struct R {
+    M m;
+} R)
+
+_(ghost R foo(R r)
+  _(returns r / { .m = \lambda \bool j; \true})
+{
+  return r / { .m = \lambda \bool j; \true};
+})
+`
+Verification of foo succeeded.
+`

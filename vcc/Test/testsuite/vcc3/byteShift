@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+typedef unsigned __int8 UINT8;
+
+void foo() {
+  UINT8 a = 5;
+  UINT8 b = 3 << a;
+}
+
+`
+Verification of foo succeeded.
+`

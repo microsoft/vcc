@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+typedef unsigned __int8 UINT8;
+typedef UINT8 BOOLEAN;
+
+BOOLEAN foo(BOOLEAN a) {
+  return (a == 0) ? 1 : 0;
+}
+
+`
+Verification of foo succeeded.
+`

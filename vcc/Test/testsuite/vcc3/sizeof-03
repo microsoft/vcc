@@ -1,0 +1,9 @@
+` /pointersize:32
+#include <vcc.h>
+
+void foo() {
+	_(assert sizeof(__w64 int) == sizeof(__int32))
+}
+`
+Verification of foo succeeded.
+`

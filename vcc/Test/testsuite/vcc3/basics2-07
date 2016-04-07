@@ -1,0 +1,13 @@
+#include "vcc.h"
+
+
+_(ghost \objset foo()
+  _(ensures \result == {(void *)0})
+{
+  return {};
+})
+`
+Verification of foo failed.
+testcase(7,3) : error VC9501: Post condition '\result == {(void *)0}' did not verify.
+testcase(5,13) : error VC9599: (related information) Location of post condition.
+`

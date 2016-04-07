@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{70e7c19d-0dfa-4382-b4bd-45ad687b11da}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>AssemblerContracts</RootNamespace>
+    <AssemblyName>vx86contractgen</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <Name>AssemblerContracts</Name>
+    <SccProjectName>
+    </SccProjectName>
+    <SccProvider>
+    </SccProvider>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccLocalPath>
+    </SccLocalPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <Tailcalls>false</Tailcalls>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <WarningLevel>3</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <Tailcalls>true</Tailcalls>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <WarningLevel>3</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <Optimize>false</Optimize>
+    <Tailcalls>false</Tailcalls>
+    <OtherFlags>--keyfile:..\Common\InterimKey.snk</OtherFlags>
+    <StartAction>Program</StartAction>
+    <StartProgram>C:\Users\stobies\verisoft\FELT\Vcc\Host\bin\Debug\vcc2.exe</StartProgram>
+    <StartWorkingDirectory>c:\temp</StartWorkingDirectory>
+    <StartArguments>/pdir:\Users\stobies\verisoft\FELT\Vcc\AssemblerContracts\bin\Debug /pvx86contractgen test.h</StartArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'CompilerOnly' ">
+    <Optimize>false</Optimize>
+    <Tailcalls>false</Tailcalls>
+    <OtherFlags>--keyfile:..\Common\InterimKey.snk</OtherFlags>
+    <StartAction>Program</StartAction>
+    <StartProgram>C:\Users\stobies\verisoft\FELT\Vcc\Host\bin\Debug\vcc2.exe</StartProgram>
+    <StartWorkingDirectory>c:\temp</StartWorkingDirectory>
+    <StartArguments>/pdir:\Users\stobies\verisoft\FELT\Vcc\AssemblerContracts\bin\Debug /pvx86contractgen test.h</StartArguments>
+    <OutputPath>bin\CompilerOnly\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="FSharp.Core" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition, Version=2009.1.23.0, Culture=neutral, PublicKeyToken=736440c9b414ea16">
+      <Name>System.ComponentModel.Composition</Name>
+      <AssemblyName>System.ComponentModel.Composition.dll</AssemblyName>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\CodeModel2VccHelper\System.ComponentModel.Composition.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Plugin.fs" />
+    <Compile Include="..\Common\Include\version.fs">
+      <Link>version.fs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CodeModel2VccHelper\CodeModel2VccHelper.csproj">
+      <Name>CodeModel2VccHelper</Name>
+      <Project>{b2144fb2-68ad-4f94-b53e-dccf827115c8}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\CodeModel2Vcc\CodeModel2Vcc.fsproj">
+      <Name>CodeModel2Vcc</Name>
+      <Project>{ab567043-8047-4cb4-863c-f7fbab4e239a}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\VccCore.csproj">
+      <Name>VccCore</Name>
+      <Project>{b855d039-8a27-419d-9a81-86ff93227e31}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\FSharp\1.0\Microsoft.FSharp.Targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+	     Other similar extension points exist, see Microsoft.Common.targets.
+	<Target Name="BeforeBuild">
+	</Target>
+	<Target Name="AfterBuild">
+	</Target>
+	-->
+</Project>

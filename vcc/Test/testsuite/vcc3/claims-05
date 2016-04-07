@@ -1,0 +1,63 @@
+#include <vcc.h>
+
+_(claimable) struct A {
+  volatile int x;
+  _(invariant \old(\this->x) == \this->x || \old(\this->x) + 1 == \this->x)
+};
+
+struct A2 {
+  volatile int x;
+  _(invariant \old(\this->x) == \this->x || \old(\this->x) + 1 == \this->x)
+};
+
+void kill_A(struct A *a)
+  _(writes a)
+  _(requires \wrapped(a))
+{
+  _(unwrap a)
+}
+
+void kill_A2(struct A2 *a)
+  _(writes a)
+  _(requires \wrapped(a))
+{
+  _(unwrap a)
+}
+
+void kill_A_ok(struct A *a)
+  _(writes a)
+  _(requires \wrapped(a) && a->\claim_count == 0)
+{
+  _(unwrap a)
+}
+
+void claim_A(struct A *a)
+  _(writes a)
+  _(requires \wrapped(a))
+{
+ 
+  _(ghost \claim c = \make_claim({a}, \true);)
+
+}
+
+
+void claim_A2(struct A2 *a)
+  _(writes a)
+  _(requires \wrapped(a))
+{
+ 
+  _(ghost \claim c = \make_claim({a}, \true);)
+
+}
+`
+Verification of A#adm succeeded.
+Verification of A2#adm succeeded.
+Verification of kill_A failed.
+testcase(17,5) : error VC9502: Call 'unwrap a' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the object has no outstanding claims'.
+Verification of kill_A2 succeeded.
+Verification of kill_A_ok succeeded.
+Verification of claim_A succeeded.
+Verification of claim_A2 failed.
+testcase(49,22) : error VC8009: type of object a was not marked with vcc(claimable).
+`

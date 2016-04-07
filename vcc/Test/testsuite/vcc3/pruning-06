@@ -1,0 +1,18 @@
+`/a /functions:foo 
+
+
+#include <vcc.h>
+
+template<typename T> void bar(T *p)
+  _(writes p);
+
+struct X { int x; };
+
+void foo(struct X *p) 
+  _(writes p)
+{ 
+  bar<struct X>(p); 
+}
+`
+Verification of foo succeeded.
+`

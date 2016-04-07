@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+typedef struct S { unsigned f[1]; } S;
+
+void test() _(ensures 0) {
+S p;
+_(wrap ((unsigned[1]) &p.f))
+}
+`
+Verification of test failed.
+testcase(7,3) : error VC8510: Assertion '(unsigned[1]) &p.f is writable in call to wrap ((unsigned[1]) &p.f)' did not verify.
+`

@@ -1,0 +1,54 @@
+#include <vcc.h>
+
+typedef unsigned __int32 UINT32;
+
+typedef _(primitive) union _S
+{
+    _(backing_member)
+    UINT32 AsUINT32;
+
+    struct
+    {
+        UINT32 Data : 24;
+        UINT32 TargetMask : 8;
+    };
+
+} S;
+
+//typedef _(primitive) struct S { int a; } S;
+
+struct T {
+  S A[10];
+};
+
+struct U {
+
+    UINT32 GicdPRIbits;
+  volatile S A[10];
+};
+
+void foo(struct T *t)
+{
+  S *s = &t->A[4];
+}
+
+////////////////////////
+void bar(struct U *u)
+{
+  volatile S* s;
+  s = &u->A[4];
+    
+}
+
+void foo_bar(struct U *u, struct T *t)
+{
+  volatile S *s = &u->A[4];
+  S *s = &t->A[4];
+  S x;
+}
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+Verification of foo_bar succeeded.
+`

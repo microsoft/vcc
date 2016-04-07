@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+struct S {
+  struct T *t;
+  
+  _(invariant \mine((\object)t))
+};
+
+void foo(struct S *s) { }
+
+`
+Verification of S#adm succeeded.
+Verification of foo succeeded.
+`

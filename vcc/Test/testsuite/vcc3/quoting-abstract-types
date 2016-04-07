@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+_(SPEC_TYPE(abstractType))
+  _(abstract \abstractType unit()
+    {
+	  \abstractType res;
+	  return res;
+	})
+  _(ghost \abstractType unit2()
+    { return unit(); })
+`
+Verification of unit succeeded.
+Verification of unit2 succeeded.
+`

@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+_(ghost void foo())
+
+void bar() {
+	foo();
+}
+`
+testcase(6,2) : warning VC9301: [possible unsoundness]: access to specification function 'foo' within non-specification code
+Verification of bar succeeded.
+`

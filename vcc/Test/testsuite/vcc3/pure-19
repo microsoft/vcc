@@ -1,0 +1,11 @@
+#include "vcc.h"
+_(pure) void f(int *a);
+_(pure) void g(int *a) _(reads a);
+
+void foo() {
+  int i = 10;
+  g(&i);
+}
+`
+Verification of foo succeeded.
+`

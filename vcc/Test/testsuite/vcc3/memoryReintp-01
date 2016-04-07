@@ -1,0 +1,103 @@
+#include <vcc2test.h>
+
+typedef unsigned char byte;
+
+void *alloc(unsigned __int64  sz)
+  _(ensures \object_root(_(blob sz) (\result)))
+  _(ensures \mutable(_(blob sz) (\result)))
+  _(ensures \fresh(_(blob sz) (\result)))
+  ;
+
+struct A {
+  int x, y;
+};
+
+void f1()
+{
+  struct A *a = _(unblobify) (struct A *) alloc(sizeof(struct A));
+  a->x = 10;
+  a->y = 20;
+}
+
+void flatten(struct A *a)
+  _(writes \extent(a))
+  _(requires \object_root(a))
+{
+  _(blobify a)
+  byte *p = _(unblobify) _(root_array sizeof(struct A)) (byte*) a;
+
+  p[0] = 10;
+  p[2] = 10;
+}
+
+void shouldFail(byte *p)
+  // missing writes
+  _(requires \mutable(_(blob sizeof(struct A)) p))
+  _(requires \object_root(_(blob sizeof(struct A)) p))
+{
+  _(ghost _(unblobify) (struct A *) p)
+  ((struct A*)p)->x = 10;
+}
+
+void flattenFail1(struct A *a)
+  _(writes \extent(a))
+  _(requires \object_root(a))
+{
+  _(blobify a)
+  byte *p = _(unblobify) _(root_array sizeof(struct A)) (byte*) a;
+
+  p[9] = 10;
+}
+
+void flattenFail2(struct A *a)
+  _(writes \extent(a))
+{
+  _(blobify a)
+  _(ghost _(unblobify) _(root_array sizeof(struct A)) (byte*) a)
+}
+
+void flattenFail3(struct A *a)
+  _(requires \mutable(a) && \object_root(a))
+{
+  _(blobify a)
+  _(ghost _(unblobify) _(root_array sizeof(struct A)) (byte*) a)
+}
+
+void f2(byte *p)
+  _(requires \mutable((byte[sizeof(struct A)]) p))
+  _(requires \object_root((byte[sizeof(struct A)]) p))
+  _(requires \in_range_phys_ptr((byte[sizeof(struct A)]) p))
+  _(writes \extent((byte[sizeof(struct A)]) p))
+{
+  _(blobify ((byte[sizeof(struct A)]) p))
+  _(ghost _(unblobify) (struct A *) p)
+}
+
+void joinShouldFail2(int *p)
+  // mismatching requires / writes
+  _(requires \mutable((byte[sizeof(struct A)]) ((byte*) p)))
+  _(requires \object_root((byte[sizeof(struct A)]) ((byte*) p)))
+  _(requires \in_range_phys_ptr((byte[sizeof(struct A)]) ((byte*) p)))
+  _(writes \extent((int[sizeof(struct A)]) p))
+{
+  _(blobify (((byte[sizeof(struct A)]) ((byte*) p))))
+  _(ghost _(unblobify) (struct A *) p)
+}
+
+`
+Verification of f1 succeeded.
+Verification of flatten succeeded.
+Verification of shouldFail failed.
+testcase(38,24) : error VC8507: Assertion '_(blob ...) ((struct A *) p) is writable' did not verify.
+Verification of flattenFail1 failed.
+testcase(49,3) : error VC8507: Assertion 'p[9] is writable' did not verify.
+Verification of flattenFail2 failed.
+testcase(55,5) : error VC9502: Call 'blobify a' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the object is allowed to be reinterpreted'.
+Verification of flattenFail3 failed.
+testcase(62,13) : error VC8507: Assertion 'extent(a) is writable' did not verify.
+Verification of f2 succeeded.
+Verification of joinShouldFail2 failed.
+testcase(83,15) : error VC8507: Assertion 'extent((byte[sizeof(struct A)]) ((byte*) p)) is writable' did not verify.
+testcase(84,24) : error VC8507: Assertion '_(blob ...) ((struct A *) p) is writable' did not verify.
+`

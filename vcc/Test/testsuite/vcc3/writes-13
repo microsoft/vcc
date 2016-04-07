@@ -1,0 +1,44 @@
+#include "vcc.h"
+
+typedef struct s1{
+    int dummy;
+    _(ghost volatile \bool b[int];)
+    _(invariant \approves(\this->\owner, b))
+} s1;
+
+struct SX { int x; };
+
+s1 S;
+
+void f()
+_(maintains \wrapped(&S))
+;
+
+void f2(struct SX *sx)
+_(maintains \wrapped(&S))
+_(writes sx)
+;
+
+void t1()
+_(maintains \wrapped(&S))
+_(requires \forall int i; (&S)->b[i])
+{
+    _(assert \forall int i; (&S)->b[i])
+    f();
+    _(assert \forall int i; (&S)->b[i])
+}
+
+void okSX(struct SX *sx)
+_(writes sx)
+_(maintains \wrapped(&S))
+_(requires \forall int i; (&S)->b[i])
+{
+    _(assert \forall int i; (&S)->b[i])
+    f2(sx);
+    _(assert \forall int i; (&S)->b[i])
+}
+
+`
+Verification of t1 succeeded.
+Verification of okSX succeeded.
+`

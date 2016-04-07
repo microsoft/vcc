@@ -1,0 +1,36 @@
+#include <vcc.h>
+
+struct A {
+	int a;
+	int b;
+};
+
+struct B {
+	_(inline) struct A x;
+};
+
+struct C {
+	_(inline) struct B y;
+};
+
+struct D {
+	_(inline) struct C z;
+};
+
+void foo(struct C *p) 
+  _(writes \extent(p))
+  _(ensures p->y.x.a == p->y.x.b)
+{
+	p->y.x.a = p->y.x.b;
+}
+
+void bar(struct D *p) 
+  _(writes \extent(p))
+  _(ensures p->z.y.x.a == p->z.y.x.b)
+{
+	p->z.y.x.a = p->z.y.x.b;
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+_(def \integer fib(\integer x)
+{
+  if (x <= 2)
+    return x;
+  return fib(x - 1) + fib(x - 2);
+})
+
+
+void foo()
+{
+  _(assert fib(3) == 3)
+}
+`
+Verification of fib succeeded.
+Verification of foo succeeded.
+`

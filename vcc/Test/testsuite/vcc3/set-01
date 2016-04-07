@@ -1,0 +1,10 @@
+#include "vcc.h"
+
+void bar() {
+	_(assert {(void*)40} \inter {(void*)44} == {})
+	_(assert {(void*)40} \inter {(void*)40} == {(void*)40})
+}
+
+`
+Verification of bar succeeded.
+`

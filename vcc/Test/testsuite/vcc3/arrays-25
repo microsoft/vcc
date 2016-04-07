@@ -1,0 +1,9 @@
+#include "vcc.h"
+
+void foo() {
+  unsigned _(as_array) a[2] = { 42, 4711 };
+  _(assert \mutable((unsigned[2]) a))
+}
+`
+Verification of foo succeeded.
+`

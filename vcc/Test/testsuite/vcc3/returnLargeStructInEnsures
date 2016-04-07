@@ -1,0 +1,21 @@
+#include <vcc.h>
+
+typedef unsigned __int64 UINT64;
+
+struct Core
+{
+    UINT64   RIP;       // instruction pointer
+    int     GIF;       // Global Interrupt Flag (always 1 for INTEL)
+};
+
+_(pure) struct Core AFSvm(UINT64 rip);
+
+UINT64 ValGetGpRegister(UINT64 rip)
+  _(ensures \result == AFSvm(rip).RIP)
+{
+	return AFSvm(rip).RIP;
+}
+
+`
+Verification of ValGetGpRegister succeeded.
+`

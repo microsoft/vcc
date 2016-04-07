@@ -1,0 +1,17 @@
+#include "vcc.h"
+
+_(ghost void foo(int *map[int])
+{
+  _(assert map[3] \is int)
+})
+
+
+_(ghost void bar(\object map[int])
+{
+  _(assert map[3] \is int)
+})
+`
+Verification of foo succeeded.
+Verification of bar failed.
+testcase(11,12) : error VC9500: Assertion 'map[3] \is int' did not verify.
+`

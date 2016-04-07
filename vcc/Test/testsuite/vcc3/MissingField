@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+struct A { int foo; };
+
+void foo() {
+  struct A* x;
+  x->foo2 = 3;
+}
+`
+testcase(7,3) : error VC0000: 'A' does not contain a definition for 'foo2'.
+`

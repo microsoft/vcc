@@ -1,0 +1,8 @@
+
+#include <vcc.h>
+
+void foo(int, ...);
+void bar() { foo(42, 42); }
+`
+testcase(5,14) : error VC9731: Call to function 'foo', which has variable arguments, is not supported.
+`

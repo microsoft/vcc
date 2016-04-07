@@ -1,0 +1,8 @@
+#include <vcc.h>
+
+void foo(_(out unsigned x)) {
+_(assert x >= 0)
+}
+`
+Verification of foo succeeded.
+`

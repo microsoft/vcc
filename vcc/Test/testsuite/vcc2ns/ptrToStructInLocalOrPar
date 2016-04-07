@@ -1,0 +1,34 @@
+#include <vcc.h>
+
+struct A {
+  int a,b,c,d;
+};
+
+struct B {
+  int x;
+  struct A a;
+};
+
+void foo()
+{
+  struct B *b;
+  void *p;
+
+  p = &b;
+  _(assume b->\valid)
+  _(assert (&b->a)->\valid)
+}
+
+
+void bar(struct B b)
+{
+  struct B *p;
+  p = &b;
+  _(assert p->\valid)
+  _(assert (&p->a)->\valid)
+}
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

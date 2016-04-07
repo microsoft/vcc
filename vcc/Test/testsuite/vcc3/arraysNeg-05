@@ -1,0 +1,17 @@
+#include "vcc.h"
+
+struct A {
+  int y[10];
+  int x;
+};
+
+void bar(struct A*a)
+  _(requires a->\valid)
+  _(writes \full_extent(a))
+{
+  a->y[-1] = 3;
+}
+`
+Verification of bar failed.
+testcase(12,3) : error VC8507: Assertion 'a->y[-1] is writable' did not verify.
+`

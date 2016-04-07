@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+typedef unsigned __int32 UINT32;
+
+UINT32 target(__int64 i, UINT32 p)
+{
+  return p + i;
+}
+`
+testcase(7,10) : error VC0000: Cannot implicitly convert type '__int64' to 'unsigned __int32'.
+`

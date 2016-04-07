@@ -1,0 +1,69 @@
+#include "vcc2test.h"
+
+struct B { int x; };
+
+struct A {
+  struct B *b;
+};
+
+struct C {
+  struct B *b;
+  _(invariant \mine(b))
+};
+
+struct C2 {
+  struct B *b;
+  _(invariant b != NULL <==> \mine(b))
+};
+
+void okC(struct C*c)
+  _(writes c)
+  _(requires \wrapped(c))
+{
+  _(unwrap c)
+  _(unwrap c->b)
+  c->b->x = 20;
+  _(wrap c->b)
+  _(wrap c)
+}
+
+void okC2(struct C2*c)
+  _(writes c)
+  _(requires \wrapped(c) && c->b != NULL)
+{
+  _(unwrap c)
+  _(unwrap c->b)
+  c->b->x = 20;
+  _(wrap c->b)
+  _(wrap c)
+}
+
+void fail1C(struct C*c)
+  _(writes c)
+  _(requires \wrapped(c))
+{
+ // unwrap(c);
+  _(unwrap c->b)
+}
+
+
+void fail1C2(struct C2*c)
+  _(writes c)
+  _(requires \wrapped(c))
+{
+  _(unwrap c)
+  _(unwrap c->b)
+  c->b->x = 20;
+  _(wrap c->b)
+  _(wrap c)
+}
+`
+Verification of C#adm succeeded.
+Verification of C2#adm succeeded.
+Verification of okC succeeded.
+Verification of okC2 succeeded.
+Verification of fail1C failed.
+testcase(46,12) : error VC8016: 'c->b' is not wrapped before unwrap.
+Verification of fail1C2 failed.
+testcase(55,12) : error VC8016: 'c->b' is not wrapped before unwrap.
+`

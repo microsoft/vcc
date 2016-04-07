@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+#ifdef VERIFY
+
+struct S {
+  int x;
+};
+
+int f()
+{
+  _(ghost struct S s1[int])
+  _(ghost struct S s2[int] = s1)
+  _(assert s1 == s2)
+}
+#endif
+`
+Verification of f succeeded.
+`

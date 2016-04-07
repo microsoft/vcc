@@ -1,0 +1,12 @@
+#include<vcc.h>
+
+void foo() { }
+
+void bar() {
+  void (*f)() = &foo;
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+Verification of bar#fnptr#foo_to_f#1 succeeded.
+`

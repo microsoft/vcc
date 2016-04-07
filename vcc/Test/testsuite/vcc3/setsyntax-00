@@ -1,0 +1,34 @@
+#include <vcc.h>
+
+void foo() {
+  int a,b,c,d,e,f;
+  
+  _(assert {} == {})
+
+  _(assert 
+    {&a} == {&a})
+
+  _(assert 
+    
+      {&a} \union {&b} == {&a, &b})
+
+  _(assert 
+    
+      {&c} \union {&a} \union {&b} == {&a, &b, &c})
+
+  _(assert 
+    
+      {&d} \union {&c} \union {&a} \union {&b} == {&a, &b, &c, &d})
+
+  _(assert 
+    
+      {&d} \union {&e} \union {&c} \union {&a} \union {&b} == {&a, &b, &c, &d, &e})
+
+  _(assert 
+    
+      {&f} \union {&d} \union {&e} \union {&c} \union {&a} \union {&b} == {&a, &b, &c, &d, &e, &f})
+}
+
+`
+Verification of foo succeeded.
+`

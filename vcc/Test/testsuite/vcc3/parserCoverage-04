@@ -1,0 +1,14 @@
+#include<vcc.h>
+
+typedef void (*FOO)();
+
+void foo() { }
+
+FOO bar() {
+  return  &foo;
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+Verification of bar#fnptr#foo_to_FOO#1 succeeded.
+`

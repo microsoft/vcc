@@ -1,0 +1,10 @@
+#include "vcc.h"
+
+struct S {
+    int a;
+    _(invariant \when_claimed(a))
+};
+
+`
+testcase(5,17) : error VC9708: '\when_claimed' cannot be used outside of a claim.
+`

@@ -1,0 +1,43 @@
+#include "vcc.h"
+
+struct S { int s; };
+struct T { int t; struct S s; _(invariant \mine(&s)) };
+struct U { int u; struct T t; _(invariant \mine(&t)) _(invariant \on_unwrap(\this, \false)) };
+
+
+
+void bar(struct U *u)
+    _(requires u->\closed)
+{
+    int x;
+    _(ghost \claim c = \make_claim({}, u->\closed))
+
+    //x = _(by_claim c) u->u;
+    //x = _(by_claim c) u->t.t;
+    _(assert &u->t \in \domain(c))
+    //_(assert \inv(&u->t))
+    //_(assert u->t.\closed)
+    //_(assert \inv(&u->t.s))
+    //_(assert u->t.s.\closed)
+    // _(assert \forall \state s; \object o; {\at(s, o->\closed)} \invok_state(s) ==> \at(s, o->\closed) ==> \at(s, \inv(o)))
+    _(assert &u->t.s \in \domain(c)) // fails
+    x = _(by_claim c) u->t.s.s;
+}
+
+void foo(struct U *u)
+    _(requires u->\closed)
+{
+    int x;
+    _(ghost \claim c = \make_claim({}, u->\closed && u->t.\closed && u->t.s.\closed))
+
+    _(assert &u->t \in \domain(c))
+    _(assert &u->t.s \in \domain(c))
+    x = _(by_claim c) u->t.s.s;
+}
+
+`
+Verification of T#adm succeeded.
+Verification of U#adm succeeded.
+Verification of bar succeeded.
+Verification of foo succeeded.
+`

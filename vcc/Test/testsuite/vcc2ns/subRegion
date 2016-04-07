@@ -1,0 +1,19 @@
+#include <vcc.h>
+
+struct S {
+  unsigned __int64 a[4];
+  unsigned __int64 b;
+};
+
+void foo() {
+  struct S s;
+  struct S *p;
+  p = &s;
+  _(ghost \objset r)
+  _(assume \subset(\extent(p), r)) 
+  _(assert \subset(\extent(&(p->b)), r))
+}
+
+`
+Verification of foo succeeded.
+`

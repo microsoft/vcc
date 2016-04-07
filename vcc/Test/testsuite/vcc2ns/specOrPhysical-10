@@ -1,0 +1,33 @@
+#include <vcc.h>
+
+struct S {
+  int a;
+  _(as_array) int c[5];
+};
+
+struct T {
+  int a;
+  int c[5];
+};
+
+void foo(struct S *s)
+  _(requires \wrapped(s))
+{
+  _(assert s->\valid)
+  _(assert (s->\valid && !\ghost(s)))
+  _(assert ((&s->a)->\valid && !\ghost(&s->a)))
+  _(assert ((&s->c[4])->\valid && !\ghost(&s->c[4])))
+}
+
+void bar(struct T *s)
+  _(requires \wrapped(s))
+{
+  _(assert s->\valid)
+  _(assert (s->\valid && !\ghost(s)))
+  _(assert ((&s->a)->\valid && !\ghost(&s->a)))
+  _(assert ((&s->c[4])->\valid && !\ghost(&s->c[4])))
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

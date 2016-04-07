@@ -1,0 +1,56 @@
+#include <vcc.h>
+
+_(abstract \bool foo(int x) 
+{ 
+})
+
+_(abstract \bool foo2(int x) 
+  _(requires x > 0)
+{ 
+})
+
+_(abstract \bool bar(int x)
+  _(requires foo(x)) 
+   
+{ 
+})
+
+_(def \bool baz(\bool m[int])
+  
+{
+  return \forall int x; m[x] ==> foo(x) && bar(x);
+})
+
+_(def \bool baz2(\bool m[int])
+  
+{
+  return \forall int x; m[x] && x > 0 ==> foo2(x);
+})
+
+_(def \bool baz_fail(\bool m[int])
+  
+{
+  return \forall int x; m[x] ==> bar(x) && foo(x);
+})
+
+
+_(def \bool baz2_fail(\bool m[int])
+  
+{
+  return \forall int x; m[x] && x > -10 ==> foo2(x);
+})
+
+
+`
+Verification of foo succeeded.
+Verification of foo2 succeeded.
+Verification of bar succeeded.
+Verification of baz succeeded.
+Verification of baz2 succeeded.
+Verification of baz_fail failed.
+testcase(33,34) : error VC9502: Call 'bar(x)' did not verify.
+testcase(13,14) : error VC9599: (related information) Precondition: 'foo(x)'.
+Verification of baz2_fail failed.
+testcase(40,45) : error VC9502: Call 'foo2(x)' did not verify.
+testcase(8,14) : error VC9599: (related information) Precondition: 'x > 0'.
+`

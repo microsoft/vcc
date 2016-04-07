@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+
+  <?define SamplesDir="..\src\vcc\Test\testsuite" ?>
+  
+  <!--
+  <?define VccVersion="3.0.0.42" ?>
+  -->
+
+
+  <Product Id="*" Codepage="1252" Language="1033" Manufacturer="Microsoft Research" Name="Microsoft Research Vcc $(var.VccVersion) Samples" UpgradeCode="0D83B0B8-4A3B-47C1-AA42-5536B9C061CC" Version="$(var.VccVersion)">
+    <Package Comments="Installs Microsoft Research Vcc $(var.VccVersion) Samples. " Compressed="yes" InstallerVersion="300" InstallPrivileges="limited" InstallScope="perUser" Languages="1033" Manufacturer="Microsoft Research" Platform="x86" ShortNames="no" />
+
+    <Icon Id="vcc.ico" SourceFile="..\Setup\vcc.ico" />
+    <Property Id="ARPPRODUCTICON" Value="vcc.ico" />
+    <Property Id="MSIFASTINSTALL" Value="7"/>
+    <Media Id="1" Cabinet="samples.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="DesktopFolder">
+        <Directory Id="INSTALLLOCATION" Name="Vcc Samples" />
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ShortcutFolder" Name="Microsoft Research Vcc" />
+      </Directory>
+    </Directory>
+
+    <DirectoryRef Id="INSTALLLOCATION">
+      <Component Id="SampleFolderHygiene" Guid="A0E2107E-F490-400E-A643-D709865F2A34">
+        <RegistryValue Root="HKCU" Key="Software\Microsoft Research\Vcc" Name="samples" Type="integer" Value="1" KeyPath="yes" />
+        <RemoveFolder Id="INSTALLLOCATION" On="uninstall" />
+      </Component>
+    </DirectoryRef>
+
+    <DirectoryRef Id="ShortcutFolder">
+      <Component Id="Shortcuts" Guid="1A54452F-540D-4A63-94CA-60BD00354170">
+        <RegistryValue Root="HKCU" Key="Software\Microsoft Research\Vcc" Name="samples_shortcut" Type="integer" Value="1" KeyPath="yes" />
+        <Shortcut Id="SamplesShortcut" Name="Vcc Samples" Target="[INSTALLLOCATION]" />
+        <RemoveFolder Id="ShortcutFolder" On="uninstall" />
+      </Component>
+    </DirectoryRef>
+
+    <Feature Id="ProductFeature" Title="VCC Samples" Level="1">
+      <ComponentRef Id="SampleFolderHygiene" />
+      <ComponentGroupRef Id="all_samples" />
+      <ComponentRef Id="Shortcuts" />
+    </Feature>
+
+    <MajorUpgrade AllowDowngrades="no" DowngradeErrorMessage="A newer version of Microsoft Research VCC Samples is already installed. Setup will now exit." Schedule="afterInstallValidate" />
+
+  </Product>
+</Wix>

@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+typedef struct _S {
+  unsigned __int64 x;
+  union {
+    _(backing_member)
+    unsigned __int64 y;
+    unsigned __int64 z;
+  };
+} S;
+
+
+void foo(S s) { }
+
+`
+Verification of foo succeeded.
+`

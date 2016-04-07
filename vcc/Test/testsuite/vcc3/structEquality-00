@@ -1,0 +1,58 @@
+#include <vcc.h>
+
+_(dynamic_owns) union U {
+  struct { unsigned __int64 a; } a;
+  struct { __int64 b; } b;
+  struct { int c; } c;
+  struct { unsigned int d; } d;
+  struct {
+    int e;
+    int f;
+  } x;
+  
+  
+  _(invariant \mine(\active_member(\this)))
+};
+
+struct S {
+  int a;
+  int b;
+  _(ghost int m[int])
+};
+
+struct T {
+  int a;
+  int b;
+  struct S s1;
+  struct S s2;
+  union U u1,u2;
+  
+  _(invariant \mine(&s1, &s2, &u1, &u2))
+  _(invariant \deep_eq(s1, s2))
+  _(invariant \deep_eq(u1, u2))
+};
+
+
+int eq_S(struct S s1, struct S s2) 
+  _(requires \deep_eq(s1, s2))
+{
+  _(assert s1.a == s2.a)
+  _(assert s1.b == s2.b)
+  _(assert s1.m == s2.m)
+}
+
+int eq_T(struct T t1, struct T t2) 
+  _(requires \deep_eq(t1, t2))
+{
+  _(assert t1.a == t2.a)
+  _(assert t1.b == t2.b)
+  _(assert \deep_eq(t1.s1, t2.s1))
+  _(assert \deep_eq(t1.s2, t2.s2))
+}
+
+`
+Verification of U#adm succeeded.
+Verification of T#adm succeeded.
+Verification of eq_S succeeded.
+Verification of eq_T succeeded.
+`

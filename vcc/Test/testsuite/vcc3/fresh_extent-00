@@ -1,0 +1,59 @@
+#include <vcc.h>
+#include <stdlib.h>
+
+typedef struct Dog {
+int id;
+} Dog;
+
+void fill_in_fields(Dog* d)
+_(writes \extent(d))
+_(maintains \extent_mutable(d))
+{
+d->id = 0;
+}
+;
+
+Dog* construct_two_dogs()
+_(ensures \result ==> \extent_fresh(\result) && \extent_mutable(\result))
+{
+Dog* d = (Dog*)malloc(sizeof(d));
+
+if (d == 0) {
+return 0;
+}
+
+_(assert \extent_mutable(d))
+_(assert \extent_fresh(d))
+
+fill_in_fields(d);
+
+_(assert \extent_mutable(d))
+_(assert \extent_fresh(d))
+
+return d;
+}
+
+Dog* construct_dog()
+_(ensures \result ==> \extent_fresh(\result) && \extent_mutable(\result))
+{
+Dog* d = (Dog*)malloc(sizeof(*d));
+
+if (d == 0) {
+return 0;
+}
+
+_(assert \extent_mutable(d))
+_(assert \extent_fresh(d))
+
+fill_in_fields(d);
+
+_(assert \extent_mutable(d))
+_(assert \extent_fresh(d))
+
+return d;
+}
+`
+Verification of fill_in_fields succeeded.
+Verification of construct_two_dogs succeeded.
+Verification of construct_dog succeeded.
+`

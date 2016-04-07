@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+struct A {
+  _(ghost \claim c)
+  int x;
+};
+
+void foo(struct A *a, struct A *b)
+  _(writes \extent(a), \extent(b))
+  _(requires a != b)
+{
+  _(ghost \claim c)
+  _(assert c == \make_claim({a}, \true))
+}
+`
+testcase(13,17) : error VC9652: \make_claim(...) used in pure context
+`

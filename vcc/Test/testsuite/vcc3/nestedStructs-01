@@ -1,0 +1,39 @@
+#include <vcc2test.h>
+
+struct foo {
+    _(as_array) unsigned int arr[20];
+    int y;
+
+    _(invariant \mine((void[20])arr))
+    _(invariant y >= 0 ==> \forall unsigned int x; x < 20 ==> (arr[x] == x))
+};
+	
+void init()
+{
+  struct foo *pf;
+  pf = (struct foo *)malloc(sizeof(struct foo));
+  if (pf != NULL) {
+    pf->y = -1;
+    _(wrap (void[20])(pf->arr))
+    _(wrap pf)
+  }
+}
+
+void i2(struct foo *f)
+_(writes \extent(f))
+{
+  f->y = -1;
+  _(wrap (void[20])(f->arr))
+  _(wrap f)
+}
+struct fail1 {
+  _(as_array) unsigned int arr[10];
+  _(invariant arr[0] == 7) // you don't own it
+};
+`
+Verification of foo#adm succeeded.
+Verification of fail1#adm failed.
+testcase(31,15) : error VC8012: invariant(arr[0] == 7) of fail1 is not admissible.
+Verification of init succeeded.
+Verification of i2 succeeded.
+`

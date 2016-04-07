@@ -1,0 +1,27 @@
+#include <vcc.h>
+
+_(ghost
+
+_(record) struct S {
+  int a;
+  \bool b;
+};
+
+void foo() {
+  struct S s = { .a = 5, .b = \true };
+  _(assert s.a == 5)
+  _(assert s.b)
+}
+
+void bar(struct S s1, struct S s2)
+{
+  if (s1.a == s2.a && s1.b == s2.b) {
+    _(assert s1 == s2)
+  }
+}
+
+)
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

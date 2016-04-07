@@ -1,0 +1,27 @@
+#include <vcc.h>
+
+void simplePointerSuccess()
+{
+	int h;
+	int *x;
+
+	x = &h;
+
+	h = 0;
+	assert(is_low(*x));
+}
+
+void simplePointerFail()
+{
+	int h;
+	int *x;
+
+	x = &h;
+	assert(is_low(*x));
+}
+
+`
+Verification of simplePointerSuccess succeeded.
+Verification of simplePointerFail failed.
+testcase(20,11) : error VC9500: Assertion '_vcc_lblset_leq(_vcc_label_of(*x), _vcc_seclabel_bot())' did not verify.
+`

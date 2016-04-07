@@ -1,0 +1,30 @@
+#include "vcc.h"
+typedef unsigned char *PUINT8;
+
+#define CONTAINING_RECORD(_Address_, _Type_, _Field_) \
+    ((_Type_ *)( (PUINT8)(_Address_) - (PUINT8)(&((_Type_ *)0)->_Field_)))
+
+typedef struct _A
+{
+   int a;
+} A;
+
+typedef struct _B
+{
+   int b;
+   A bA;
+} B;
+
+void foo (B *b)
+{
+   int * x;
+   B* y;
+
+   _(assert &CONTAINING_RECORD(CONTAINING_RECORD(&b->bA.a,A,a),B,bA)->bA == CONTAINING_RECORD(&b->bA.a,A,a))
+   y = CONTAINING_RECORD(&b->bA.a,B,bA.a);
+   _(assert &y->bA == CONTAINING_RECORD(&b->bA.a,A,a))
+   _(assert &CONTAINING_RECORD(&b->bA.a,B,bA.a)->bA == CONTAINING_RECORD(&b->bA.a,A,a))
+}
+`
+Verification of foo succeeded.
+`

@@ -1,0 +1,20 @@
+#include "vcc.h"
+
+_(abstract int foo(int x)
+  _(requires x < 1000)
+  _(ensures \result > x))
+
+_(abstract int foo(int x) { return x; })
+
+void bar(int x)
+    _(requires x < 100)
+    _(requires foo(x) == 7)
+{
+  _(assert 7 > x)
+}
+`
+Verification of foo failed.
+testcase(7,29) : error VC9501: Post condition '\result > x' did not verify.
+testcase(5,13) : error VC9599: (related information) Location of post condition.
+Verification of bar succeeded.
+`

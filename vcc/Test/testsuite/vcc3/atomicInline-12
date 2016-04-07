@@ -1,0 +1,31 @@
+#include <vcc.h>
+
+struct S {
+  volatile int a;
+  _(ghost volatile int b)
+};
+
+int f(struct S *s _(ghost int ^x) _(ghost \claim c))
+  _(requires \claims(c, s->\closed))
+  _(requires \wrapped(c))
+  _(requires x!=0 ==> \mutable(x))
+{
+  _(atomic s, c) {
+    s->a=5;
+    _(ghost x!=0 && (s->b=*x))
+  }
+}
+
+int g(struct S *s _(ghost int ^x) _(ghost \claim c))
+  _(requires \claims(c, s->\closed))
+  _(requires \wrapped(c))
+  _(requires x!=0 ==> \mutable(x))
+{
+  _(atomic_op 
+            s, c,
+            x!=0 && (s->b=*x))(s->a=5);
+}
+`
+Verification of f succeeded.
+Verification of g succeeded.
+`

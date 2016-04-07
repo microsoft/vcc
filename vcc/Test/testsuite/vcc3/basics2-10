@@ -1,0 +1,37 @@
+#include <vcc2test.h>
+
+struct S {  int a; };
+
+void void a(struct S *x)
+  _(requires x == NULL);
+
+void a(int *x)
+  _(requires x != NULL);
+
+void b() {
+    int x;
+    a(&x);
+}
+
+void c() {
+  struct S s;
+  a(&s);
+}
+
+void d() {
+  a((struct S *)NULL);
+}
+
+void e() {
+  a((int *)NULL);
+}
+`
+Verification of b succeeded.
+Verification of c failed.
+testcase(18,3) : error VC9502: Call 'a(&s)' did not verify.
+testcase(6,14) : error VC9599: (related information) Precondition: 'x == ((void*)0)'.
+Verification of d succeeded.
+Verification of e failed.
+testcase(26,3) : error VC9502: Call 'a((int *)((void*)0))' did not verify.
+testcase(9,14) : error VC9599: (related information) Precondition: 'x != ((void*)0)'.
+`

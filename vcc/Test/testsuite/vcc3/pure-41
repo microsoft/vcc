@@ -1,0 +1,9 @@
+#include <vcc.h>
+
+_(pure int zero() _(returns 0))
+
+void foo() { _(assert zero() == 0) };
+
+`
+Verification of foo succeeded.
+`

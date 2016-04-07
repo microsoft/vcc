@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+_(primitive)
+struct S {
+	int i;
+};
+
+struct T {
+	struct S s;
+	_(invariant s.i == 5)
+};
+
+void foo(struct T *t) 
+	_(requires \wrapped(t))
+{
+	struct S s1 = t->s;
+	_(assert s1.i == 5)
+}
+`
+Verification of T#adm succeeded.
+Verification of foo succeeded.
+`

@@ -1,0 +1,50 @@
+#include "vcc2test.h"
+
+struct A {
+  int x;
+  _(invariant x > 0)
+};
+
+void foo(struct A *a)
+  _(requires \wrapped(a))
+{
+  _(assert a->x > 0)
+}
+
+void fooFail(struct A *a, int k)
+  _(requires k > 0 ==> \wrapped(a))
+{
+  _(assert k > 0 ==> a->x > 0)
+}
+
+void fooOk(struct A *a, int k)
+  _(requires k > 0 ==> \wrapped(a))
+{
+  _(assert k > 0 ==> a \in \domain(a))
+  _(assert k > 0 ==> a->x > 0)
+}
+
+vcc_attr("no_infer", "all")
+void fooFail2(struct A *a)
+  _(requires \wrapped(a))
+{
+  _(assert a->x > 0)
+}
+
+vcc_attr("no_infer", "in_domain")
+void fooFail3(struct A *a)
+  _(requires \wrapped(a))
+{
+  _(assert a->x > 0)
+}
+`
+Verification of A#adm succeeded.
+Verification of foo succeeded.
+Verification of fooFail failed.
+testcase(17,12) : error VC9500: Assertion 'k > 0 ==> a->x > 0' did not verify.
+Verification of fooOk succeeded.
+Verification of fooFail2 failed.
+testcase(31,12) : error VC9500: Assertion 'a->x > 0' did not verify.
+Verification of fooFail3 failed.
+testcase(38,12) : error VC9500: Assertion 'a->x > 0' did not verify.
+`

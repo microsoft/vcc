@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+typedef enum _ArithmeticOpcode ArithmeticOpcode;
+enum _ArithmeticOpcode {
+  ADD = 30,
+};
+int apply(ArithmeticOpcode op, short a, short b)
+{
+  switch (op) {
+  case ADD:
+    return a + b;
+  default:
+    return 0;
+  }
+}
+`
+Verification of apply succeeded.
+`

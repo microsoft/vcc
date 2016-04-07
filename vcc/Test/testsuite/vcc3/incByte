@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+typedef unsigned __int8 UINT8;
+
+void foo() {
+  UINT8 i = 0;
+  i++;
+  i--;
+  ++i;
+  --i;
+  _(assert i == 0)
+}
+
+`
+Verification of foo succeeded.
+`

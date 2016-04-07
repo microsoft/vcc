@@ -1,0 +1,25 @@
+#include "vcc.h"
+
+typedef struct s1{
+    int dummy;
+} s1;
+
+typedef _(dynamic_owns) struct q1{
+    _(ghost \bool b)
+    s1 *s;
+    _(invariant b ==> \mine(s))
+}q1;
+
+void f(q1 *q)
+_(requires !q->b)
+_(requires \wrapped(q))
+_(writes q)
+{
+    _(unwrap q)
+    _(ghost q->\owns -= q->s);
+}
+`
+Verification of q1#adm succeeded.
+Verification of f failed.
+testcase(19,25) : error VC8026: q->s is not in q->\owns before trying to remove it.
+`

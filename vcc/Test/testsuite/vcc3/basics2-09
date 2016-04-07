@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+int foo();
+void bar()
+{
+  _(assert foo->b == 0)
+} 
+`
+testcase(6,12) : error VC0000: The left of '->b' must point to a struct or union.
+`

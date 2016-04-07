@@ -1,0 +1,12 @@
+` /f:foo
+#include <vcc.h>
+
+_(assume_correct)
+void foo() {
+}
+
+void bar() {
+}
+`
+Verification of foo succeeded.
+`

@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" 
+     xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" 
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
+     xmlns:vs="http://schemas.microsoft.com/wix/VSExtension">
+
+  <?define BoogieDir="..\..\Boogie" ?>
+  <?define HostDir="..\..\host\bin\debug" ?>
+  <?define VsPackageDir="..\..\VSPackage\bin\debug" ?>
+  <?define AxiomProfilerDir="..\..\Tools\Z3Visualizer\Z3Visualizer\bin\Debug" ?>
+  <?define HeaderDir="..\..\Headers" ?>
+  <?define SamplesDir="..\SamplesSetup\bin\Debug" ?>
+  <?define RedistDir="..\Redist"?>
+  <?define WikiDir="..\..\Docs\Wiki"?>
+
+  <!--
+  <?define VccVersion="3.0.0.42" ?>
+  -->
+
+  <Product Id="*" Codepage="1252" Language="1033" Manufacturer="Microsoft Research" Name="Microsoft Research Vcc $(var.VccVersion)" UpgradeCode="{09253B53-5BAF-4EE5-836C-9742871A2812}" Version="$(var.VccVersion)">
+    <Package Comments="Installs Microsoft Research Vcc $(var.VccVersion). " Compressed="yes" InstallerVersion="300" InstallPrivileges="elevated" InstallScope="perMachine" Languages="1033" Manufacturer="Microsoft Research" Platform="x86" ShortNames="no" />
+    <Icon Id="vcc.ico" SourceFile="vcc.ico" />
+    <Icon Id="txt.ico" SourceFile="UtilityText.ico" />
+    <Property Id="ARPPRODUCTICON" Value="vcc.ico" />
+
+    <Media Id="1" Cabinet="vcc.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="MSRLOCATION" Name="Microsoft Research">
+          <Directory Id="INSTALLLOCATION" Name="Vcc">
+            <Directory Id="BINDIR" Name="Binaries" />
+            <Directory Id="INCDIR" Name="Headers" />
+            <Directory Id="VSPACKAGEDIR" Name="VsPackage" />
+            <Directory Id="DOCDIR" Name="Documentation">
+              <Directory Id="SAMPLESDIR" Name="Samples" />
+              <Directory Id="WIKIDIR" Name="Wiki">
+                <Directory Id="CSS" Name="css"/>
+              </Directory>
+            </Directory>
+          </Directory>
+        </Directory>
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ShortcutFolder" Name="Microsoft Research Vcc" />
+      </Directory>
+    </Directory>
+
+    <DirectoryRef Id="BINDIR" FileSource="$(var.HostDir)">
+      <Component Id="VccCommandLine" Guid="8A90C8BD-A5E4-436D-B42B-BD5206AB4B1B">
+        <RegistryValue Root ="HKLM" Key="Software\Microsoft Research\Vcc" Name ="vccExecutablePath" Type ="string" Value ="[BINDIR]vcc.exe" />
+        <File Name="vcc.exe" KeyPath="yes">
+          <netfx:NativeImage Id="ngen_vcc.exe" Platform="32bit" Priority="1" AppBaseDirectory="BINDIR" />
+        </File>
+        <File Name="vcc.pdb" />
+        <File Name="Microsoft.Research.Vcc.Ast.dll" />
+        <File Name="Microsoft.Research.Vcc.Ast.pdb" />
+        <File Name="Microsoft.Research.Vcc.CodeModel.dll" />
+        <File Name="Microsoft.Research.Vcc.CodeModel.pdb" />
+        <File Name="Microsoft.Research.Vcc.CodeModelHelper.dll" />
+        <File Name="Microsoft.Research.Vcc.CodeModelHelper.pdb" />
+        <File Name="Microsoft.Research.Vcc.Core.dll" />
+        <File Name="Microsoft.Research.Vcc.Core.pdb" />
+        <File Name="Microsoft.Research.Vcc.Runtime.dll" />
+        <File Name="Microsoft.Research.Vcc.Runtime.pdb" />
+        <File Name="Microsoft.Research.Vcc.Translator.dll" />
+        <File Name="Microsoft.Research.Vcc.Translator.pdb" />
+        <File Name="Microsoft.Research.Vcc.Transformers.dll" />
+        <File Name="Microsoft.Research.Vcc.Transformers.pdb" />
+        <File Name="Microsoft.Cci.AstsProjectedAsCodeModel.dll" />
+        <File Name="Microsoft.Cci.AstsProjectedAsCodeModel.pdb" />
+        <File Name="Microsoft.Cci.CodeModel.dll" />
+        <File Name="Microsoft.Cci.CodeModel.pdb" />
+        <File Name="Microsoft.Cci.CodeModelToIL.dll" />
+        <File Name="Microsoft.Cci.CodeModelToIL.pdb" />
+        <File Name="Microsoft.Cci.ILGenerator.dll" />
+        <File Name="Microsoft.Cci.ILGenerator.pdb" />
+        <File Name="Microsoft.Cci.MetadataHelper.dll" />
+        <File Name="Microsoft.Cci.MetadataHelper.pdb" />
+        <File Name="Microsoft.Cci.MetadataModel.dll" />
+        <File Name="Microsoft.Cci.MetadataModel.pdb" />
+        <File Name="Microsoft.Cci.MutableCodeModel.dll" />
+        <File Name="Microsoft.Cci.MutableCodeModel.pdb" />
+        <File Name="Microsoft.Cci.MutableMetadataModel.dll" />
+        <File Name="Microsoft.Cci.MutableMetadataModel.pdb" />
+        <File Name="Microsoft.Cci.PeReader.dll" />
+        <File Name="Microsoft.Cci.PeReader.pdb" />
+        <File Name="Microsoft.Cci.SourceModel.dll" />
+        <File Name="Microsoft.Cci.SourceModel.pdb" />
+        <File Name="System.ComponentModel.Composition.dll" />
+        <File Name="System.ComponentModel.Composition.pdb" />
+        <File Source="$(var.BoogieDir)\bvd.exe" />
+        <File Source="$(var.BoogieDir)\bvd.pdb" />
+        <File Source="$(var.RedistDir)\FSharp.PowerPack.dll" />
+        <File Source="$(var.RedistDir)\FSharp.PowerPack.pdb" />
+        <Environment Id="EnvPath" Name="PATH" Value="[BINDIR]" Permanent="no" Part="last" Separator=";" Action="set" System="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <DirectoryRef Id="BINDIR" FileSource="$(var.BoogieDir)">
+      <Component Id="Boogie" Guid="DDA78D93-D121-477F-94BB-ABED71406996">
+        <File Name="boogie.exe" KeyPath="yes">
+          <netfx:NativeImage Id="ngen_boogie.exe" Platform="32bit" Priority="1" AppBaseDirectory="BINDIR" />
+        </File>
+        <File Name="boogie.pdb" />
+        <File Name="AbsInt.dll" />
+        <File Name="AbsInt.pdb" />
+        <File Name="AIFramework.dll" />
+        <File Name="AIFramework.pdb" />
+        <File Name="BaseTypes.dll" />
+        <File Name="BaseTypes.pdb" />
+        <File Name="CodeContractsExtender.dll" />
+        <File Name="CodeContractsExtender.pdb" />
+        <File Name="Core.dll" />
+        <File Name="Core.pdb" />
+        <File Name="Graph.dll" />
+        <File Name="Graph.pdb" />
+        <File Name="Houdini.dll" />
+        <File Name="Houdini.pdb" />
+        <File Name="Microsoft.Contracts.dll" />
+        <File Name="Model.dll" />
+        <File Name="Model.pdb" />
+        <File Name="ParserHelper.dll" />
+        <File Name="ParserHelper.pdb" />
+        <File Name="Provers.Isabelle.dll" />
+        <File Name="Provers.Isabelle.pdb" />
+        <File Name="Provers.SMTLib.dll" />
+        <File Name="Provers.SMTLib.pdb" />
+        <File Name="VCExpr.dll" />
+        <File Name="VCExpr.pdb" />
+        <File Name="VCGeneration.dll" />
+        <File Name="VCGeneration.pdb" />
+        <File Name="UnivBackPred2.smt2" />
+      </Component>
+      <Component Id="Z3" Guid="8862D1F3-9D6E-4304-A84F-56E2BD309BF1">
+        <File Name="z3.exe" KeyPath="yes" />
+        <File Name="z3inspector.exe" />
+        <File Name="z3inspector.pdb" />
+        <File Source="$(var.AxiomProfilerDir)\Z3AxiomProfiler.exe" />
+        <File Source="$(var.AxiomProfilerDir)\Z3AxiomProfiler.pdb" />
+      </Component>
+    </DirectoryRef>
+
+    <DirectoryRef Id="INCDIR" FileSource="$(var.HeaderDir)">
+      <Component Id="HeaderFiles" Guid="BE0CDA33-DB91-416A-BEB9-1C2874F68CDF">
+        <File Name="vcc.h" />
+        <File Name="vccp.h" />
+        <File Name="Vcc3Prelude.bpl" />
+        <!-- Add . to the path, because WiX adds \ and this ends up as /I:"...\Headers\" in Visual Studio confusing our command line parsing. -->
+        <Environment Id="EnvInclude" Name="INCLUDE" Value="[INCDIR]." Permanent="no" Part="last" Separator=";" Action="set" System="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <!-- These are the files needed for the Visual Studio 2010 Package.-->
+    <DirectoryRef Id="VSPACKAGEDIR" FileSource="$(var.VsPackageDir)">
+      <Component Id="VsPackage" Guid="{61E5BD9E-620B-4E66-A241-56B7357FE565}">
+        <File Name="extension.vsixmanifest" />
+        <File Name="preview.png" />
+        <File Name="Package.ico" />
+        <File Name="Microsoft.Research.Vcc.VsPackage.dll" />
+        <File Name="Microsoft.Research.Vcc.VSPackage.pdb" />
+        <File Name="Microsoft.Research.Vcc.VSPackage.pkgdef" />
+        <File Name="Microsoft.Research.Vcc.VSPackage.Parser.dll" />
+        <File Name="Microsoft.Research.Vcc.VSPackage.Parser.pdb" />
+        <File Id="bvd.exe_2" Source="$(var.BoogieDir)\bvd.exe" />
+        <File Id="bvd.pdb_2" Source="$(var.BoogieDir)\bvd.pdb" />
+        <File Id="Model.dll_2" Source="$(var.BoogieDir)\Model.dll" />
+        <File Id="Model.pdb_2" Source="$(var.BoogieDir)\Model.pdb" />
+        <File Id="FSharp.PowerPack.dll_2" Source="$(var.RedistDir)\FSharp.PowerPack.dll" />
+        <File Id="FSharp.PowerPack.pdb_2" Source="$(var.RedistDir)\FSharp.PowerPack.pdb" />
+      </Component>
+      
+      <!-- Here the two links in Visual Studio's dir are created that install the VSPackage in VS2010.-->
+      <Directory Id="DEVENV10_DIR" Name=".">
+        <Directory Id="EXTENSIONS10" Name="Extensions">
+          <Directory Id="VCCEXTENSIONDIR10" Name="Microsoft Research Vcc">
+            <Component Id="ExtensionShortcuts10" Guid="{BDA42EA8-33E1-42D2-BFC2-DE01EF3F6CA3}" KeyPath="yes">
+              <Shortcut Id="MANIFESTSHORTCUT10" Name="extension.vsixmanifest.lnk" Target="[VSPACKAGEDIR]extension.vsixmanifest"/>
+              <Shortcut Id="PKGDEFSHORTCUT10" Name="Microsoft.Research.Vcc.VSPackage.pkgdef.lnk" Target="[VSPACKAGEDIR]Microsoft.Research.Vcc.VSPackage.pkgdef"/>
+            </Component>
+          </Directory>
+        </Directory>
+      </Directory>
+
+      
+      <!-- Install the VSIX package into Dev11 via the VSIX Installer -->
+      <Component Id="VsPackage11" Guid="{65C5778C-11A7-4103-89DC-223070ED61A5}">
+        <File Name="Microsoft.Research.Vcc.VSPackage.vsix">
+          <vs:VsixPackage PackageId="Microsoft.Research.Vcc" Vital="yes" />            
+        </File>
+      </Component>
+    </DirectoryRef>
+
+    
+    <DirectoryRef Id="DOCDIR">
+      <Component Id="EULA" Guid="*">
+        <File Source="eula.rtf" />
+      </Component>
+    </DirectoryRef>
+
+    <DirectoryRef Id="SAMPLESDIR">
+      <Component Id="SamplesInstaller" Guid="*">
+        <File Source="$(var.SamplesDir)\Samples.msi" />
+      </Component>
+    </DirectoryRef>
+    
+    <DirectoryRef Id="WIKIDIR" FileSource="$(var.WikiDir)">
+      <Component Id="wiki_files" Guid="58e1dd16-a5da-4cda-bd68-43dbb305e1aa">
+        <RemoveFolder Id="WIKIDIR" On="uninstall"/>
+        <RegistryValue Root="HKCU" Key="Software\Microsoft Research\Vcc" Name="wiki_files" Type="integer" Value="1" KeyPath="yes" />
+        <?include Wiki.Files.wxi?>
+      </Component>
+    </DirectoryRef>
+
+    <DirectoryRef Id="CSS" FileSource="$(var.WikiDir)\css">
+      <Component Id="wiki_css_files" Guid="ddb49de6-974e-448b-b323-1f8c5bddb42c">
+        <RemoveFolder Id="CSS" On="uninstall"/>
+        <RegistryValue Root="HKCU" Key="Software\Microsoft Research\Vcc" Name="wiki_css_files" Type="integer" Value="1" KeyPath="yes" />
+        <?include Wiki.Css.wxi?>
+      </Component>
+    </DirectoryRef>
+
+    <DirectoryRef Id="ShortcutFolder">
+      <Component Id="Shortcuts" Guid="B20B4427-86FF-42A0-B705-973D8106A917">
+        <Shortcut Id="DocShortcut" Name="Vcc Documentation" Target="[DOCDIR]\wiki\Home.html" Icon="vcc.ico" />
+        <Shortcut Id="LicenseShortcut" Name="License" Target="[DOCDIR]\eula.rtf" Icon="txt.ico" />
+        <Shortcut Id="InstallSamplesShortcut" Name="(Re-)Install Samples" Description="Installs the VCC Samples to your Desktop" Target="[SAMPLESDIR]\Samples.msi" />
+        <util:InternetShortcut Id="VccOnCodeplexShortcut" Name="VCC on Codeplex" Target="http://vcc.codeplex.com/" />
+        <RegistryValue Root="HKCU" Key="Software\Microsoft Research\Vcc" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+        <RemoveFolder Id="ShortcutFolder" On="uninstall" />
+      </Component>
+    </DirectoryRef>
+
+    <!--DirectoryRef Id="TARGETDIR" DiskId="1">
+      <Merge Id="VCCRTRedist" SourceFile="$(var.RedistDir)\Microsoft_VC90_CRT_x86.msm" Language="0" />
+      <Merge Id="VCCRTRedistPol" SourceFile="$(var.RedistDir)\policy_9_0_Microsoft_VC90_CRT_x86.msm" Language="0" />
+      <Merge Id="VCOpenMPRedist" SourceFile="$(var.RedistDir)\Microsoft_VC90_OpenMP_x86.msm" Language="0" />
+      <Merge Id="VCOpenMPRedistPol" SourceFile="$(var.RedistDir)\policy_9_0_Microsoft_VC90_OpenMP_x86.msm" Language="0" />
+    </DirectoryRef-->
+
+    <PropertyRef Id="NETFRAMEWORK40CLIENT" />
+
+    <Condition Message="Error: VCC requires the .NET Framework 4.0 Client Profile. Please install the .NET Framework then run this installer again."><![CDATA[Installed OR NETFRAMEWORK40CLIENT]]></Condition>
+    <Condition Message="Error: VCC requires the F# Runtime 2.0. A download page will open when this installer exits. Please install the runtime and then run this installer again."><![CDATA[Installed OR FSHARPINSTALLED]]></Condition>
+
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLLOCATION" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALTEXT" Value="Enjoy!" />
+    <WixVariable Id="WixUILicenseRtf" Value="eula.rtf" />
+    <WixVariable Id="WixUIBannerBmp" Value="vcc_wix.bmp" />
+    <WixVariable Id="WixUIDialogBmp" Value="vcc_wix_dialog.bmp" />
+
+    <!-- This is the registry path for VS2010. If VS2010 is not installed, this is null (and evaluates to false).-->
+    <Property Id="DEVENV10_DIR">
+      <RegistrySearch Id="RegSearch_Devenv10_Directory" Root="HKLM" Key="Software\Microsoft\VisualStudio\10.0\Setup\VS" Name="EnvironmentDirectory" Type="raw" />
+    </Property>
+
+    <!-- This is the registry path for VS2011 Developer Preview. If VS2011 is not installed, this is null (and evaluates to false).-->
+    <Property Id="DEVENV11_DIR">
+      <RegistrySearch Id="RegSearch_Devenv11_Directory" Root="HKLM" Key="Software\Microsoft\VisualStudio\11.0\Setup\VS" Name="EnvironmentDirectory" Type="raw" />
+    </Property>
+
+    <Property Id="FSHARPINSTALLED">
+      <DirectorySearch Id="AssemblyDirectorySearch" Path="[WindowsFolder]\Microsoft.NET\assembly\GAC_MSIL\FSharp.Core\" Depth="1">
+        <FileSearch Name="FSharp.Core.dll" MinVersion="4.0.0.0" />
+      </DirectorySearch>
+    </Property>
+
+    <Property Id="WixShellExecTarget"
+              Value="http://www.microsoft.com/downloads/details.aspx?FamilyID=5f0a79f8-925f-4297-9ae2-86e2fdcff33c" />
+
+    <CustomAction Id="OpenURL"
+                  BinaryKey="WixCA"
+                  DllEntry="WixShellExec"
+                  Impersonate="yes"
+                  Return="ignore" />
+
+    <UI>
+      <UIRef Id="WixUI_FeatureTree" />
+      <Publish Dialog="FatalError"
+               Control="Finish"
+               Event="DoAction"
+               Value="OpenURL">NOT Installed AND NOT FSHARPINSTALLED</Publish>
+    </UI>
+
+    <Feature Id="Vcc" Title="Vcc" Level="1" Absent ="disallow" AllowAdvertise ="no">
+      <ComponentRef Id="EULA" />
+      <ComponentRef Id="VccCommandLine" />
+      <ComponentRef Id="Boogie" />
+      <ComponentRef Id="Z3" />
+      <ComponentRef Id="HeaderFiles" />
+      <ComponentRef Id="SamplesInstaller" />
+      <ComponentRef Id="wiki_files"/>
+      <ComponentRef Id="wiki_css_files"/>
+      <ComponentRef Id="Shortcuts" />
+      <!--
+      <MergeRef Id="VCCRTRedist" />
+      <MergeRef Id="VCCRTRedistPol" />
+      <MergeRef Id="VCOpenMPRedist" />
+      <MergeRef Id="VCOpenMPRedistPol" />
+      -->
+    </Feature>
+    <Feature Id ="VisualStudio2010Integration" Title ="Visual Studio 2010 Integration" AllowAdvertise="no" Level="0">
+      <Condition Level="1">DEVENV10_DIR</Condition>
+      <ComponentRef Id ="VsPackage"/>
+      <ComponentRef Id ="ExtensionShortcuts10"/>
+    </Feature>
+    <Feature Id ="VisualStudio2011Integration" Title ="Visual Studio 2011 Integration" AllowAdvertise="no" Level="0">
+      <Condition Level="1">DEVENV11_DIR</Condition>
+      <ComponentRef Id ="VsPackage11"/>
+    </Feature>
+
+    <MajorUpgrade AllowDowngrades="no" DowngradeErrorMessage="A newer version of Microsoft Research VCC is already installed. Setup will now exit." Schedule="afterInstallValidate" />
+
+  </Product>
+</Wix>

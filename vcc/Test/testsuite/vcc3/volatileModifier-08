@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+typedef struct _S {
+  int a;
+} S;
+
+_(dynamic_owns) struct T {
+  volatile S* s;
+  _(invariant \mine(s))
+};
+
+void foo(struct T *t)
+  _(requires \wrapped(t))
+{
+  volatile S *s = t->s;
+  _(assert t->s \in t->\owns)
+  _(assert s \in t->\owns)  // <- HERE
+}
+`
+Verification of T#adm succeeded.
+Verification of foo succeeded.
+`

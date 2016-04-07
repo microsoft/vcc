@@ -1,0 +1,61 @@
+#include <vcc.h>
+
+_(volatile_owns) struct A {
+  int x;
+  _(ghost \object a)
+  _(invariant \approves(a, a))
+  _(invariant \approves(a, \this->\owns))
+};
+
+_(volatile_owns) struct A2 {
+  int x;
+  _(ghost \object a)
+  _(invariant \approves(a, a))
+};
+
+struct C {
+int x;
+};
+
+struct B {
+  struct A *a;
+  struct C *c;
+  _(invariant \mine(a))
+  _(invariant a->a == \this)
+  _(invariant c \in a->\owns)
+};
+
+struct B_fail1 {
+  struct A *a;
+  struct C *c;
+  _(invariant a->a == \this)
+  _(invariant c \in a->\owns)
+};
+
+struct B_fail2 {
+  struct A *a;
+  struct C *c;
+  _(invariant \mine(a))
+  _(invariant c \in a->\owns)
+};
+
+struct B_fail3 {
+  struct A2 *a;
+  struct C *c;
+  _(invariant \mine(a))
+  _(invariant a->a == \this)
+  _(invariant c \in a->\owns)
+};
+
+`
+Verification of A#adm succeeded.
+Verification of A2#adm succeeded.
+Verification of B#adm succeeded.
+Verification of B_fail1#adm failed.
+testcase(31,15) : error VC8012: invariant(a->a == \this) of B_fail1 is not admissible.
+testcase(32,15) : error VC8012: invariant(c \in a->\owns) of B_fail1 is not admissible.
+Verification of B_fail2#adm failed.
+testcase(39,15) : error VC8012: invariant(c \in a->\owns) of B_fail2 is not admissible.
+Verification of B_fail3#adm failed.
+testcase(47,15) : error VC8012: invariant(c \in a->\owns) of B_fail3 is not admissible.
+`

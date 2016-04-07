@@ -1,0 +1,35 @@
+#include <vcc.h>
+
+typedef unsigned __int64 UINT64;
+
+typedef union _X64_PTE
+{
+    struct
+    {
+        UINT64 Present:1;
+        UINT64 ReadWrite:1;
+        UINT64 User:1;
+        UINT64 WriteThrough:1;
+        UINT64 CacheDisable:1;
+        UINT64 Accessed:1;
+        UINT64 Dirty:1;
+        UINT64 Pat:1;
+        UINT64 Global:1;
+        UINT64 Available0:3;
+        UINT64 Pfn:40;
+        UINT64 Available1:11;
+        UINT64 NoExecute:1;
+    };
+
+    _(backing_member)
+    UINT64 AsUINT64;
+
+} X64_PTE, *PX64_PTE;
+
+void foo(X64_PTE pte) {
+  (&pte)->Present = 1;
+}
+
+`
+Verification of foo succeeded.
+`

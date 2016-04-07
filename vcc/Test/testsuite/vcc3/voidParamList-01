@@ -1,0 +1,12 @@
+#include <vcc.h>
+typedef void VOID;
+
+void foo(VOID) { }
+
+void bar() {
+  foo();
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

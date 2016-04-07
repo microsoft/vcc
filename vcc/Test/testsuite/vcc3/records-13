@@ -1,0 +1,27 @@
+#include "vcc.h"
+
+typedef _(record) struct State {
+    int x;
+} State;
+
+typedef _(claimable) struct Container {
+    _(ghost volatile State s)
+    volatile int a;
+} Container;
+
+void test(Container *c _(ghost \claim claim))
+    _(requires \wrapped(claim))
+    _(requires \active_claim(claim))
+    _(requires \claims(claim, c->\closed))
+{
+    _(atomic c, claim)
+    {
+        c->a = 0;
+        
+            _(ghost c->s = c->s / {.x = 1};)
+        
+    }
+}
+`
+Verification of test succeeded.
+`

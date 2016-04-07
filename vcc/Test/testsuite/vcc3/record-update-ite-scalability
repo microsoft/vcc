@@ -1,0 +1,329 @@
+#include "vcc.h"
+
+typedef unsigned UINT32;
+
+
+struct S
+{
+    unsigned x1;
+    unsigned x2;
+    unsigned x3;
+    unsigned x4;
+    unsigned x5;
+    unsigned x6;
+    unsigned x7;
+    unsigned x8;
+    unsigned x9;
+    unsigned x10;
+    unsigned x11;
+    unsigned x12;
+    unsigned x13;
+    unsigned x14;
+    unsigned x15;
+    unsigned x16;
+};
+
+_(record R
+{
+    \natural y1;
+    \natural y2;
+    \natural y3;
+    \natural y4;
+    \natural y5;
+    \natural y6;
+    \natural y7;
+    \natural y8;
+    \natural y9;
+    \natural y10;
+    \natural y11;
+    \natural y12;
+    \natural y13;
+    \natural y14;
+    \natural y15;
+    \natural y16;
+})
+
+_(def R Abstract1(struct S* s)
+{
+    return (R) {
+        .y1 = s->x1,
+        .y2 = s->x2,
+        .y3 = s->x3,
+        .y4 = s->x4,
+        .y5 = s->x5,
+        .y6 = s->x6,
+        .y7 = s->x7,
+        .y8 = s->x8,
+        .y9 = s->x9,
+        .y10 = s->x10,
+        .y11 = s->x11,
+        .y12 = s->x12,
+        .y13 = s->x13,
+        .y14 = s->x14,
+        .y15 = s->x15,
+        .y16 = s->x16
+    };
+})
+
+
+union U
+{
+    _(backing_member)
+    unsigned uint32;
+
+    struct
+    {
+        unsigned F1 : 2;
+        unsigned F2 : 2;
+        unsigned F3 : 2;
+        unsigned F4 : 2;
+        unsigned F5 : 2;
+        unsigned F6 : 2;
+        unsigned F7 : 2;
+        unsigned F8 : 2;
+        unsigned F9 : 2;
+        unsigned F10 : 2;
+        unsigned F11 : 2;
+        unsigned F12 : 2;
+        unsigned F13 : 2;
+        unsigned F14 : 2;
+        unsigned F15 : 2;
+        unsigned F16 : 2;
+    };
+};
+
+
+_(record V
+{
+    \natural G1;
+    \natural G2;
+    \natural G3;
+    \natural G4;
+    \natural G5;
+    \natural G6;
+    \natural G7;
+    \natural G8;
+    \natural G9;
+    \natural G10;
+    \natural G11;
+    \natural G12;
+    \natural G13;
+    \natural G14;
+    \natural G15;
+    \natural G16;
+})
+
+_(def V Abstract2(union U* u)
+{
+    return (V) {
+        .G1 = u->F1,
+        .G2 = u->F2,
+        .G3 = u->F3,
+        .G4 = u->F4,
+        .G5 = u->F5,
+        .G6 = u->F6,
+        .G7 = u->F7,
+        .G8 = u->F8,
+        .G9 = u->F9,
+        .G10 = u->F10,
+        .G11 = u->F11,
+        .G12 = u->F12,
+        .G13 = u->F13,
+        .G14 = u->F14,
+        .G15 = u->F15,
+        .G16 = u->F16
+    };
+})
+
+
+
+
+union B
+{
+    _(backing_member)
+    unsigned uint32;
+
+    struct
+    {
+        unsigned B1 : 1;
+        unsigned B2 : 1;
+        unsigned B3 : 1;
+        unsigned B4 : 1;
+        unsigned B5 : 1;
+        unsigned B6 : 1;
+        unsigned B7 : 1;
+        unsigned B8 : 1;
+        unsigned B9 : 1;
+        unsigned B10 : 1;
+        unsigned B11 : 1;
+        unsigned B12 : 1;
+        unsigned B13 : 1;
+        unsigned B14 : 1;
+        unsigned B15 : 1;
+        unsigned B16 : 1;
+        unsigned X : 16;
+    };
+};
+
+
+_(record C
+{
+    \natural C1;
+    \natural C2;
+    \natural C3;
+    \natural C4;
+    \natural C5;
+    \natural C6;
+    \natural C7;
+    \natural C8;
+    \natural C9;
+    \natural C10;
+    \natural C11;
+    \natural C12;
+    \natural C13;
+    \natural C14;
+    \natural C15;
+    \natural C16;
+})
+
+_(def C Abstract3(union B* b)
+{
+    return (C) {
+        .C1 = b->B1,
+        .C2 = b->B2,
+        .C3 = b->B3,
+        .C4 = b->B4,
+        .C5 = b->B5,
+        .C6 = b->B6,
+        .C7 = b->B7,
+        .C8 = b->B8,
+        .C9 = b->B9,
+        .C10 = b->B10,
+        .C11 = b->B11,
+        .C12 = b->B12,
+        .C13 = b->B13,
+        .C14 = b->B14,
+        .C15 = b->B15,
+        .C16 = b->B16
+    };
+})
+
+
+union F
+{
+    _(backing_member)
+    UINT32 uint32;
+
+    struct
+    {
+        UINT32 F1 : 5;
+        UINT32 F2 : 1;
+        UINT32 F3 : 1;
+        UINT32 F4 : 1;
+        UINT32 F5 : 1;
+        UINT32 F6 : 1;
+        UINT32 F7 : 6;
+        UINT32 F8 : 4;
+        UINT32 : 4;
+        UINT32 F9 : 1;
+        UINT32 F10 : 2;
+        UINT32 F11 : 1;
+        UINT32 F12 : 1;
+        UINT32 F13 : 1;
+        UINT32 F14 : 1;
+        UINT32 F15 : 1;
+    };
+
+};
+
+_(record H
+{
+    \natural H1;
+    \bool H2;
+    \bool H3;
+    \bool H4;
+    \bool H5;
+    \bool H6;
+
+    \bool H01;
+    \bool H02;
+    \bool H03;
+    \bool H04;
+    \bool H05;
+    \bool H06;
+
+    \bool H31;
+    \bool H32;
+    \bool H33;
+    \bool H34;
+    \bool H35;
+    \bool H36;
+
+    \bool H21;
+    \bool H22;
+    \bool H23;
+    \bool H24;
+    \bool H25;
+    \bool H26;
+
+    \natural H7;
+    \natural H8;
+    \bool H9;
+    \natural H10;
+    \bool H11;
+    \bool H12;
+    \bool H13;
+    \bool H14;
+    \bool H15;
+})
+
+
+
+_(def H Abstract4(union F f)
+{
+    return (H) {
+        .H1 = f.F1,
+        .H2 = f.F2,
+        .H3 = f.F3,
+        .H4 = f.F4,
+        .H5 = f.F5,
+        .H6 = f.F6,
+
+        .H21 = f.F1,
+        .H22 = f.F2,
+        .H23 = f.F3,
+        .H24 = f.F4,
+        .H25 = f.F5,
+        .H26 = f.F6,
+
+        .H31 = f.F1,
+        .H32 = f.F2,
+        .H33 = f.F3,
+        .H34 = f.F4,
+        .H35 = f.F5,
+        .H36 = f.F6,
+
+        .H01 = f.F1,
+        .H02 = f.F2,
+        .H03 = f.F3,
+        .H04 = f.F4,
+        .H05 = f.F5,
+        .H06 = f.F6,
+
+        .H7 = f.F7,
+        .H8 = f.F8,
+        .H9 = f.F9,
+        .H10 = f.F10,
+        .H11 = f.F11,
+        .H12 = f.F12,
+        .H13 = f.F13,
+        .H14 = f.F14, 
+        .H15 = f.F15
+        };
+})
+`
+Verification of Abstract1 succeeded.
+Verification of Abstract2 succeeded.
+Verification of Abstract3 succeeded.
+Verification of Abstract4 succeeded.
+`

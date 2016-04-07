@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+_(primitive)
+struct S {
+	int i;
+};
+
+void foo(struct S *s) 
+	_(writes s)
+	_(ensures s->i == 0)
+{
+	s->i = 0;
+}
+`
+Verification of foo succeeded.
+`

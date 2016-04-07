@@ -1,0 +1,37 @@
+#include "vcc.h"
+
+struct S {
+    int a;
+};
+
+_(dynamic_owns) struct T {
+    struct S a, b, c;
+    _(invariant \mine(&a, &b, &c))
+};
+
+void works(struct T *t)
+    _(requires \wrapped(t))
+    _(writes t)
+{
+    _(unwrap t)
+    _(assert \forall \object o; o \in t->\owns ==> \wrapped(o))
+}
+
+struct U {
+    struct S a, b, c;
+    _(invariant \mine(&a, &b, &c))
+};
+
+void fails(struct U *u)
+    _(requires \wrapped(u))
+    _(writes u)
+{
+    _(unwrap u)
+    _(assert \forall \object o; o \in u->\owns ==> \wrapped(o))
+}
+`
+Verification of T#adm succeeded.
+Verification of U#adm succeeded.
+Verification of works succeeded.
+Verification of fails succeeded.
+`

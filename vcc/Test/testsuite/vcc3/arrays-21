@@ -1,0 +1,19 @@
+#include "vcc.h"
+
+typedef struct A {
+  int x;
+} A;
+
+void bar(A *p)
+  _(writes \extent(p))
+  _(maintains \mutable(p));
+
+void foo(A*p)
+  _(maintains \mutable_array(p,5))
+  _(writes \array_range(p,5))
+{
+  bar(p+1);
+}
+`
+Verification of foo succeeded.
+`

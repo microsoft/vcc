@@ -1,0 +1,24 @@
+#include <vcc.h>
+
+struct S {
+	volatile int a;
+	volatile int b;
+	
+	_(invariant :lemma b > 0)
+	_(invariant a == b)
+	_(invariant a > 0)
+};
+
+void fooShouldFail(struct S *s) 
+	_(requires \wrapped(s))
+{
+	_(atomic s) {
+		s->b = -1;
+	}
+}
+
+`
+Verification of S#adm succeeded.
+Verification of fooShouldFail failed.
+testcase(15,11) : error VC8524: Assertion 'chunk a == b of invariant of s holds after atomic' did not verify.
+`

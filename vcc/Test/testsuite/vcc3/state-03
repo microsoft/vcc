@@ -1,0 +1,34 @@
+#include <vcc.h>
+
+void foo()
+{
+  int x, *p;
+  _(ghost \state s1, s2;)
+  _(ghost \state s3, ^s3p;)
+  p = &x;
+  _(ghost  s3p = &s3;)
+
+  *p = 1;
+  _(ghost s3 = \now();)
+  _(ghost s1 = \now();)
+  *p = 2;
+  _(ghost s3 = \now();)
+  _(ghost s2 = \now();)
+
+  _(assert \at(s1, \at(s2, *p)) == 2)
+  _(assert \at(s2, \at(s1, *p)) == 1)
+  _(assert \at(s1, \at(\now(), *p)) == 2)
+
+
+  _(assert \at(s1, \at(s3, *p)) == 2)
+  _(assert \at(\at(s1, s3), *p) == 1)
+  _(assert \at(s1, \at(\at(\now(),s3), *p)) == 2)
+}
+`
+testcase(18,12) : warning VC9106: '\old', '\at', or '\when_claimed' in '\at(s1, \at(s2, *p))' has no effect
+testcase(19,12) : warning VC9106: '\old', '\at', or '\when_claimed' in '\at(s2, \at(s1, *p))' has no effect
+testcase(20,12) : warning VC9106: '\old', '\at', or '\when_claimed' in '\at(s1, \at(\now(), *p))' has no effect
+testcase(23,12) : warning VC9106: '\old', '\at', or '\when_claimed' in '\at(s1, \at(s3, *p))' has no effect
+testcase(25,12) : warning VC9106: '\old', '\at', or '\when_claimed' in '\at(s1, \at(\at(\now(),s3), *p))' has no effect
+Verification of foo succeeded.
+`

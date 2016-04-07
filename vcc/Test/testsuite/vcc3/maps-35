@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+void foo(_(ghost int m[int]))
+  _(requires \forall int i; m[i] == i)
+{
+  _(ghost int k[int] = (\lambda int i; i))
+  _(assert k == m)
+}
+`
+Verification of foo succeeded.
+`

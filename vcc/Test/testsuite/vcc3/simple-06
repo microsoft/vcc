@@ -1,0 +1,34 @@
+#include <vcc.h>
+
+struct A {
+  int f;
+  volatile int g;
+};
+
+void bar(struct A *a)
+  _(maintains \wrapped(a))
+{
+  _(atomic a) {
+    a->g = 3;
+  }
+}
+
+void foo()
+{
+  struct A a;
+
+  a.f = 1;
+  a.g = 2;
+  _(wrap &a)
+  _(assert a.f == 1 && a.g == 2)
+  bar(&a);
+  _(assert a.f == 1)
+  _(assert a.g == 2) // should fail
+  _(unwrap &a)
+
+}
+`
+Verification of bar succeeded.
+Verification of foo failed.
+testcase(26,12) : error VC9500: Assertion 'a.g == 2' did not verify.
+`

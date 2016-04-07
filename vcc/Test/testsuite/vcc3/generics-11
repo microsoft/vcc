@@ -1,0 +1,37 @@
+#include "vcc.h"
+
+void *
+CompareAndSwapPointer(
+    void * volatile * Destination,
+    void * Exchange,
+    void * Comperand
+    );
+
+#ifdef VERIFY
+template<typename T>
+_(atomic_inline)
+T *
+CompareAndSwapPointer(
+    T* volatile * Destination,
+    T* Exchange,
+    T* Comperand
+    )
+{
+    T *result = *Destination;
+    if (*Destination == Comperand)
+        *Destination = Exchange;
+    return result;
+}
+#endif
+
+struct S { int dummy; };
+
+void foo() {
+    struct S *a, *b, *c;
+
+    CompareAndSwapPointer<struct S>(&a, b, c);
+
+}
+`
+Verification of foo succeeded.
+`

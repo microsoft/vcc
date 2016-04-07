@@ -1,0 +1,158 @@
+`/smoke 
+#include "vcc.h"
+
+int foo1() {
+  int x;
+  _(ghost \bool a = x;) // conversion uses if-then-else
+}
+
+int foo1_smoke(int True)
+  _(requires True)
+{
+  int x;
+  _(ghost \bool a = x;) // conv uses if-then-else
+  if (True) return;
+}
+
+_(int foo2() {
+  \bool b;
+  \bool a = b || b;
+})
+
+_(int foo2_smoke(\bool True)
+  _(requires True)
+{
+  \bool b;
+  \bool a = b || b;
+  if (True) return;
+})
+
+_(int foo3() {
+  \bool b;
+  \bool a = b && b;
+})
+
+_(int foo3_smoke(\bool True)
+  _(requires True)
+{
+  \bool b;
+  \bool a = b && b;
+  if (True) return;
+})
+
+_(int foo4() {
+  \bool b;
+  \bool a = b ? b : b;
+})
+
+_(int foo4_smoke(\bool True)
+  _(requires True)
+{
+  \bool b;
+  \bool a = b ? b : b;
+  if (True) return;
+})
+
+int foo5() {
+  unsigned n;
+  for (n = 0; n < 20; n++) { }
+}
+
+int foo5_smoke(int True)
+  _(requires True)
+{
+  unsigned n;
+  for (n = 0; n < 20; n++) { }
+  if (True) return;
+}
+
+int foo6() {
+  unsigned n;
+  n = 0; while (n < 20) { n++; }
+}
+
+int foo6_smoke(int True)
+  _(requires True)
+{
+  unsigned n;
+  n = 0; while (n < 20) { n++; }
+  if (True) return;
+}
+
+int loopexit1() {
+  unsigned n;
+  for (n = 0; n < 20; n++)
+    _(invariant n <= 7)
+  {
+    if (n == 7) return;
+  }
+}
+
+int loopexit1_defused()
+{
+  unsigned n;
+  for (n = 0; n < 20; n++)
+    _(invariant n <= 7)
+  {
+    if (n == 7) return;
+  }
+  _(assert \false)
+}
+
+int loopexit2() {
+  unsigned n;
+  n = 0;
+  while (n < 20)
+    _(invariant n <= 7)
+  {
+    if (n == 7) return;
+    n++;
+  }
+}
+
+int loopexit2_defused()
+{
+  unsigned n;
+  n = 0;
+  while (n < 20)
+    _(invariant n <= 7)
+  {
+    if (n == 7) return;
+    n++;
+  }
+  _(assert \false)
+}
+`
+Verification of foo1 succeeded.
+Verification of foo1_smoke succeeded.
+testcase(13,3) : warning : found unreachable code, possible soundness violation, please check the axioms or add an explicit assert(false)
+Verification of foo2 succeeded.
+Verification of foo2_smoke succeeded.
+testcase(26,3) : warning : found unreachable code, possible soundness violation, please check the axioms or add an explicit assert(false)
+Verification of foo3 succeeded.
+Verification of foo3_smoke succeeded.
+testcase(39,3) : warning : found unreachable code, possible soundness violation, please check the axioms or add an explicit assert(false)
+Verification of foo4 succeeded.
+Verification of foo4_smoke succeeded.
+testcase(52,3) : warning : found unreachable code, possible soundness violation, please check the axioms or add an explicit assert(false)
+Verification of foo5 succeeded.
+Verification of foo5_smoke succeeded.
+testcase(65,3) : warning : found unreachable code, possible soundness violation, please check the axioms or add an explicit assert(false)
+testcase(64,3) : warning : trace to unreachable location
+testcase(65,3) : warning : trace to unreachable location
+Verification of foo6 succeeded.
+Verification of foo6_smoke succeeded.
+testcase(78,3) : warning : found unreachable code, possible soundness violation, please check the axioms or add an explicit assert(false)
+testcase(77,10) : warning : trace to unreachable location
+testcase(78,3) : warning : trace to unreachable location
+Verification of loopexit1 succeeded.
+testcase(83,3) : warning : found unreachable code, possible soundness violation, please check the axioms or add an explicit assert(false)
+testcase(84,17) : warning : trace to unreachable location
+testcase(83,3) : warning : trace to unreachable location
+Verification of loopexit1_defused succeeded.
+Verification of loopexit2 succeeded.
+testcase(104,3) : warning : found unreachable code, possible soundness violation, please check the axioms or add an explicit assert(false)
+testcase(105,17) : warning : trace to unreachable location
+testcase(104,3) : warning : trace to unreachable location
+Verification of loopexit2_defused succeeded.
+`

@@ -1,0 +1,24 @@
+#include <vcc.h>
+
+_(logic \bool And(\bool a, \bool b) _(ensures a && b);)
+
+void foo2()
+{
+  int a, b, c;
+  _(assert And(a > b, b > c && b > 0))
+}
+
+_(logic \bool And2(\bool a, \bool b) _(returns a && b) _(ensures a);)
+
+void foo3()
+{
+  int a, b, c;
+  _(assert And2(a > b, b > c && b > 0))
+}
+
+`
+testcase(3,3) : error VC9715: spec macros should have one ensures clause of the form 'result == expr'
+testcase(8,12) : error : (Location of symbol related to previous error.)
+testcase(11,3) : error VC9715: spec macros should have one ensures clause of the form 'result == expr'
+testcase(16,12) : error : (Location of symbol related to previous error.)
+`

@@ -1,0 +1,12 @@
+`/a /functions:foo 
+
+#include <vcc.h>
+
+_(axiom \forall int x,  y; ((x ^ y) ^ x) == y)
+
+void foo(int a, int b) {
+  _(assert ((a ^ b) ^ a) == b)
+}
+`
+Verification of foo succeeded.
+`

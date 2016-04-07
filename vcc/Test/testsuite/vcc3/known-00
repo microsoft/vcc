@@ -1,0 +1,39 @@
+#include <vcc.h>
+
+int foo(int i, int j) 
+  _(requires i)
+  _(requires !j)
+{
+  int k = _(known \true)i && _(known \false)j;
+  return k;
+}
+
+int bar(int i, int j) 
+  _(requires !j)
+{
+  int k = _(known \true)i && _(known \false)j;
+  return k;
+}
+
+int baz(int i, int j) 
+  _(requires !i)
+  _(requires !j)
+{
+  int k = _(known \true)i && _(known \false)j;
+  return k;
+}
+
+int qux(int i, int j)
+  _(requires i && !j)
+{
+  int k = _(known  \true)i && !(_(known  \false)j);
+  _(assert k)
+}
+`
+Verification of foo succeeded.
+Verification of bar failed.
+testcase(14,25) : error VC8533: Assertion 'i has the value \true specified by _(known ...)' did not verify.
+Verification of baz failed.
+testcase(22,25) : error VC8533: Assertion 'i has the value \true specified by _(known ...)' did not verify.
+Verification of qux succeeded.
+`

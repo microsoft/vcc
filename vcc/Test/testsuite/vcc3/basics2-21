@@ -1,0 +1,23 @@
+#include <vcc.h>
+
+struct S {
+  unsigned __int64 a:32;
+  unsigned __int64 b:16;
+};
+
+void foo(unsigned __int32 a, unsigned __int16 b) { }
+
+void bar(struct S s) {
+  foo(s.a, s.b);
+}
+
+void baz(struct S *s) 
+  _(requires \mutable(s))
+{
+  foo(s->a, s->b);
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+Verification of baz succeeded.
+`

@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+void main()
+{        
+  unsigned il;
+  switch (il) {
+    case (0):
+      unsigned j, ppx;
+      for (j = 0; j < 32; j++)
+        ppx = 0;
+      break;
+  }
+}        
+`
+Verification of main succeeded.
+`

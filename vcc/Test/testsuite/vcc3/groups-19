@@ -1,0 +1,21 @@
+#include <vcc.h>
+
+typedef struct Pls *pPls;
+typedef _(claimable) struct _Protector {
+  int state;
+  //invariant(depends(((pPls)owner(this))::Ipi, this))
+  _(invariant \depends(\this->\owner::Ipi, \this))
+
+  } Protector;
+
+typedef _(claimable) struct Pls {
+  _(group Ipi)
+  _(:Ipi)
+  int state;
+  Protector p;
+
+  _(invariant &p \in \this->\owns)
+} Pls, *pPls;
+`
+testcase(7,24) : error VC0000: The left of '::Ipi' must point to a struct or union.
+`

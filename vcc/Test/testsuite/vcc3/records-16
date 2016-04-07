@@ -1,0 +1,15 @@
+#include "vcc.h"
+
+_(
+_(record) struct X {
+    \bool Y[unsigned];   
+};) 
+
+_(ghost void foo() {
+  struct X x;
+  x.Y[5] = \false;
+  _(assert x.Y[5] == \false)
+})
+`
+Verification of foo succeeded.
+`

@@ -1,0 +1,28 @@
+#include "vcc.h"
+
+struct Point{int x; int y;};
+struct Rect{
+  struct Point* ll;
+  struct Point * ur;
+  _(invariant \this->ll != \this->ur && \mine(\this->ll, \this->ur))
+};
+
+void Move(struct Rect *r)
+  _(requires  \wrapped(r))
+  _(ensures  \wrapped(r))
+  _(writes  r)
+{
+  struct Point *tmp;
+  struct Point *x;
+
+  _(unwrap r)
+    tmp = r->ll;
+    _(unwrap tmp)
+      tmp->x = 3;
+    _(wrap tmp)
+  _(wrap r)
+}
+`
+Verification of Rect#adm succeeded.
+Verification of Move succeeded.
+`

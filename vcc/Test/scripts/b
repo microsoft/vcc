@@ -1,0 +1,4 @@
+#!/bin/sh
+
+Boogie /trace /z3opt:/memory:128000000 /bv:i c:/felt/vcc2/Headers/Vcc2Prelude.bpl "$@"
+#c:/felt/felt2boogie/bin/Boogie /trace /z3opt:/memory:128000000 /bv:i c:/felt/vcc2/Headers/Vcc2Prelude.bpl "$@"

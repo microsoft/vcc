@@ -1,0 +1,45 @@
+` /smoke
+#include <vcc.h>
+
+void foo(void)
+  _(requires \false);
+
+typedef void (*foo_ptr)(void)
+  _(requires \false);
+
+struct foo_ptr_vector
+{
+    foo_ptr fptr;
+};
+
+void f1()
+{
+    foo_ptr v[1];
+
+    v[0] = foo;
+}
+
+void f2()
+{
+    struct foo_ptr_vector v;
+
+    v.fptr = foo;
+}
+
+struct foo_ptr_vector v;
+
+void f3()
+    _(requires \mutable(&v))
+    _(writes \extent(&v))
+{
+    v.fptr = foo;
+}
+
+`
+Verification of f1 succeeded.
+Verification of f2 succeeded.
+Verification of f3 succeeded.
+Verification of f3#fnptr#foo_to_foo_ptr#1 succeeded.
+Verification of f2#fnptr#foo_to_foo_ptr#1 succeeded.
+Verification of f1#fnptr#foo_to_foo_ptr#1 succeeded.
+`

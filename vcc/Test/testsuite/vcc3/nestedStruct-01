@@ -1,0 +1,19 @@
+#include <vcc.h>
+
+typedef 
+  struct Bar {
+    struct SubBar {
+      int x;
+    } sub;
+  } 
+  Bar_t;
+
+int main() {
+  struct Bar b;
+  struct SubBar sb;
+  sb = b.sub;
+  return 0;
+}
+`
+Verification of main succeeded.
+`

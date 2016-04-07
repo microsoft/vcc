@@ -1,0 +1,36 @@
+#include <vcc.h>
+
+_(abstract int foo0()
+  _(ensures \result > 0)
+{
+  return 7;
+})
+
+_(def int foo1()
+  _(ensures \result > 0)
+{
+  return 7;
+})
+
+_(abstract int fooFail0()
+  _(ensures \result > 0)
+{
+  return -7;
+})
+
+_(def int fooFail1()
+  _(ensures \result > 0)
+{
+  return -7;
+})
+
+`
+Verification of foo0 succeeded.
+Verification of foo1 succeeded.
+Verification of fooFail0 failed.
+testcase(18,3) : error VC9501: Post condition '\result > 0' did not verify.
+testcase(16,13) : error VC9599: (related information) Location of post condition.
+Verification of fooFail1 failed.
+testcase(24,3) : error VC9501: Post condition '\result > 0' did not verify.
+testcase(22,13) : error VC9599: (related information) Location of post condition.
+`

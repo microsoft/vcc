@@ -1,0 +1,21 @@
+#include <vcc.h>
+
+struct A { int b; };
+
+void bar(struct A *a)
+  _(updates a)
+{
+
+  _(maintains \wrapped(a))
+  _(writes a)
+  _(ensures a->b == 42)
+  {
+    _(unwrap a)
+    a->b = 42;
+    _(wrap a)
+  }
+}
+`
+Verification of bar succeeded.
+Verification of bar#block#0 succeeded.
+`

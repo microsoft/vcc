@@ -1,0 +1,19 @@
+#include <vcc.h>
+
+struct S{
+  unsigned __int64 a[4];
+  unsigned __int64 b;
+};
+
+void foo(struct S s) {
+}
+
+void bar() {
+  struct S s;
+  foo(s);
+}
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

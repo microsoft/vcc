@@ -1,0 +1,95 @@
+#include <vcc.h>
+
+_(datatype D1 {
+  case A();
+  case B(int);
+})
+
+_(datatype D2 {
+  case C();
+  case D(int);
+})
+
+_(ghost
+int foo0(D1 d)
+{
+  switch (d) {
+  case A(): return 1;
+  case C(): return 2;
+  }
+})
+
+_(ghost
+int foo1(int d)
+{
+  switch (d) {
+  case A(): return 10;
+  case C(): return 20;
+  }
+})
+
+_(ghost
+int foo2(D1 d)
+{
+  switch (d) {
+  case A(): return 11;
+  case A(): return 22;
+  }
+})
+
+_(ghost
+int foo3(D1 d)
+{
+  switch (d) {
+  case A(): 
+  case B(x): return x;
+  }
+})
+
+_(ghost
+int foo4(D1 d)
+{
+  switch (d) {
+  case B(x): return x;
+  case A(): 
+  }
+})
+
+_(ghost
+int foo5(D1 d)
+{
+  switch (d) {
+  case B(x): if (x > 0) return x;
+  case A(): return 0;
+  }
+})
+
+_(ghost
+int ok0(D1 d)
+{
+  switch (d) {
+  case B(x): if (x > 0) return x; else break;
+  case A(): break;
+  }
+  return 0;
+})
+
+_(ghost
+int ok1(D1 d)
+{
+  switch (d) {
+  case B(x): if (x > 0) return x; break;
+  case A(): break;
+  }
+  return 0;
+})
+
+`
+testcase(18,8) : error VC9727: case 'C' is not a member of D1
+testcase(25,3) : error VC9729: cannot match on non-datatype int32_t
+testcase(36,8) : error VC9726: the datatype case 'A' is used more than once
+testcase(35,8) : error : (Location of symbol related to previous error.)
+testcase(44,3) : error VC9728: possible fall-off from a match case
+testcase(54,3) : error VC9728: possible fall-off from a match case
+testcase(62,3) : error VC9728: possible fall-off from a match case
+`

@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+_(datatype D1 {
+  case A();
+  case B(int);
+})
+
+_(ghost void foo(D1 d)
+{
+  \integer m[D1];
+  m[B(7)] = 12;
+  m[d] = 12;
+  _(assert m[B(7)] == 12)
+})
+
+`
+Verification of foo succeeded.
+`

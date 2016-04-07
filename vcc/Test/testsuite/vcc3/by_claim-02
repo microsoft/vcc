@@ -1,0 +1,81 @@
+#include <vcc.h>
+
+
+_(claimable) struct A {
+  int x;
+  volatile int vol_x;
+};
+
+struct B {
+  int y;
+  struct A *a;
+  _(ghost \claim ca)
+
+  _(invariant \mine(ca) && \claims(ca, (\when_claimed(a))->\closed))
+  _(invariant y == a->x)
+};
+
+void write_int(int *x)
+  _(writes x);
+
+void ok1(struct A*a _(ghost \claim c))
+  _(always c, a->\closed)
+{ 
+  int q;
+  int z = a->x;
+  int zz;
+
+  write_int(&q);
+  zz = a->x;
+  _(assert  z == zz)
+}
+
+vcc_attr("no_infer", "always_by_claim")
+void ok2(struct A*a _(ghost \claim c))
+  _(requires \always_by_claim(c, a))
+  _(always c, a->\closed)
+{
+  int q;
+  int z = a->x;
+  int zz;
+
+  write_int(&q);
+  zz = a->x;
+  _(assert  z == zz)
+}
+
+
+vcc_attr("no_infer", "always_by_claim")
+void ok3(struct A*a _(ghost \claim c))
+  _(always c, a->\closed)
+{
+  int q;
+  int z;
+  int zz;
+
+  _(assert \always_by_claim(c, a))
+  z = a->x;
+
+  write_int(&q);
+  zz = a->x;
+  _(assert  z == zz)
+}
+
+vcc_attr("no_infer", "always_by_claim")
+struct B2 {
+  int y;
+  struct A *a;
+  _(ghost \claim ca)
+ 
+  _(invariant \always_by_claim(ca, a))
+  _(invariant \mine(ca) && \claims(ca, (\when_claimed(a))->\closed))
+  _(invariant y == a->x)
+};
+
+`
+Verification of B#adm succeeded.
+Verification of B2#adm succeeded.
+Verification of ok1 succeeded.
+Verification of ok2 succeeded.
+Verification of ok3 succeeded.
+`

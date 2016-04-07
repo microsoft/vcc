@@ -1,0 +1,23 @@
+#include <vcc.h>
+
+struct B{ int x; };
+
+struct A {
+	struct B *b;
+	_(invariant \mine(b))
+};
+
+
+template<typename T>void blah(T **p)
+    _(writes p);
+
+void foo(struct A *a)
+	_(requires \mutable(a))
+	_(writes \extent(a))
+{
+	blah(vcc_nospeccast(void **, &a->b));
+}
+`
+Verification of A#adm succeeded.
+Verification of foo succeeded.
+`

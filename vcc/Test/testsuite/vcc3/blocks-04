@@ -1,0 +1,21 @@
+#include <vcc.h>
+
+int foo(int i)
+  _(requires i < 10)
+{
+  i++;
+  
+    _(requires i < 11)
+	_(ensures \old(i) == 0 ==> i == 0)
+	_(ensures \old(i) != 0 ==> i == \old(i) + 1)
+  {
+      if(i)
+        i++;
+  }
+
+  return i;
+}
+`
+Verification of foo succeeded.
+Verification of foo#block#0 succeeded.
+`

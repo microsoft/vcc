@@ -1,0 +1,19 @@
+#include <vcc.h>
+
+struct A {
+  int a;
+  int b;
+  _(ghost int x)
+  _(ghost int y)
+};
+
+void foo(struct A *p)
+  _(requires \mutable(p))
+  _(writes &p->a, &p->x)
+{
+  p->a = 12;
+  _(ghost p->x = 13)
+}
+`
+Verification of foo succeeded.
+`

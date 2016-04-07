@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+struct Foo {
+    unsigned dummy;
+};
+
+void foo(unsigned i) {
+   _(ghost struct Foo map1[unsigned]) 
+   _(ghost struct Foo map2[unsigned]) 
+   _(ghost map2 = ((i==2)? map1: map2))
+}
+`
+Verification of foo succeeded.
+`

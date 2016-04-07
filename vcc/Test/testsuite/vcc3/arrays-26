@@ -1,0 +1,18 @@
+#include <vcc.h>
+#include <stdlib.h>
+
+_(logic \bool isNTstring(char * s) =
+   (\exists size_t l;
+       \mutable((char[l+1]) s) &&
+       s[l] == '\0'))
+       
+void foo() {
+  char *s = (char *)malloc(10);
+  _(assume s != NULL)
+  s[9] = '\0';
+  _(assert isNTstring(s))
+}
+
+`
+Verification of foo succeeded.
+`

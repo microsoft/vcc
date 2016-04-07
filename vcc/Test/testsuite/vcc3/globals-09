@@ -1,0 +1,10 @@
+#include "vcc.h"
+
+int x, y;
+
+void foo() {
+  _(assert \gemb(&x)!=\gemb(&y))
+}
+`
+Verification of foo succeeded.
+`

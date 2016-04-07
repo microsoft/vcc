@@ -1,0 +1,23 @@
+#include "vcc.h"
+
+struct B { int z; };
+
+
+typedef struct B* PB;
+struct A {
+  int p;
+  _(ghost struct B *pp)
+  _(invariant \addr(pp) == p)
+  _(invariant \mine(pp))
+};
+
+void foo(struct A* a)
+  _(requires \wrapped(a))
+{
+  volatile struct B *pp = ((volatile struct B *) a->p);
+  _(assert pp ==  ((volatile struct B *)a->p))
+}
+`
+Verification of A#adm succeeded.
+Verification of foo succeeded.
+`

@@ -1,0 +1,19 @@
+#include "vcc.h"
+
+struct Acct {
+  int amount;
+};
+
+void deposit(struct Acct *a, int x)
+  _(requires \wrapped(a))
+  _(ensures \wrapped(a))
+  _(writes a)
+{
+  _(unwrap a)
+  a->amount = _(unchecked)(a->amount + x);
+  _(wrap a)
+}
+`
+testcase(13,28) : warning VC9326: [possible unsoundness]: signed overflow (of '+') has undefined behavior in C
+Verification of deposit succeeded.
+`

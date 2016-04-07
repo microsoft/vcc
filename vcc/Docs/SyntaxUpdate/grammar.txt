@@ -1,0 +1,279 @@
+# Note: this is outdated
+#
+# This document gives extensions to the C99 grammar provided by the
+# VCC verification tool to facilitate annotation of C programs.
+# The C99 grammar extended can be found at:
+#   http://www.open-std.org/JTC1/SC22/wg14/www/docs/n1124.pdf
+
+# claim/unclaim: use \claim/\unclaim
+# set_owner/set_owns: \set(\owns(x), ...); \set(\owner(y), ...);
+#    The alternatives are:
+#       x->\owns = ...;
+#       \owns(x) = ...;
+#    Both look weird, but maybe this is just a matter of taste.
+#
+# Functions like \old, \owner and so forth parse as regular functions, so there is no
+# need to add them to the grammar.
+#
+
+#
+# Additions.
+#
+
+# Mark: old (or \old?) & when_claimed() are missing; distinguish one- versus two-state expression at the grammar level?
+#
+
+primary-expression:
+	...
+	specification-expression
+
+cast-expression:
+	...
+	"__vcc_spec" "(" "unchecked" ")" cast-expression
+	"__vcc_spec" "(" "spec_cast" type-name ")" cast-expression # not sure if needed
+
+struct-or-union:
+	...
+	"\record"
+
+declaration:
+	...
+	specification-declaration
+
+struct-declaration:
+	...
+	specification-struct-declaration
+
+parameter-type-list:
+	...
+	parameter-list ghost-parameter-list
+
+statement:
+	...
+	specification-statement
+
+iteration-statement:
+	...
+	annotated-iteration-statement
+
+function-definition:
+	...
+	declaration-specifiers declarator function-specification-list compound-statement
+
+declarator:
+	...
+	pointer(opt) direct-declarator "(" parameter-type-list ")" function-specification-list
+
+pointer:
+	...
+	"^" type-qualifier-list(opt) pointer(opt)
+	# This places ^ in exactly the same place as * (see 6.7.5)
+
+direct-declarator:
+	...
+	direct-declarator "[" type-name "]" # maps
+	# note that int[10] (for as_array() casting) is already a valid C type
+
+relational-expression:
+	...
+	relational-expression "\in" shift-expression
+	relational-expression "..." shift-expression # don't use .., use something that is already a token
+
+storage-class-specifier:
+	...
+	specification-type-specifier
+	specification-field-specifier
+
+function-specifier:
+	...
+	specification-function-specifier
+
+
+# this is a replacement, not addition
+conditional-expression:
+	iff-expression
+	iff-expression ? expression : conditional-expression
+
+#
+# New definitions.
+#
+
+iff-expression:
+	iff-expression "<==>" explies-expression
+	explies-expression
+
+explies-expression:
+	explies-expression "<==" implies-expression
+	implies-expression
+
+implies-expression:
+	logical-OR-expression "==>" implies-expression
+	logical-OR-expression
+
+specification-struct-declaration:
+	"__vcc_spec" "(" "ghost" specifier-qualifier-list struct-declarator-list ")"
+	"__vcc_spec" "(" "invariant" conditional-expression ")"
+
+specification-expression:
+	quant-name variable-binding-list prover-hints(opt) ";" conditional-expression
+	# There are no ranges, also for lambdas. There seem to be no gain (checking-wise) from partially defined lambda.
+	"\let" let-binding-list ";" conditional-expression
+	# Mark: this is just a feature idea: \let in function specs outside the
+	# regular clauses could be handy, such that the same abbreviations can be
+	# used in (multiple) requires and ensures.
+	set-constructor
+	record-map-update
+
+quant-name:
+	"\forall"
+	"\exists"
+	"\lambda"
+
+set-constructor:
+	"{" conditional-expression-list "}"
+
+record-map-update:
+	"{" expression "\with" update-specifier-list "}"
+	"{" expression "for" update-specifier-list "}"
+
+update-specifier:
+	designator "=" conditional-expression
+
+let-binding:
+	identifier "=" conditional-expression
+
+variable-binding:
+	type-specifier declarator-list
+
+prover-hints:
+	prover-hints(opt) prover-hint
+
+prover-hint:
+	"{" identifier "}"
+	"{" identifier ":" expression "}"
+	"{" conditional-expression-list "}"
+
+# Note that this allows stray semicolons, and that contracts of ghost functions
+# will need to sit in a (nested) _(...).
+specification-declaration:
+	"__vcc_spec" "(" top-specification-declaration ";"(opt) ")"
+
+top-specification-declaration:
+	"ghost" external-declaration
+	"pure" external-declaration
+	"axiom" conditional-expression
+	"logic" type-specifier pointer(opt) identifier "(" parameter-list(opt) ")" "=" conditional-expression
+
+ghost-parameter-list:
+	ghost-parameter-list(opt) ghost-parameter
+
+ghost-parameter:
+	"__vcc_spec" "(" "ghost" parameter-list ")"
+	"__vcc_spec" "(" "ghost_out" parameter-list ")"
+
+specification-statement:
+	"__vcc_spec" "(" "ghost" statement ")"  # it would be good to make the ";" at the end of statement optional
+	"__vcc_spec" "(" "assert" prover-hints(opt) conditional-expression ")"
+	"__vcc_spec" "(" "assume" conditional-expression ")"
+
+	"__vcc_spec" "(" "atomic" conditional-expression-list ")" compound-statement
+	# Mark: is it intentional to enforce braces for atomic, blocks, unwrapping,
+	# and the like? Or should we just take a statement and stick more to
+	# regular C ?
+	"__vcc_spec" "(" "begin_update" conditional-expression-list ")" # TODO: rename?
+	# allow for begin_update to take an optional list of additional claims
+
+	"__vcc_spec" "(" "block" ")" function-specification-list compound-statement
+
+	"__vcc_spec" "(" "wrap" conditional-expression ")"
+	"__vcc_spec" "(" "unwrap" conditional-expression ")"
+	"__vcc_spec" "(" "unwrapping" conditional-expression-list ")" unwrapping-specification-list(opt) compound-statement
+	# The _(writes ...) turns it into current skinny_expose.
+
+	# Mark: for symmetry support lists for wrap / unwrap as well?
+	# Michal: possibly.
+
+	# TODO We might want to use \to_bytes, etc.
+	"__vcc_spec" "(" "to_bytes" conditional-expression ")"
+	"__vcc_spec" "(" "from_bytes" conditional-expression ")"
+	"__vcc_spec" "(" "split_array" conditional-expression-list ")"
+	"__vcc_spec" "(" "join_arrays" conditional-expression-list ")"
+
+iteration-statement:
+	"while" "(" expression ")" loop-specification-list statement
+	"do" loop-specification-list statement while "(" expression ")" ;
+	"for" "(" expression(opt) ";" expression(opt) ";" expression(opt) ")" loop-specification-list statement
+	"for" "(" declaration expression(opt) ";" expression(opt) ")" loop-specification-list statement
+
+loop-specification-list:
+	loop-specification-list(opt) loop-specification
+
+loop-specification:
+	"__vcc_spec" "(" "invariant" conditional-expression ")"
+	"__vcc_spec" "(" "writes" conditional-expression-list ")"
+
+unwrapping-specification-list:
+	unwrapping-specification-list(opt) unwrapping-specification
+
+unwrapping-specification:
+	"__vcc_spec" "(" "writes" conditional-expression-list ")"
+
+
+function-specification-list:
+	function-specification-list(opt) function-specification
+
+function-specification:
+	"__vcc_spec" "(" "reads" conditional-expression-list ")"
+	"__vcc_spec" "(" "writes" conditional-expression-list ")"
+	"__vcc_spec" "(" "requires" conditional-expression ")"
+	"__vcc_spec" "(" "ensures" conditional-expression ")"
+	"__vcc_spec" "(" "maintains" conditional-expression ")"
+	# Mark: should "maintains" really be a first-order construct? We probably need abbreviations for other stuff (returns, always, ...) as well...
+
+# TODO: add the remaining ones
+specification-field-specifier:
+	"__vcc_spec" "(" "backing_member" ")"
+	"__vcc_spec" "(" "name" identifier ")"
+	"__vcc_spec" "(" "inline" ")"
+	"__vcc_spec" "(" "outline" ")"  # as_array
+
+
+# Note that this places them *before* "struct", not after.
+specification-type-specifier:
+	"__vcc_spec" "(" "dynamic_owns" ")"
+	"__vcc_spec" "(" "volatile_owns" ")"
+	"__vcc_spec" "(" "claimable" ")"
+
+specification-function-specifier:
+	"__vcc_spec" "(" "status" expression ")"  # verified, specified, ...
+	"__vcc_spec" "(" "hint" identifier ":" expression ")" # splits, options, frame_axiom
+	"__vcc_spec" "(" "atomic_inline" ")"
+	# Mark: maybe add a regular "inline" as well
+
+# comma-separated lists
+let-binding-list:
+	let-binding-list "," let-binding
+	let-binding
+
+variable-binding-list:
+	variable-binding-list "," variable-binding
+	variable-binding
+	# Mark: ACSL does not seem to support 'int x, y;' in contrast to the thing
+	# that's written above, although the "," makes it a little hard to parse
+	# (and read, with respect to standard C)
+
+conditional-expression-list:
+	conditional-expression-list "," conditional-expression
+	conditional-expression
+
+declarator-list:
+	declarator-list "," declarator
+	declarator
+
+
+update-specifier-list:
+	update-specifier-list "," update-specifier
+	update-specifier
+
+
+# vim: spell

@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+struct S {
+  int a;
+  int b;
+};
+
+int foo(struct S s) 
+  _(ensures \result == s.a + s.b);
+  
+void bar() {
+  int x = foo( (struct S) { .a = 10, .b = 20 } );
+  _(assert x == 30)
+}
+`
+Verification of bar succeeded.
+`

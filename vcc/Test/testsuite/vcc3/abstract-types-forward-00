@@ -1,0 +1,33 @@
+#include <vcc.h>
+
+_(type foo)
+_(datatype bar {
+  case f(foo);
+  case b();
+})
+_(datatype foo {
+  case bb(bar);
+  case aa();
+})
+
+_(def \integer sz(foo f)
+  _(decreases f)
+{
+  switch (f) {
+  case bb(b): return 0;
+  case aa(): return 1;
+  }
+})
+
+_(def \integer sz2(bar bl)
+  _(decreases bl)
+{
+  switch (bl) {
+  case f(x): return 1;
+  case b(): return 2;
+  }
+})
+`
+Verification of sz succeeded.
+Verification of sz2 succeeded.
+`

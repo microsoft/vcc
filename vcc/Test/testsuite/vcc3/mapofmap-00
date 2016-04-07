@@ -1,0 +1,22 @@
+#include "vcc.h"
+
+void success1()
+{
+	_(ghost int a[int][int])
+	_(ghost int b[int])
+	_(ghost int foo[int])
+
+	_(ghost foo = (\lambda int x; x > 0 && x<100 ? (x*x) : 0);)
+	_(ghost a = (\lambda int y; y>0 ? (foo) : b);)
+	_(ghost foo = (\lambda int x; x > 0 && x<100 ? (x*x*x) : 0);)
+	_(ghost a[6] = foo;)
+	_(ghost b = a[5];)
+	_(assert b[3] == 9)
+	_(ghost 
+	  b = a[6];
+	)
+	_(ghost _(assert b[3] == 27))
+}
+`
+Verification of success1 succeeded.
+`

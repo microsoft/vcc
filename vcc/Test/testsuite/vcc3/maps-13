@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+struct S {
+  int a;
+  _(ghost \bool M[unsigned __int64])
+  _(invariant M == \lambda unsigned __int64 x; x < 100 ==> ((struct S *)x \is struct S))
+};
+
+void foo(struct S *s) {}
+
+`
+Verification of S#adm succeeded.
+Verification of foo succeeded.
+`

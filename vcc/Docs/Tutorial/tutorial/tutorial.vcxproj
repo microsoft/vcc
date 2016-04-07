@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{979202CB-C20D-479D-B0F2-D730958AE977}</ProjectGuid>
+    <RootNamespace>tutorial</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\5.7.solutions.c" />
+    <ClCompile Include="..\c\02_rand.c" />
+    <ClCompile Include="..\c\2.1.minInline.c" />
+    <ClCompile Include="..\c\3.5.copy1.c" />
+    <ClCompile Include="..\c\3.6.copy_array.c" />
+    <ClCompile Include="..\c\3.7.issorted.c" />
+    <ClCompile Include="..\c\3.1.min2.c" />
+    <ClCompile Include="..\c\3.2.min3.c" />
+    <ClCompile Include="..\c\4.3.min5.c" />
+    <ClCompile Include="..\c\3.3.min_assert.c" />
+    <ClCompile Include="..\c\3.4.rw.c" />
+    <ClCompile Include="..\c\5.1.div.c" />
+    <ClCompile Include="..\c\5.2.div_assert.c" />
+    <ClCompile Include="..\c\4.2.hash.c" />
+    <ClCompile Include="..\c\4.1.hash_fail.c" />
+    <ClCompile Include="..\c\5.3.lsearch_full.c" />
+    <ClCompile Include="..\c\5.4.sort.c" />
+    <ClCompile Include="..\c\7.0.arraySet.c" />
+    <ClCompile Include="..\c\7.3.sort.c" />
+    <ClCompile Include="..\c\5.6.copy_and_clear_array.c" />
+    <ClCompile Include="..\c\5.5.copy_array.c" />
+    <ClCompile Include="..\c\6.1.safestring.c" />
+    <ClCompile Include="..\c\6.2.safestring_assert.c" />
+    <ClCompile Include="..\c\6.3.safestring_dynamic.c" />
+    <ClCompile Include="..\c\6.4.safestring_dynamic_assert.c" />
+    <ClCompile Include="..\c\7.2.list.c" />
+    <ClCompile Include="..\c\7.1.list0.c" />
+    <ClCompile Include="..\c\6.5.table.c" />
+    <ClCompile Include="..\c\7.4.math.c" />
+    <ClCompile Include="..\c\7.5.lists.c" />
+    <ClCompile Include="..\c\8.1.lockw.c" />
+    <ClCompile Include="..\c\8.2.lockw_wrong.c" />
+    <ClCompile Include="..\c\8.3.lockw_wrong2.c" />
+    <ClCompile Include="..\c\8.4.lock_claimsobj.c" />
+    <ClCompile Include="..\c\8.5.counter.c" />
+    <ClCompile Include="..\c\8.6.rundown.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

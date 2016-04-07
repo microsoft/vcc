@@ -1,0 +1,78 @@
+﻿%{
+
+open Ast
+
+let private spans = ref []
+
+let internal result() = List.rev !spans
+
+let internal reset() = spans := []
+
+let private addKeyword (ps : Position, pe : Position) = 
+  spans := Keyword(ps.Column, pe.Column - ps.Column) :: !spans
+
+let private addSpecCode (ps : Position) (pe : Position) =
+  spans := Spec(ps.Column, pe.Column - ps.Column + 1) :: !spans
+
+%}
+
+// The start token becomes a parser function in the compiled code:
+%start start
+
+%token <Position> OPENSPEC
+%token <Position> LPAREN
+%token <Position> RPAREN
+%token <Position*Position> KEYWORD
+%token <Position*Position> GUARDED
+%token <Position*Position> GHOST
+%token EOF
+
+
+// This is the type of the data produced by a successful reduction of the 'start'
+// symbol:
+%type < unit > start
+
+%%
+
+// Instead of building an AST and passing that one back to our caller, we create a list of the
+// relevant locations as side-effects during the parsing. The reason for this is that
+// we want to deal with syntactically incorrect code and collect all spans up to the
+// parse error
+
+start:  Program                                       { () }
+
+Program : 
+    | NestedParens EOF                                { () }
+
+NestedParens :
+    | IgnoredKeywords                                 { () } 
+    | NestedParens Parens IgnoredKeywords             { () }
+
+Parens :
+    | LPAREN NestedParens RPAREN                      { () }
+    | OPENSPEC KeywordOpt NestedParensInSpec RPAREN   { addSpecCode $1 $4 }
+
+NestedParensInSpec :
+    | Keywords                                        { () } 
+    | NestedParensInSpec ParensInSpec Keywords        { () }
+
+ParensInSpec :
+    | LPAREN NestedParensInSpec RPAREN                { () }
+    | OPENSPEC KeywordOpt NestedParensInSpec RPAREN   { addSpecCode $1 $4 }
+
+IgnoredKeywords  :  // handling of keywords outside of spec block
+    |                                                 { () }
+    | KEYWORD IgnoredKeywords                         { () }
+    | GHOST IgnoredKeywords							              { () }
+    | GUARDED IgnoredKeywords                         { addKeyword $1 }
+
+Keywords  :  // handling of keywords inside spec block
+    |                                                 { () }
+    | KEYWORD Keywords                                { () }
+    | GHOST Keywords                                  { addKeyword $1 }
+    | GUARDED Keywords                                { addKeyword $1 }
+
+KeywordOpt :  // handling of keyword following the opening of a spec block
+    |                                                 { () }
+    | KEYWORD                                         { addKeyword $1 }
+    | GHOST                                           { addKeyword $1 }

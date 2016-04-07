@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+void foo() {
+  _(assert __alignof( char ) == 1)
+  _(assert __alignof( short ) ==	2)
+  _(assert __alignof( int ) ==	4)
+  _(assert __alignof( __int64 ) ==	8)
+}
+
+`
+Verification of foo succeeded.
+`

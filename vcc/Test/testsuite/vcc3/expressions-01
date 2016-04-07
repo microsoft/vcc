@@ -1,0 +1,31 @@
+#include "vcc.h"
+
+void dbz1() {
+  int a, zero = 0;
+  a = a / zero;
+}
+
+void dbz2() {
+  int a, zero = 0;
+  a = _(unchecked)(a / zero);
+}
+
+void dbz3() {
+  int a, zero = 0;
+  a = a % zero;
+}
+
+void dbz4() {
+  int a, zero = 0;
+  a = _(unchecked)(a % zero);
+}
+`
+Verification of dbz1 failed.
+testcase(5,11) : error VC8519: Assertion 'zero != 0 (in division by zero)' did not verify.
+Verification of dbz2 failed.
+testcase(10,24) : error VC8519: Assertion 'zero != 0 (in division by zero)' did not verify.
+Verification of dbz3 failed.
+testcase(15,11) : error VC8519: Assertion 'zero != 0 (in division by zero)' did not verify.
+Verification of dbz4 failed.
+testcase(20,24) : error VC8519: Assertion 'zero != 0 (in division by zero)' did not verify.
+`

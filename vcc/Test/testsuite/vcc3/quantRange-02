@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+int b[42];
+
+_(axiom \forall unsigned i; {b[i]} {b[i]} \true)
+
+struct Foo {
+	int a[42];
+	_(invariant \forall unsigned i; {a[i]} {a[i]} \true)
+};
+void bar() {
+	int a[42];
+	_(assert \forall unsigned i; {a[i]} {a[i]} \true)
+}
+`
+Verification of Foo#adm succeeded.
+Verification of bar succeeded.
+`

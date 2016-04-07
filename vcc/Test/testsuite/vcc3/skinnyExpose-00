@@ -1,0 +1,152 @@
+#include <vcc.h>
+
+struct B {
+  int x;
+  int y;
+};
+struct A {
+  int z;
+  struct B *b;
+  _(invariant \mine(b))
+};
+
+void foo(struct A *a)
+  _(maintains \wrapped(a))
+  _(writes a)
+  _(ensures \domain_updated_at(a, {&a->b->x}))
+{
+  _(unwrapping a, a->b)
+    _(writes &a->b->x)
+  {
+    a->b->x = 12;
+  }
+}
+
+void fooFail(struct A *a)
+  _(maintains \wrapped(a))
+  _(writes a)
+  _(ensures \domain_updated_at(a, {&a->b->x}))
+{
+  _(unwrapping a, a->b)
+    _(writes &a->b->x)
+  {
+    a->b->y = 12;
+  }
+}
+
+
+void fooFail2(struct A *a)
+  _(maintains \wrapped(a))
+  _(writes a)
+  _(ensures \domain_updated_at(a, {&a->b->y}))
+{
+  _(unwrapping a, a->b)
+    _(writes &a->b->x)
+  {
+    a->b->x = 12;
+  }
+}
+
+void baz(struct A *a, struct B *b)
+  _(maintains \wrapped(a))
+  _(maintains \wrapped(b))
+  _(writes a,b)
+  _(ensures \domain_updated_at(a, {&a->b->x}))
+{
+  _(unwrapping a, a->b)
+    _(writes &a->b->x)
+  {
+    a->b->x = 12;
+  }
+
+  _(unwrapping b) {
+    b->y = 12;
+  }
+}
+
+void bazFail(struct A *a, struct B *b)
+  _(maintains \wrapped(a))
+  _(maintains \wrapped(b))
+  _(writes a,b)
+  _(ensures \domain_updated_at(a, {&a->b->x}))
+{
+  _(unwrapping a, a->b)
+    _(writes &a->b->x)
+  {
+    a->b->x = 12;
+  }
+
+  _(unwrapping a) {
+    a->z = 12;
+  }
+}
+
+void fooFailOwns(struct A *a)
+  _(maintains \wrapped(a))
+  _(writes a)
+  _(ensures \domain_updated_at(a, {&a->b->x}))
+{
+  _(unwrapping a, a->b)
+    _(writes &a->b->x)
+  {
+    _(ghost a->\owns =  {});
+    a->b->x = 12;
+  }
+}
+
+
+void fooFailWrapped(struct A *a)
+  _(writes a)
+  _(ensures \domain_updated_at(a, {&a->b->x}))
+{
+  _(unwrapping a, a->b)
+    _(writes &a->b->x)
+  {
+    a->b->x = 12;
+  }
+}
+
+
+void bar()
+{
+  struct A a;
+  struct B b;
+
+
+  a.b = &b;
+  a.b->y = 10;
+  a.z = 10;
+  _(wrap &b)
+  _(wrap &a)
+
+  _(assert &a \in \domain(&a))
+  _(assert &b \in \domain(&a))
+  _(assert a.b->y == 10)
+  _(assert a.z == 10)
+
+  foo(&a);
+
+  _(assert a.b->y == 10)
+  _(assert a.z == 10)
+  _(unwrap &a)
+  _(unwrap &b)
+}
+`
+Verification of A#adm succeeded.
+Verification of foo succeeded.
+Verification of fooFail failed.
+testcase(30,16) : error VC8530: Assertion 'skinny_expose(a, ...) body has written at an unlisted location' did not verify.
+Verification of fooFail2 failed.
+testcase(48,1) : error VC9501: Post condition '\domain_updated_at(a, {&a->b->y})' did not verify.
+testcase(41,13) : error VC9599: (related information) Location of post condition.
+Verification of baz succeeded.
+Verification of bazFail failed.
+testcase(82,1) : error VC9501: Post condition '\domain_updated_at(a, {&a->b->x})' did not verify.
+testcase(71,13) : error VC9599: (related information) Location of post condition.
+Verification of fooFailOwns failed.
+testcase(89,16) : error VC8530: Assertion 'skinny_expose(a, ...) body has written at an unlisted location' did not verify.
+testcase(89,16) : error VC8531: Assertion 'owns(a) was updated inside skinny_expose(...)' did not verify.
+Verification of fooFailWrapped failed.
+testcase(102,16) : error VC8016: 'a' is not wrapped before unwrap.
+Verification of bar succeeded.
+`

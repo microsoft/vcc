@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+void foo(__int64 i) 
+  _(requires -8 <= i && i <= 7)
+{
+  _(assert \false)
+}
+
+`
+Verification of foo failed.
+testcase(6,12) : error VC9500: Assertion '\false' did not verify.
+`

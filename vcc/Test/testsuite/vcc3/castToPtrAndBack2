@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+void foo()
+{
+  _(assert ((int)(void *)0) != ((int)(void *)0))
+}
+`
+Verification of foo failed.
+testcase(5,12) : error VC9500: Assertion '((int)(void *)0) != ((int)(void *)0)' did not verify.
+`

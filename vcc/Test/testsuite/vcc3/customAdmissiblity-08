@@ -1,0 +1,24 @@
+#include <vcc.h>
+
+struct A {
+  int x;
+  _(invariant \this->x>0)
+};
+
+
+_(ghost _(admissibility)
+void adm_A(struct A* x)
+{
+  _(havoc_others x)
+})
+
+void qux()
+{
+   _(ghost adm_A((struct A*)0);) 
+}
+`
+Verification of A#adm succeeded.
+Verification of adm_A succeeded.
+Verification of qux failed.
+testcase(17,12) : error VC8001: custom admissibility was called (in call 'adm_A((struct A*)0)').
+`

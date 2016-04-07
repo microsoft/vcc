@@ -1,0 +1,273 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Tutorial">
+      <UniqueIdentifier>{90fc5834-eac9-491f-bb52-f0b4a26bf963}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Examples">
+      <UniqueIdentifier>{887f9717-b426-4071-bd7d-07b365140c9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Testsuite">
+      <UniqueIdentifier>{5f2f2c1c-5fd9-42fc-8087-b77c4f2a1b73}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="testsuite\tutorial\inc.c">
+      <Filter>Tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="testsuite\tutorial\lsearch.c">
+      <Filter>Tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="testsuite\tutorial\max.c">
+      <Filter>Tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="testsuite\tutorial\rect.c">
+      <Filter>Tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="testsuite\tutorial\rect_inv.c">
+      <Filter>Tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="testsuite\tutorial\rect_ptr.c">
+      <Filter>Tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="testsuite\tutorial\succ.c">
+      <Filter>Tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\ArrayList.c">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\BitMap.c">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\ClaimOnGroup.c">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\ClaimPassing.c">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\Handles.c">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\Iterator.c">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\List.c">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\Lock.c">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\LockFreeIncr.c">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\LockFreeStack.c">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\PageSet.c">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\Reserve.c">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\Rundown.c">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\SingleList.c">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\StackArray.c">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\StackAsArray.c">
+      <Filter>Examples</Filter>
+    </ClCompile>
+    <ClCompile Include="testsuite\examples\VolatileAbstractState.c">
+      <Filter>Examples</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="testsuite\vcc2\arrays">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\arraysNeg">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\atomicInline">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\basics">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\bitfields">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\blocks">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\bv_lemma">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\by_claim">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\castFromObjT">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\claim_tutorial">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\claims">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\containingRecord">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\customAdmissiblity">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\deposit">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\expose">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\fieldInlining">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\frameaxiom">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\functionPtrs">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\ghosts">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\globals">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\groups">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\infer">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\ints">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\invChunk">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\invs">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\mapofmap">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\maps">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\mapsNeg">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\memoryReintp">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\move">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\nestedLocals">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\nestedStructs">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\not_shared">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\outParams">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\overloads">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\packedFraming">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\parameterPassing">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\pruning">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\pure">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\quantRange">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\records">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\return">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\shift">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\skinnyExpose">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\start_here">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\state">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\staticWrap">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\structEquality">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\structQuantifier">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\thread_id">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\unions">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\unionsNeg">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\valueStructs">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\volatile">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\volatileModifier">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\volatileVersion">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\writes">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\termination">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\informationFlow">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\assertionSplitting">
+      <Filter>Testsuite</Filter>
+    </None>
+    <None Include="testsuite\vcc2\triggerInference">
+      <Filter>Testsuite</Filter>
+    </None>
+  </ItemGroup>
+</Project>

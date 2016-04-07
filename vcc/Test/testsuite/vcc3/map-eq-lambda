@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+typedef struct { int x; } T ;
+
+_(ghost void foo()
+{
+_(assert (\lambda int x; \false) == (\lambda int x; \false))
+_(assert (\lambda T *x; \false) == (\lambda T *x; \false))
+_(assert (\lambda T *x; (int)14) == (\lambda T *x; (int)14))
+})
+
+`
+Verification of foo succeeded.
+`

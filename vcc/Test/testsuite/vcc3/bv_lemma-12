@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+void foo() {
+  _(assert {:bv} \forall int a; a >= 0)
+}
+`
+testcase(4,18) : warning VC9121: failed to infer triggers for '\forall int a; a >= 0)'
+Verification of foo succeeded.
+Verification of foo#bv_lemma#0 failed.
+testcase(4,18) : error VC9500: Assertion '\forall int a; a >= 0)' did not verify.
+`

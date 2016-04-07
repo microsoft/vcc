@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+typedef void *PVOID;
+
+PVOID InterlockedCompareExchangePointer(PVOID Comperand)
+{
+    return (PVOID) Comperand;
+}
+`
+Verification of InterlockedCompareExchangePointer succeeded.
+`

@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Usage" xml:space="preserve">
+    <value>/aggressivepruning             Remove unreferenced items when verifying specific functions (Short form: /a)
+/boogie:&lt;boogie option list&gt;   Options to pass on to Boogie (Short form: /b)
+/bvd                           Generate counter examples for the Boogie Verification Debugger
+/determinize                   Sort items to generate more deterministic Boogie files (Short form: /det)
+/dumpsource0                   Print source before syntax transformations (Short form: /d0)
+/dumpsource                    Print source after syntax transformations (Short form: /d)
+/functions:&lt;function list&gt;     List of function roots to verify (Short form: /f)
+/Functions:&lt;function list&gt;     List of exact function names to verify (Short form: /F)
+/help                          Display this usage message (Short form: /?)
+/hide:&lt;warning list&gt;           Hide specified warnings (by number; short form: /h)
+/inspector                     Run Z3 Inspector to show progress of verification (Short form: /i)
+/ignoreincludes[:&lt;filename&gt;]   Only verify entities from the files on the command line, not included files (Short form: /ii)
+                 With filename: verify only entities from that file
+/nopreprocessor                Do not invoke the C preprocessor on the input files (Short form: /n)
+/noverification                Do not run the verification; stop after semantic analysis (Short form: /nv)
+/opsasfuncs                    Translate arithmetic operations into Boogie functions (Short form: /oaf)
+/out:&lt;directory&gt;               Place generated files in &lt;directory&gt; (Short form: /o)
+/preprocessor:&lt;pp option list&gt; Options to pass on to the C preprocessor (Short form: /p)
+/prelude:&lt;BPL prelude path&gt;    Specify the path to an alternative VCC BPL prelude
+/pointersize:&lt;32|64&gt;           Size of the target platform's pointer type in bits (32,64), default is 64 (Short form: /ps)
+/pipe:&lt;opt1&gt;,...               Alter compiler pipeline. Can use . or + instead of the space in option names.
+                                     'active' lists stages
+                                     'dump after &lt;stage&gt;' dumps source after the stage
+                                     'dump after ...', ditto
+                                     'dump-all', dump after every stage (lots of output!)
+                                     'show-types', show expression types when dumping
+                                     'time', dump time takes by each stage
+                                     'disable &lt;stage&gt;' turns off a stage
+                                     'move &lt;stage&gt; before &lt;stage&gt;' moves stage in the pipeline
+                                     'move ... after ...', ditto
+                                     'isabelle &lt;theory-name&gt; &lt;filename-prefix&gt;', dump Isabelle theory
+/weight:&lt;name=N&gt;,...           Set weight for a particular kind of quantifier. Quantifiers with lower weights are instantiated first. 
+                                     To learn abouts kinds of quantifiers use /weight:dump-names /t and inspect the resulting .bpl file.
+                                     Specyfing /weight:foo=5 will set weight to 5 to 'foo' as well as 'foobar'.
+                                     The default weight for user supplied quantifier (user-exists and user-forall) is 10.
+                                     Most of the VCC generated ones have default of 1.
+                                     Definition axioms for lambda expressions (c-lambda-def) and _(def ...) function (c-def-function) have a default of 10.
+                                     You should avoid setting weight to 0.
+/smoke                         Run smoke tests, which is equivalent to /b:/smoke (Short form: /sm)
+/stats                         Display time statistics (Short form: /st)
+/suite &lt;file or directory&gt;     Treat the given file or directory as a collection of test cases with expected output and report any differences (Short form: /s)
+/time                          Display more detailed time statistics.
+/translate                     Translate the source files into corresponding BPL files (Short form: /t)
+/termination:&lt;n&gt;               Check termination behavior of: 0-nothing, 1-pure functions (default), 2-also ghost functions, 3-also regular functions (Short form: /term)
+/defexpansion:&lt;n&gt;              Specify number of expansion levels for recursive _(def ...) functions (default: 3; 0 is no limit; Short form: /dexp)
+/version                       Display the compiler version.
+/warningsaserrors              Treat warnings as errors (Short form: /wx)
+/warn:&lt;n&gt;                      Set warning level (0-2), default is 1 (Short form: /w)
+/xml:&lt;fil&gt;                     Write XML log to &lt;file&gt;.
+/z3:&lt;z3 option list&gt;           Options to pass on to Z3 (Short form: /z)
+/dumptriggers:&lt;n&gt;              1-report inferred triggers, 2-report results for different {:level}s, 3-report also when explicit triggers are present, 4-include Boogie form, 5-debug (Short form: /dt)</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Microsoft Research Vcc Version {0}
+Microsoft Research Boogie Version {1}
+Microsoft Research Z3 Version {2}</value>
+  </data>
+</root>

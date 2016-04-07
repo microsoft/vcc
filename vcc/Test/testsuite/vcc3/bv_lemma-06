@@ -1,0 +1,30 @@
+#include "vcc.h"
+
+void foo()
+{
+  _(assert {:bv} \forall __int64 a; short b; (a | b) == (b | a))
+  _(assert {:bv} \forall __int64 a; int b; (a | b) == (b | a))
+  _(assert {:bv} \forall __int32 a; short b; (a | b) == (b | a))
+  _(assert {:bv} \forall unsigned __int32 a; short b; (a | b) == (b | a))
+  _(assert {:bv} \forall __int32 a; unsigned short b; (a | b) == (b | a))
+  _(assert {:bv} \forall unsigned __int32 a; unsigned short b; (a | b) == (b | a))
+  _(assert {:bv} \forall __int64 a; unsigned short b; (a | b) == (b | a))
+  _(assert {:bv} \forall unsigned __int64 a; unsigned short b; (a | b) == (b | a))
+  _(assert {:bv} \forall __int64 a; unsigned int b; (a | b) == (b | a))
+  _(assert {:bv} \forall unsigned __int64 a; unsigned int b; (a | b) == (b | a))
+  _(assert {:bv} \forall __int64 a; short b; ((short)a | b) == (b | (short)a))
+}
+`
+Verification of foo succeeded.
+Verification of foo#bv_lemma#0 succeeded.
+Verification of foo#bv_lemma#1 succeeded.
+Verification of foo#bv_lemma#10 succeeded.
+Verification of foo#bv_lemma#2 succeeded.
+Verification of foo#bv_lemma#3 succeeded.
+Verification of foo#bv_lemma#4 succeeded.
+Verification of foo#bv_lemma#5 succeeded.
+Verification of foo#bv_lemma#6 succeeded.
+Verification of foo#bv_lemma#7 succeeded.
+Verification of foo#bv_lemma#8 succeeded.
+Verification of foo#bv_lemma#9 succeeded.
+`

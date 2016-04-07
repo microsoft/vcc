@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+void foo () {
+  _(ghost \thread m = \me;)
+  _(assert m == \me)
+}
+
+`
+Verification of foo succeeded.
+`

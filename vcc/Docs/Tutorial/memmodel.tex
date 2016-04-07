@@ -1,0 +1,113 @@
+\section{Objects and Memory}
+\label{sect:memmodel}
+\label{sect:reint}
+
+In VCC, the state of the world is given by the state of a set of
+completely independent \Def{objects}, each with a set of fields and a value
+for each of these fields. (That's right, the objects are completely
+separate.) For a given program, the set of objects is fixed. Each
+field of each object is either ghost or concrete; each concrete field
+of each object has a fixed address and size. Each object has a
+(volatile, ghost) Boolean field \vcc{\valid} that says whether the
+object is currently ``active''; a basic invariant guaranteed by
+succesful verification is that concrete fields of valid objects do not
+overlap. Moreover, another basic invariant guarantees that threads
+read and write only through valid objects. These invariants guarantee
+that reads and writes of concrete fields can be implemented by reads
+and writes in the concrete address space.
+
+
+The objects mostly correspond to instances of user-defined compound
+(i.e., \vcc{struct} or \vcc{union}) types. In addition, there are a few
+special objects; the most important of these are the following:
+\begin{itemize}
+\item 
+For every variable of primitive type, there is a dummy object of
+which the variable is the only field.
+\item 
+Each thread is an object. The thread running the current function
+activation is called \vcc{\me}, and it owns all of the \vcc{\wrapped}
+and \vcc{\mutable} variables.
+\end{itemize}
+
+In particular, there are no objects of primitive types (integral types
+or pointer types); a C ``object'' of primitive type is always
+a field of a a VCC object. If \vcc{p}
+is a pointer to a primitive lvalue, the object of which \vcc{p} is a
+field is denoted \vcc{\embedding(p)}. The embedding of a field is
+considered part of its type, so pointers to two fields of different
+objects that happen to have the same address are not considered equal
+to VCC, even though they ``test'' as equal in C. For example,
+\begin{VCC}
+void test(int *x, int *y) {
+  if (x == y) {
+    _(assert \addr(x) == \addr(y)) // succeeds
+    _(assert x == y)               // fails
+  }
+}
+\end{VCC}
+
+\noindent Note that for pointers to fields of valid objects, this
+discrepency disappears (since such fields cannot alias), so the
+discrepency in the interpreation of pointer equality rarely comes up
+in practice. Note also that this discrepency doesn't effect the
+soundness of verification, just how assertions are interpreted. If for
+some reason you really need to talk about raw addresses, you can
+always use the \vcc{\addr} operator.
+
+\subsection{Unions}
+A C \vcc{union} defines a group of objects that share memory addresses. Thus,
+the members of a union cannot in general all be valid at the same
+time. When VCC allocates a union, it chooses an arbitrary member to be
+the valid one. You can invalidate the active one and validate another
+using the operator
+\vcc{union_reinterpret}, as in the following example:
+\begin{VCC}
+typedef struct S {
+	int x;
+} S;
+
+typedef struct T {
+	int y,z;
+} T;
+
+typedef union U {
+	S s;
+	T t;
+} U;
+
+void test() {
+  U u;
+  //u.s.x = 1;              // fails
+  _(union_reinterpret &u.s) 
+  u.s.x = 1;
+  //u.t.y == 1;             // fails
+  _(union_reinterpret &u.t)
+  u.t.y = 2;
+}
+\end{VCC}
+
+\subsection{Blobs}
+
+In addition to unions, on rare occasions one needs a chunk of memory
+that can be used to make objects of more arbitrary types. In practice,
+this arises primarily when you are implementing your own memory
+manager (typically to more efficiently manage the allocation of small
+objects within a page of raw memory).
+
+In VCC, a chunk of truly ``raw'' memory is called a \Def{blob}. A blob
+of appropriate size and alignment can be turned into an object (along
+with its extent), making the blob invalid and the objects valid (and
+mutable). The top object of such a hierarchy is said to be
+blobifiable, and can be later turned back into a blob (again, this
+requires that its extent is mutable).  Contiguous blobs can be
+combined into a single blob or vice versa.
+
+When a typed object is allocated (on the heap of the stack), what is
+actually allocated is a blob, and this blob is unblobified into an
+object of the appropriate type. This means that you can blobify
+top-level local objects, as well as an object created from
+\vcc{malloc}'d memory. On the other hand, you cannot blobify a field
+of a \vcc{struct}.
+
+

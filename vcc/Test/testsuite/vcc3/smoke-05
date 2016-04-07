@@ -1,0 +1,17 @@
+`/smoke 
+#include <vcc.h>
+
+int bar(int a)
+  _(requires a)
+{
+  int x;
+  x = 42;
+  if (a) x = 13;
+  else { }
+  return 42;
+}
+
+`
+Verification of bar succeeded.
+testcase(8,3) : warning : found unreachable code, possible soundness violation, please check the axioms or add an explicit assert(false)
+`

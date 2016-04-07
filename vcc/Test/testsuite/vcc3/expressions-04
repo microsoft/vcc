@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+int div(int i, int j)
+  _(requires j != 0)
+{
+  return i / j;
+}
+`
+Verification of div failed.
+testcase(6,10) : error VC8003: i / j might overflow (in div/mod case).
+`

@@ -1,0 +1,13 @@
+#include "vcc.h"
+
+_(ghost typedef _(record) struct R {
+    int x[int];
+} R)
+
+_(ghost void foo(R abs)
+{
+    _(assert abs==abs.x)
+})
+`
+testcase(9,14) : error VC0000: Operator '==' cannot be applied to operands of type 'R' and 'System.Diagnostics.Contracts.CodeContract.Map<int, int>'.
+`

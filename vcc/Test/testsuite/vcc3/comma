@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+// commaoperator inside conditional
+int main(){
+  int i;
+  int x =0;
+  int z = (x++, x);
+  int y = i? x++, x: x-2;
+}
+`
+Verification of main succeeded.
+`

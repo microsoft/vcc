@@ -1,0 +1,32 @@
+#include <vcc.h>
+
+typedef unsigned __int64 UINT64;
+typedef unsigned __int8 PAGE[4096];
+typedef void *PVOID;
+
+typedef struct _S { UINT64 x; } S;
+
+_(pure) int foo(S s) 
+  _(ensures \result == (s.x == 1))
+{
+  return s.x == 1;
+}
+
+_(pure) int bar(S s) 
+  _(ensures \result == (s.x == 2))
+{
+  return s.x == 2;
+}
+
+int baz(S s)
+  _(ensures \result == (foo(s) || bar(s)))
+{
+  return foo(s) || bar(s);
+}
+
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+Verification of baz succeeded.
+`

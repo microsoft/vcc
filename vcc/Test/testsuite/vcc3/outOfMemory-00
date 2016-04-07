@@ -1,0 +1,9 @@
+`/z:/memory:1 
+#include "vcc.h"
+
+void foo() {
+	_(assert \true)
+};
+`
+Verification of foo ran out of memory.
+`

@@ -1,0 +1,35 @@
+#include <vcc.h>
+
+typedef struct _LS {
+  unsigned __int32 x;
+  unsigned __int32 y;
+  unsigned __int32 z;
+} LS;
+
+LS f(LS s)
+  _(requires s.x < 0x7FFFFFFF)
+  _(ensures \result.x == s.x + 1)
+{
+    s.x = s.x + 1;
+    return s;
+}
+
+LS fSholdFail(LS s)
+  _(ensures \result.x == s.x + 1)
+{
+    s.x = s.x + 1;
+    return s;
+}
+
+void g(LS s) 
+{
+  s.x = 0;
+  s = f(s);
+  _(assert s.x == 1)
+}
+`
+Verification of f succeeded.
+Verification of fSholdFail failed.
+testcase(20,11) : error VC8004: s.x + 1 might overflow.
+Verification of g succeeded.
+`

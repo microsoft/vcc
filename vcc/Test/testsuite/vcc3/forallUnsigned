@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+typedef unsigned __int64 UINT64;
+
+void foo() {
+  _(assert \forall UINT64 i, j; 0 <= i)
+}
+
+`
+testcase(6,12) : warning VC9121: failed to infer triggers for '\forall UINT64 i, j; 0 <= i)'
+Verification of foo succeeded.
+`

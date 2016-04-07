@@ -1,0 +1,28 @@
+
+#include <vcc.h>
+
+_(claimable)
+struct S {
+  _(group G)
+  _(:G) int a;
+  int b;
+  _(:G) int c;
+  
+  _(invariant :volatile \mine(\this::G))
+};
+
+
+void foo(volatile struct S *s)
+	_(updates s)
+{
+
+	_(ghost \claim cl = \make_claim({s}, s::G->\closed))
+
+	_(atomic s::G, cl) {
+		s->a = 5;
+	}
+}
+`
+Verification of foo succeeded.
+Verification of volatile#S#adm succeeded.
+`

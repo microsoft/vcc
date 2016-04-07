@@ -1,0 +1,23 @@
+#include <vcc.h>
+
+_(typedef int FromIntToInt[int];)
+_(typedef \bool FromIntToBool[int])
+_(typedef FromIntToBool FromIntToIntToBool[int];)
+
+_(ghost _(pure) FromIntToBool InnerLambda(int y)
+  _(returns \lambda int x; x < 100 ==> (x < y)))
+
+_(ghost FromIntToIntToBool success3() {
+  _(ghost \bool result[int][int])
+  _(ghost \bool foo[int])
+  result = (\lambda int y; InnerLambda(y));
+
+  _(assert result[4][3])
+  _(assert !result[3][4])
+  
+  return result;
+})
+
+`
+Verification of success3 succeeded.
+`

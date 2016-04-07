@@ -1,0 +1,17 @@
+#include "vcc.h"
+
+typedef struct _LTH_THREAD
+{
+	int dummy;
+} LTH_THREAD, *PLTH_THREAD;
+
+
+typedef struct _LCPU_PLS
+{
+	PLTH_THREAD volatile SchDeferredList;
+  _(invariant SchDeferredList == (void *)0)
+} LCPU_PLS, *PLCPU_PLS;
+
+`
+Verification of _LCPU_PLS#adm succeeded.
+`

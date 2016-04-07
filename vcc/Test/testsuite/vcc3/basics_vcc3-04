@@ -1,0 +1,15 @@
+#include "vcc.h"
+
+struct x {
+  int dummy;
+};
+
+struct y {
+  int dummy;
+  struct x *xp;
+  _(invariant xp->\closed) 
+};
+`
+Verification of y#adm failed.
+testcase(10,15) : error VC8012: invariant(xp->\closed) of y is not admissible.
+`

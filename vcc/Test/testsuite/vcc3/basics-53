@@ -1,0 +1,9 @@
+#include <vcc.h>
+_(ghost \integer toto()
+_(requires \result > 0)
+{
+return 1;
+})
+`
+testcase(3,12) : error VC0000: Cannot use '\result' in this context.
+`

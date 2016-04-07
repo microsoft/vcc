@@ -1,0 +1,37 @@
+#include "vcc2test.h"
+
+struct B { int x; };
+
+struct A {
+  struct B * volatile b;
+};
+
+struct A2 {
+  struct B *b;
+};
+
+struct ShouldFailStabilityOfAB {
+  struct A a;
+  _(invariant \mine(a.b))
+};
+
+struct ShouldFailStabilityOfAB2 {
+  struct A a;
+  _(invariant \mine(&a))
+  _(invariant \mine(a.b))
+};
+
+struct OK1 {
+  struct A2 a;
+  _(invariant \mine(&a))
+  _(invariant \mine(a.b))
+};
+
+
+`
+Verification of ShouldFailStabilityOfAB#adm failed.
+testcase(15,15) : error VC8012: invariant(\mine(a.b)) of ShouldFailStabilityOfAB is not admissible.
+Verification of ShouldFailStabilityOfAB2#adm failed.
+testcase(21,15) : error VC8012: invariant(\mine(a.b)) of ShouldFailStabilityOfAB2 is not admissible.
+Verification of OK1#adm succeeded.
+`

@@ -1,0 +1,13 @@
+#include<vcc.h>
+
+_(ghost int G[void *])
+
+struct S {
+ _(ghost int M[void *])
+ int a;
+};
+
+void foo(struct S *s) { }
+`
+Verification of foo succeeded.
+`

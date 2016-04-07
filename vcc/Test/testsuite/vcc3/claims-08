@@ -1,0 +1,44 @@
+#include <vcc.h>
+
+struct Node {
+    struct Node *next;
+
+    _(invariant \depends(\this->\owner, \this))
+};
+
+
+typedef struct Node *PNode;
+struct Stack {
+    volatile PNode hd;
+};
+
+int t1(struct Stack *s _(ghost \claim c))
+    _(always c, s->\closed)
+{
+	_(atomic c, s) {
+	   _(wrap s)
+	}
+}
+
+int t2(struct Stack *s _(ghost \claim c))
+    _(always c, s->\closed)
+{
+	_(atomic c, s) {
+	   _(unwrap s)
+	}
+}
+
+void foo () { }
+
+int t3(struct Stack *s _(ghost \claim c))
+    _(always c, s->\closed)
+{
+	_(atomic c, s) {
+		foo();
+	}
+}
+`
+testcase(19,7) : error VC9626: static_wrap(...) cannot be used inside atomic update/read
+testcase(27,7) : error VC9626: static_unwrap(...) cannot be used inside atomic update/read
+testcase(37,3) : error VC9627: ordinary functions like foo(...) cannot be used inside atomic update/read
+`

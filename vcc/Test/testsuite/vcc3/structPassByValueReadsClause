@@ -1,0 +1,28 @@
+#include <vcc.h>
+
+typedef unsigned __int64 UINT64;
+typedef unsigned __int8 PAGE[4096];
+typedef void *PVOID;
+
+static PAGE PhysicalPages[512];
+
+typedef union _VA {
+  _(backing_member) UINT64 AsUINT64;
+  struct {
+    UINT64 PageOffset:12;
+    UINT64 PtOffset:9;
+    UINT64 Reserved:41;
+  };
+} VA, *PVA;
+
+
+void Translate(VA VirtualAddress)
+  _(reads PhysicalPages[10]) 
+  
+{
+  UINT64 po = VirtualAddress.PageOffset;
+}
+
+`
+Verification of Translate succeeded.
+`

@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+_(def \integer f(\integer x) 
+  _(recursive_with g)
+  { return g(x) / 2; })
+
+_(logic \integer f1(\integer x) = f(x))
+
+_(def \integer g(\integer y)
+  { return f1(y) / 2; })
+`
+Verification of f failed.
+testcase(5,12) : error VC8029: the call 'g(x)' might not terminate.
+Verification of g failed.
+testcase(10,12) : error VC8029: the call 'f(x)' might not terminate.
+`

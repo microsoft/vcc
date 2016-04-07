@@ -1,0 +1,13 @@
+#include <vcc.h>
+struct S;
+struct T;
+struct R { struct S x; int a; };
+
+struct S { struct T y; };
+
+struct T { struct R x; };
+
+void foo(struct R *s) { }
+`
+testcase(4,1) : error VC0000: Type member 'x' in type 'R' causes a cycle in the type layout.
+`

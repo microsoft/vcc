@@ -1,0 +1,42 @@
+#include <vcc.h>
+
+struct S {
+  int a;
+  int b;
+};
+
+void foo() {
+  struct S s;
+  s.a = 0;
+  s.b = 0;
+  _(assert \extent_zero(&s))
+}
+
+void bar() {
+  int i = 0;
+  _(assert \extent_zero(&i))
+}
+
+void baz() {
+  int a[4] = { 0,0,0,0 };
+  _(assert \extent_zero((void[4])a))
+}
+
+void qux() {
+  struct S a[4];
+  a[0].a = 0;
+  a[0].b = 0;
+  a[1].a = 0;
+  a[1].b = 0;
+  a[2].a = 0;
+  a[2].b = 0;
+  a[3].a = 0;
+  a[3].b = 0;
+  _(assert \extent_zero((void[4])a))
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+Verification of baz succeeded.
+Verification of qux succeeded.
+`

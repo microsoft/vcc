@@ -1,0 +1,29 @@
+#include <vcc.h>
+#include <sal.h>
+
+typedef long long __vcI8;
+typedef unsigned long long __vcU8;
+
+
+typedef volatile __int32 *PVINT32;
+
+__int32
+InterlockedIncrement(
+    __inout PVINT32 Target
+    )
+{
+  return 0;
+}
+
+void
+foo()
+{
+    volatile __int32 barrierPointer = 0;
+    unsigned __int32 i = (unsigned __int32)InterlockedIncrement(&barrierPointer);
+}
+
+`
+Verification of InterlockedIncrement succeeded.
+Verification of foo failed.
+testcase(22,44) : error VC8518: Assertion 'InterlockedIncrement(&barrierPointer) fits range of uint32_t' did not verify.
+`

@@ -1,0 +1,31 @@
+#include <vcc.h>
+#include <stdlib.h>
+
+struct S {
+  int a;
+};
+
+struct S *foo() 
+  _(ensures \result->\valid)
+  _(ensures \thread_local(\result))
+  _(ensures \fresh(\result))
+  _(ensures \mutable(\result))
+{
+  struct S *p = (struct S *)malloc(sizeof(struct S));
+  _(assume p != NULL)
+  return p;
+}
+
+void bar() {
+  struct S *p;
+  _(wrap (p = foo()))
+  _(unwrap (p = foo()))
+}
+`
+testcase(21,11) : warning VC9300: [possible unsoundness]: assignment to physical location from specification code
+testcase(22,13) : warning VC9300: [possible unsoundness]: assignment to physical location from specification code
+testcase(21,15) : error VC9635: function 'foo' used in pure context, but not marked with '_(pure)'
+testcase(8,8) : error : (Location of symbol related to previous error.)
+testcase(22,17) : error VC9635: function 'foo' used in pure context, but not marked with '_(pure)'
+testcase(8,8) : error : (Location of symbol related to previous error.)
+`

@@ -1,0 +1,14 @@
+`/smoke 
+#include <vcc.h>
+
+void foo(int c)
+_(requires c <= 0)
+{
+	if (c <= 0) return;
+}
+
+`
+Verification of foo succeeded.
+testcase(7,1) : warning : found unreachable code, possible soundness violation, please check the axioms or add an explicit assert(false)
+testcase(6,2) : warning : trace to unreachable location
+`

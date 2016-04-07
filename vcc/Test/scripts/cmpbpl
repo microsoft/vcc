@@ -1,0 +1,30 @@
+#!/bin/sh
+
+set -x
+
+d1=$1
+d2=$2
+f=$3
+shift
+shift
+shift
+
+mkdir -p tmp
+
+for d in $d1 $d2 ; do
+./$d/bin/vcc2.exe /t "$f" || exit
+mv $(basename "$f" .c).bpl tmp/c$d.bpl
+done
+bc2 tmp/c$d1.bpl tmp/c$d2.bpl &
+read junk
+
+for d in $d1 $d2 ; do
+rm -f tmp/p$d.bpl
+cp -f $d/headers/vcc2prelude.bpl tmp/p$d.bpl
+cd tmp
+Boogie /bv:i c$d.bpl p$d.bpl /proverLog:z$d.sx /timeLimit:1 "$@"
+c:/z3/release/z3.exe /st /mam:0 PROFILE_MATCHING_LOOPS=true /cex:5 z$d.sx > z$d.log 2> z$d.out
+c:/emicvs/Z3Visualizer/Z3Visualizer/bin/Debug/Z3Visualizer.exe z$d.log &
+cd ..
+done
+bc2 tmp/z$d1.out tmp/z$d2.out &

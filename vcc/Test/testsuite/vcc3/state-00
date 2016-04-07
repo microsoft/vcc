@@ -1,0 +1,27 @@
+#include <vcc.h>
+
+struct S {
+  int a;
+  int b;
+};
+
+_(ghost \bool _(pure) swapped(struct S *s, \state s1, \state s2)
+  _(returns \at(s1, s->a) == \at(s2, s->b) && \at(s2, s->a) == \at(s1, s->b));)
+
+void foo(struct S *s)
+  _(requires \mutable(s))
+  _(writes \extent(s))
+{
+  _(ghost \state s0 = \now();)
+  _(ghost \state s1;)
+  int tmp = s->a;
+  s->a = s->b;
+  s->b = tmp;
+  _(ghost s1 = \now();)
+  _(assert \at(s0, s->a) == \at(s1, s->b))
+  _(assert \at(s0, s->b) == \at(s1, s->a))
+  _(assert swapped(s, s0, s1))
+}
+`
+Verification of foo succeeded.
+`

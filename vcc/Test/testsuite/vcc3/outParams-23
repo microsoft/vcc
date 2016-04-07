@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+struct S { 
+	int a;
+};
+
+void foo(_(out struct S s)) 
+{
+	_(wrap &s)
+	_(unwrap &s)
+}
+`
+Verification of foo succeeded.
+`

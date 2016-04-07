@@ -1,0 +1,23 @@
+#include <vcc.h>
+
+short _InterlockedAnd16a(unsigned ptrset);
+short _InterlockedAnd16b(signed ptrset);
+
+short InterlockedAnd16a()
+{
+  unsigned v = 0;
+  return _InterlockedAnd16a((unsigned) v);
+}
+
+short InterlockedAnd16b()
+{
+  signed v = 0;
+  return _InterlockedAnd16b((signed) v);
+}
+
+void main(){}
+`
+Verification of InterlockedAnd16a succeeded.
+Verification of InterlockedAnd16b succeeded.
+Verification of main succeeded.
+`

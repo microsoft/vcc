@@ -1,0 +1,35 @@
+#include <vcc.h>
+
+struct A {
+int sz;
+char buf[];
+};
+
+struct B {
+int sz;
+char buf[];
+};
+
+struct C {
+int sz;
+__int64 buf[];
+};
+
+void foo()
+{
+	struct A *a;
+	struct B *b;
+	struct C *c;
+	int sa = sizeof(struct A);
+	_(assert sa== sizeof(int))
+	_(assert sizeof(struct B) == sizeof(int))
+	_(assert sizeof(struct C) == sizeof(int))
+	_(assert \wrapped(a) ==> \addr(a->buf) == \addr(a) + sizeof(int))
+	_(assert \wrapped(b) ==> \addr(b->buf) == \addr(b) + sizeof(int))
+	_(assert \wrapped(c) ==> \addr(c->buf) == \addr(c) + sizeof(__int64))
+}
+
+`
+Verification of foo failed.
+testcase(29,11) : error VC9500: Assertion '\wrapped(c) ==> \addr(c->buf) == \addr(c) + sizeof(__int64)' did not verify.
+`

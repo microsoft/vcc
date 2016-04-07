@@ -1,0 +1,9 @@
+#include <vcc.h>
+void foo()
+{
+  int x, *p;
+  _(assert *x == 2)
+}
+`
+testcase(5,12) : error VC0000: Illegal indirection.
+`

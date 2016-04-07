@@ -1,0 +1,13 @@
+#include <vcc.h>
+
+typedef struct {int i; } S;
+
+void foo(S s)
+{
+  int* p = &s.i;
+  *p = 1;
+  _(assert s.i == 1)
+}
+`
+Verification of foo succeeded.
+`

@@ -1,0 +1,20 @@
+#include "vcc.h"
+
+struct S {
+  void *y;
+  _(invariant y)
+  _(ghost \object x)
+  _(invariant x)
+};
+
+void foo() {
+  struct S s;
+  _(ghost s.x = &s)
+  s.y = &s;
+  _(wrap &s)
+  _(unwrap &s)
+}
+`
+Verification of S#adm succeeded.
+Verification of foo succeeded.
+`

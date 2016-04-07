@@ -1,0 +1,28 @@
+#include <vcc.h>
+
+template<typename T, typename S> void foo(T* t, S*s)
+  _(requires \wrapped(t) && \wrapped(s));
+  
+struct Q {
+  int a;
+};
+  
+struct P {
+  int a;
+};
+  
+void bar(struct Q *q)
+  _(requires \wrapped(q))
+{
+  foo(q,q);
+}
+
+void bar1(struct Q *q, struct P *p)
+  _(requires \wrapped(q) && \wrapped(p))
+{
+  foo(q,p);
+}
+`
+Verification of bar succeeded.
+Verification of bar1 succeeded.
+`

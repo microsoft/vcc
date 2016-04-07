@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+typedef unsigned __int32 UINT32;
+
+void foo(UINT32 n)
+{
+  UINT32 i = _(unchecked)(1 << n);
+}
+`
+Verification of foo failed.
+testcase(7,32) : error VC8519: Assertion 'n in admissible range (in shift)' did not verify.
+`

@@ -1,0 +1,13 @@
+#include <vcc.h>
+
+typedef struct _S S;
+
+typedef struct _S { int a; } S;
+
+typedef int X;
+typedef unsigned X;
+
+void foo()  { }
+`
+testcase(8,1) : error VC0000: Incompatible redefinition of type 'X' from '__int32' to 'unsigned __int32'.
+`

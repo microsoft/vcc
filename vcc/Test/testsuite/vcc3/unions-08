@@ -1,0 +1,35 @@
+#include <vcc.h>
+
+union U {
+  struct {
+    int a;
+    int b;
+  } _(m1);
+  
+  struct {
+    unsigned int c;
+    unsigned int d;
+  } _(m2);
+};
+
+
+void foo(union U *u)
+  _(writes \extent(u))
+  _(requires \union_active(&u->m1))
+{
+
+  u->a = 12;
+}
+
+void fooShouldFail(union U *u)
+  _(writes \extent(u))
+  _(requires \union_active(&u->m1))
+{
+
+  u->c = 12;
+}
+`
+Verification of foo succeeded.
+Verification of fooShouldFail failed.
+testcase(29,3) : error VC8507: Assertion 'u->c is writable' did not verify.
+`

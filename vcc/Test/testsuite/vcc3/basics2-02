@@ -1,0 +1,11 @@
+#include "vcc.h"
+_(ghost _(pure) \bool foo(unsigned n))
+_(ghost _(pure) \bool bar(unsigned *map) _(reads \universe()))
+_(axiom \forall unsigned *p; { bar(p) } foo(*p))
+
+void f() {
+  _(ghost foo(5))
+ }
+`
+Verification of f succeeded.
+`

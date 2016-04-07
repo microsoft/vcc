@@ -1,0 +1,15 @@
+
+#include <vcc.h>
+
+struct foo {
+	char dummy;
+	_(ghost volatile \bool c[\integer];)
+
+	_(invariant bar(*\this))
+};
+
+_(logic \bool bar(struct foo s) = \forall \integer i; \unchanged(s.c[i]))
+
+`
+Verification of foo#adm succeeded.
+`

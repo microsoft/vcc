@@ -1,0 +1,45 @@
+#include <vcc.h>
+#include <sal.h>
+
+typedef long long __vcI8;
+typedef unsigned long long __vcU8;
+
+
+
+
+typedef unsigned int UINT32;
+
+typedef union pte_t {
+	struct {
+		unsigned ppx:10;	
+		signed ppxs:10;	
+		unsigned v:1;	
+		unsigned p:1;	
+		unsigned reserved_9_0:10;	
+	} f;			
+	_(backing_member) UINT32 uint32;	
+} pte_t;
+
+
+void assign_str(pte_t str)
+{
+	pte_t a;
+	a = str;
+
+	_(assert a.f.ppx == str.f.ppx && a.f.ppxs == str.f.ppxs && a.f.v == str.f.v)
+}
+
+void assign_via_ptr (pte_t *p)
+  _(requires \thread_local(p))
+{
+	 pte_t a;
+	 a = *p;
+
+	 _(assert a.f.ppx == (p->f).ppx)
+	 _(assert a.f.ppxs == (p->f).ppxs)
+}
+
+`
+Verification of assign_str succeeded.
+Verification of assign_via_ptr succeeded.
+`

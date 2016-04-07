@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+void f()
+{
+  lab:
+    _(assert \true);
+}
+`
+Verification of f succeeded.
+`

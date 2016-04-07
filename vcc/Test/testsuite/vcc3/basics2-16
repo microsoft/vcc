@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+static char const RCSid[] = "2.1.2";
+
+void foo() {
+  _(assert RCSid[0] == '2')
+}
+`
+Verification of foo succeeded.
+`

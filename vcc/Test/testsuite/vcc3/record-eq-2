@@ -1,0 +1,43 @@
+#include "vcc.h"
+
+
+_(ghost
+
+typedef _(record) struct {
+  \integer a;
+  int m[int];
+} S;
+
+
+void foo(S s1, S s2)
+{
+  if (s1.a == s2.a && s1.m == s2.m) {
+    _(assert s1 == s2)
+  }
+}
+
+void bar(S s1, S s2)
+{
+  _(assume \forall int x; s1.m[x] == s2.m[x])
+  if (s1.a == s2.a) {
+    _(assert s1 == s2)
+  }
+}
+
+typedef int IS[S];
+
+void bar2(S s1, S s2, IS xx)
+{
+  _(assume \forall int x; s1.m[x] == s2.m[x])
+  if (s1.a == s2.a) {
+    xx[s1] = 2;
+    _(assert xx[s2] == 2)
+  }
+}
+
+)
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+Verification of bar2 succeeded.
+`

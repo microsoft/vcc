@@ -1,0 +1,19 @@
+#include <vcc.h>
+
+void foo() { }
+
+void bar() { }
+
+void baz() {
+  void *f1 = &foo;
+  void *f2 = &foo;
+  void *b = &bar;
+  _(assert f1 == f2)
+  _(assert b != f1)
+}
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+Verification of baz succeeded.
+`

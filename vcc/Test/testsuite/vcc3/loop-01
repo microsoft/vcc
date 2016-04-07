@@ -1,0 +1,18 @@
+#include "vcc.h"
+#include <limits.h>
+
+void foo() {
+  int i;
+  
+  for (i = 0; ;) 
+    _(invariant i == 0)
+  {
+    break;
+  }
+  
+  _(assert i == 0)
+}
+
+`
+Verification of foo succeeded.
+`

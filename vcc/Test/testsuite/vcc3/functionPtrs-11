@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+#define PARAMETER_TYPE struct X
+
+struct X { int  x; };
+
+typedef void (*Funcptr)(PARAMETER_TYPE);
+
+struct Y { Funcptr y; };
+
+void foo(PARAMETER_TYPE z) {}
+
+void bar()
+{
+  struct Y g;
+  g.y  = foo;
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+Verification of bar#fnptr#foo_to_Funcptr#1 succeeded.
+`

@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+_(ghost _(pure) int g1(int x) _(ensures \result == g2(x)))
+_(ghost _(pure) int g2(int x) _(ensures \result == g3(x)))
+_(ghost _(pure) int g3(int x) _(ensures \result == g1(x)))
+_(ghost _(pure) int g0(int x) _(ensures \result == g2(x)) { return g2(x); })
+`
+testcase(3,11) : warning VC9303: [possible unsoundness]: cycle in pure function calls: g1 -> g2 -> g3 -> g1
+testcase(4,11) : warning VC9303: [possible unsoundness]: cycle in pure function calls: g2 -> g3 -> g1 -> g2
+testcase(5,11) : warning VC9303: [possible unsoundness]: cycle in pure function calls: g3 -> g1 -> g2 -> g3
+Verification of g0 succeeded.
+`

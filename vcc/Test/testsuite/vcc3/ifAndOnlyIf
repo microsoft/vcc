@@ -1,0 +1,28 @@
+#include <vcc.h>
+
+_(\bool foo(int i, \bool b) 
+  _(ensures \result <==> b && i < 0) 
+{
+  if (!b) return 0;
+  if (i < 0) return 1;
+  return 0;
+}
+)
+void bar(int i, int j)
+  _(requires i <==> j)
+{
+}
+
+void baz() {
+  bar(0,0);
+  bar(2,4);
+  bar(0,4);
+}
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+Verification of baz failed.
+testcase(19,3) : error VC9502: Call 'bar(0,4)' did not verify.
+testcase(12,14) : error VC9599: (related information) Precondition: 'i <==> j'.
+`

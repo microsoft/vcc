@@ -1,0 +1,14 @@
+#include "vcc.h"
+struct S {
+    int a;
+    _(ghost int b)
+};
+
+void foo() {
+    struct S s;
+    _(ghost _(unchecked)(s.b++))
+}
+`
+testcase(9,26) : warning VC9326: [possible unsoundness]: signed overflow (of '+') has undefined behavior in C
+Verification of foo succeeded.
+`

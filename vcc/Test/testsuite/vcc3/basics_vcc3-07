@@ -1,0 +1,19 @@
+#include <vcc.h>
+#include <limits.h>
+
+void foo(int *q, size_t l)
+_(writes \array_range(q,l))
+;
+
+void test(int *p, size_t l) 
+_(requires \mutable_array(p,l))
+_(writes \array_range(p,l))
+{
+   _(assume l > 3)
+   _(assert \mutable_array(p+1,l-2))
+   foo(p+1,l-2); // fails
+}
+
+`
+Verification of test succeeded.
+`

@@ -1,0 +1,32 @@
+#include "vcc.h"
+
+#define CONCAT(x,y) x##y
+#define TEST1(x,...) \
+	void CONCAT(test,x) () { \
+		int a[13]; \
+		int b[13]; \
+		_(assert __VA_ARGS__); \
+	}
+
+#define TEST(...) TEST1(__COUNTER__,__VA_ARGS__)
+
+ _(ghost _(pure) \bool alwaysTrue(\bool x) _(returns \true);) 
+
+
+TEST(a!=b)
+TEST(a + 0 != b)
+TEST(a + 0 != b + 0)
+// good ^ -- bad v
+TEST(\forall unsigned i; i < 13 ==> (alwaysTrue((a+i)->\valid) && alwaysTrue((b+0)->\valid) ==> a + i != b))
+TEST(\forall unsigned i; i < 13 ==> (alwaysTrue((a+i)->\valid) && alwaysTrue((b+0)->\valid) ==> a + i != b + 0))
+TEST(\forall unsigned i, j; i < 13 && j < 13 ==> (alwaysTrue((a+i)->\valid) && alwaysTrue((b+j)->\valid) ==> a + i != b + j))
+TEST(\disjoint(\array_range(a,13), \array_range(b,13)))
+`
+Verification of test0 succeeded.
+Verification of test1 succeeded.
+Verification of test2 succeeded.
+Verification of test3 succeeded.
+Verification of test4 succeeded.
+Verification of test5 succeeded.
+Verification of test6 succeeded.
+`

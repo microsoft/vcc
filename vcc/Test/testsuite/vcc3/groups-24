@@ -1,0 +1,42 @@
+#include <vcc.h>
+
+typedef struct _S S;
+typedef struct _T T;
+typedef struct _U U;
+typedef struct _U1 U1;
+typedef struct _U2 U2;
+
+typedef struct _S{
+    unsigned int Id;
+
+    _(invariant \forall S* s; s->\closed && s->Id == Id ==> s == \this)
+}S; 
+
+typedef struct _T{
+    _(group G)
+    _(:G) unsigned int Id;
+
+    _(invariant \mine(\this::G))
+    _(invariant \forall T* t; t->\closed && t->Id == Id ==> t == \this)
+}T;
+
+typedef struct _U{
+    _(group G)
+    _(:G) unsigned int Id;
+
+     _(invariant :G \forall U* u; u::G->\closed && u->Id == Id ==> u::G == ((U*)\this)::G)
+}U;
+
+struct _U2{
+    _(group G)
+    _(:G) unsigned int Id;
+
+     _(invariant :G \forall U2* u; u::G->\closed && u->Id == Id ==> u::G == \this)
+};
+
+`
+Verification of _S#adm succeeded.
+Verification of _T#adm succeeded.
+Verification of _U##G#adm succeeded.
+Verification of _U2##G#adm succeeded.
+`

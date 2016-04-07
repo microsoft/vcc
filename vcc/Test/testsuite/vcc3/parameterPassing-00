@@ -1,0 +1,62 @@
+//-----------------------------------------------------------------------------
+// Parameterpassing
+//
+// A struct is passed in pieces down to a lower level, which updates it; 
+// the effect is visible on the upper level
+//-----------------------------------------------------------------------------
+
+#include "vcc.h"
+
+struct S{ int a; int b;};
+struct T{ struct S* s; int c;};
+
+ 
+void LowerLevel(int* x)
+	_(maintains \mutable(x))
+	_(requires *x < 1000)
+	_(ensures *x == \old(*x)+1)
+	_(writes x)
+{
+	*x=*x+1;
+}
+
+void MiddleLevel(struct S* s)
+	_(maintains \mutable(s))
+	_(requires s->a < 1000)
+	_(ensures s->a == \old(s->a)+1)
+	_(writes &s->a)
+{	LowerLevel(&s->a);
+}
+
+void UpperLevel(struct T* t)
+	// the reason we need mutable(t) here is that otherwise
+	// it could be contained and call to MiddleLevel(t->s) could change location &t->s
+	// Same goes for t->s
+	_(requires \mutable(t) && \mutable(t->s) && t->s->a < 1000)
+	_(writes &t->s->a)
+
+{	MiddleLevel(t->s);
+
+	_(assert t->s == \old(t->s))
+	_(assert t->s->a == \old(t->s->a)+1)
+	_(assert 1)
+}
+
+
+
+
+/*int main(int argc, char *argv[])
+{
+	struct T t;
+	struct S s;
+	s.a= 1;
+	t.s=&s;
+	assert(t.s->a == 1);
+	UpperLevel(&t);
+
+} */
+`
+Verification of LowerLevel succeeded.
+Verification of MiddleLevel succeeded.
+Verification of UpperLevel succeeded.
+`

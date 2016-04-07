@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+void foo(int x)
+  _(requires x > 1000)
+{
+  unsigned int a = (unsigned int) x;
+}
+`
+Verification of foo succeeded.
+`

@@ -1,0 +1,30 @@
+#include <vcc.h>
+
+_(record R {
+  int x;
+})
+
+typedef struct S {
+  _(ghost R r)
+  int y;
+} S;
+
+void foo()
+{
+  S s1, s2;
+
+  s1.y = 1;
+  s2.y = 1;
+  _(ghost s1.r.x = 2)
+  _(ghost s2.r.x = 2)
+  _(assert \deep_eq(s1, s2))
+  _(ghost s2.r.x = 3)
+  _(assert !\deep_eq(s1, s2))
+  _(ghost s1.r.x = 3)
+  _(assert \deep_eq(s1, s2))
+  s1.y = 2;
+  _(assert !\deep_eq(s1, s2))
+}
+`
+Verification of foo succeeded.
+`

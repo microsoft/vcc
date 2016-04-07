@@ -1,0 +1,9 @@
+#include <vcc.h>
+
+void foo() _(ensures 0);
+void foo() { }
+`
+Verification of foo failed.
+testcase(4,14) : error VC9501: Post condition '0' did not verify.
+testcase(3,22) : error VC9599: (related information) Location of post condition.
+`

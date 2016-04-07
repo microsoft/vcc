@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+void foo() {
+  _(ghost int a[int] = (\lambda int i; (i)))
+  _(ghost int b[int] = (\lambda int i; (i)))
+  _(assert a == b)
+}
+
+void bar() {
+  _(ghost int a[int][int] = (\lambda int i; int j; (i)))
+  _(ghost int b[int][int] = (\lambda int i; int j; (i)))
+  _(assert a == b)
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

@@ -1,0 +1,15 @@
+#include <vcc.h>
+
+struct x {
+    _(ghost int Map2[int])
+    int a;
+} z;
+
+void foo() {
+    struct x z;
+    x.a = 10;
+}
+`
+testcase(10,5) : error VC0000: An object reference is required for the nonstatic field, method, or property 'a'.
+testcase(5,5) : error : (Location of symbol related to previous error.)
+`

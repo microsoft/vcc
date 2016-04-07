@@ -1,0 +1,39 @@
+#include <vcc.h>
+
+typedef unsigned int UINT32;
+typedef union foo_t {
+	struct {
+		unsigned one:1;
+		unsigned two:2;
+		unsigned twentynine:29;
+	} f;
+        _(backing_member)
+	UINT32 u32;
+} foo_t;
+
+int a[4];
+
+void g1(foo_t f)
+	_(writes \array_range(a, sizeof(a) / sizeof(*a)))
+{
+	a[f.f.two] = 42; 
+	return;
+}
+
+void g2(foo_t f)
+	_(requires f.f.two < 4)
+{
+	return;
+}
+
+// we may want to make this one verify without bitvectors
+void h(foo_t f)
+{
+	g2(f); 
+}
+
+`
+Verification of g1 succeeded.
+Verification of g2 succeeded.
+Verification of h succeeded.
+`

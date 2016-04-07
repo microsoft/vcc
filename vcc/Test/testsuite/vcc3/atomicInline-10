@@ -1,0 +1,9 @@
+#include "vcc.h"
+_(ghost _(atomic_inline) \bool True() { return \true; })
+void foo() {
+    _(ghost \bool f)
+    _(ghost f = True())
+}
+`
+Verification of foo succeeded.
+`

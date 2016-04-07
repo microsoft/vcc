@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+void foo()
+{
+  
+  _(ghost \objset a, b)
+  void *x;
+
+  _(assert x \in a && !(x \in b) ==> x \in a \diff b)
+  _(assert x \in a && x \in b ==> !(x \in a \diff b))
+  _(assert !(x \in a) && x \in b ==> !(x \in a \diff b))
+  _(assert !(x \in a) && !(x \in b) ==> !(x \in a \diff b))
+}
+`
+Verification of foo succeeded.
+`

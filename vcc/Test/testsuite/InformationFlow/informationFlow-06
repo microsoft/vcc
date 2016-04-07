@@ -1,0 +1,66 @@
+#include <vcc.h>
+#include <stdlib.h>
+
+void primPtr1Group()
+{
+	int *h;
+	int *x;
+	
+	h = malloc(sizeof(*h)); assume(h != NULL);
+	assert(is_low(h == h));
+	x = h;
+	assert(is_low(x == h));
+	
+	*x = 1;
+	assert(is_low(*x));
+	assert(is_low(*h));
+	assert(is_low(x == h));
+}
+
+void primPtrStackHeap()
+{
+	int *x, y;
+	
+	x = malloc(sizeof(*x));
+	if (test_classifier(lambda(obj_t p; true), x == NULL)) assume(false);
+
+	assert(is_low(x == x));
+	assert(is_low(x == &y));
+}
+
+void primPtrStackHeapWithPtrClubs()
+{
+	int *x, y;
+	spec(club_t happyFriends = new_club(seclabel_bot);)
+	spec(add_member(&y, happyFriends);)
+	
+	x = malloc(sizeof(*x));
+	if (test_classifier(lambda(obj_t p; true), x == NULL)) assume(false);
+	spec(add_member(x, happyFriends);)
+
+	assert(is_member(x, happyFriends));
+	assert(is_low(x == x));
+	assert(is_low(x == &y));
+}
+
+
+void primPtr2Groups()
+{
+	int *x, *y;
+	
+	x = malloc(sizeof(*x));
+	if (test_classifier(lambda(obj_t p; true), x == NULL)) assume(false);
+	y = malloc(sizeof(*y));
+	if (test_classifier(lambda(obj_t p; true), y == NULL)) assume(false);
+	
+	assert(is_low(x == x));
+	*x = 0;
+	assert(is_low(*x));
+}
+`
+Verification of primPtr1Group succeeded.
+Verification of primPtrStackHeap failed.
+testcase(28,11) : error VC9500: Assertion '_vcc_lblset_leq(_vcc_label_of(x == &y), _vcc_seclabel_bot())' did not verify.
+Verification of primPtrStackHeapWithPtrClubs succeeded.
+Verification of primPtr2Groups succeeded.
+`

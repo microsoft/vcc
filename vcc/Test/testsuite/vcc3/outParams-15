@@ -1,0 +1,19 @@
+#include <vcc.h>
+int foo(_(ghost int a));
+void bar() {
+  _(ghost int x)
+  foo(_(out x));
+}
+
+
+int fooOut(_(out int a));
+void barOut() {
+  _(ghost int x)
+  fooOut(_(ghost x));
+}
+`
+testcase(5,3) : error VC0000: The best overloaded method match for '__Globals__.foo(int)' has some invalid arguments.
+testcase(5,3) : error VC0000: Argument '1' should not be passed with the 'out' keyword.
+testcase(12,3) : error VC0000: The best overloaded method match for '__Globals__.fooOut(int)' has some invalid arguments.
+testcase(12,3) : error VC0000: Argument '1' must be passed with the 'out' keyword.
+`

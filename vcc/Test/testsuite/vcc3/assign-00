@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+union A {
+_(backing_member)
+int a;
+short q;
+};
+
+void foo()
+{
+  union A x, y;
+  x = y;
+}
+`
+Verification of foo succeeded.
+`

@@ -1,0 +1,36 @@
+#include <vcc.h>
+
+_(logic \bool fresh_object(\object ptr) =
+  \object_root(ptr) && \mutable(ptr) && \fresh(ptr))
+
+void *alloc(unsigned __int64 sz)
+  _(ensures fresh_object(_(blob sz)(\result)))
+  ;
+
+struct A {
+  int x, y;
+};
+
+void bar()
+{
+  _(ghost \object blob)
+  struct A *a = alloc(sizeof(*a));
+
+  _(ghost {
+    blob = _(blob sizeof(*a))a;
+    blob->\owns = {}; // required because alloc() doesn't say anything about the \owns set
+  })
+  _(wrap blob)
+  _(unwrap blob)
+
+  a = _(unblobify)a;
+  a->x = 7;
+  _(wrap a)
+  _(unwrap a)
+  _(blobify a) // (blobify guarantees empty \owns set)
+  _(wrap blob)
+  _(unwrap blob)
+}
+`
+Verification of bar succeeded.
+`

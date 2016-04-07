@@ -1,0 +1,33 @@
+#include "vcc.h"
+
+typedef unsigned __int8 uint8_t;
+
+struct T { int a[42]; int b; };
+struct Tv { volatile int a[42]; int b; };
+
+void foo(struct T *t) _(writes \extent(t));
+void fooV(struct Tv *t) _(writes \extent(t));
+
+void bar(struct T *t) _(writes \extent(t))
+{
+	foo(t);
+}
+
+void fails(struct T *t)
+	_(writes \array_range(t,7))
+{
+	// (... but succeeds without array int a[42])
+	foo(t + 0);
+}
+
+void failsV(struct Tv *t)
+	_(writes \array_range(t,7))
+{
+	// (... but succeeds without array int a[42])
+	fooV(t + 0);
+}
+`
+Verification of bar succeeded.
+Verification of fails succeeded.
+Verification of failsV succeeded.
+`

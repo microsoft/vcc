@@ -1,0 +1,23 @@
+#include <vcc.h>
+#include <stdlib.h>
+
+_(claimable) struct S {
+  volatile int c;
+};
+
+void foo(struct S **s) 
+  _(writes s)
+{
+  struct S *a = (struct S *)malloc(sizeof(struct S) * 10);
+  struct S *b = &a[0];
+  if (a != NULL) {
+    _(wrap b)
+    free((void *)(void[10])a);
+  }
+}
+`
+Verification of foo failed.
+testcase(15,5) : error VC8510: Assertion '\extent(p) is writable in call to free((void *)(void[10])a)' did not verify.
+testcase(15,5) : error VC9502: Call 'free((void *)(void[10])a)' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the extent of the object being reclaimed is mutable'.
+`

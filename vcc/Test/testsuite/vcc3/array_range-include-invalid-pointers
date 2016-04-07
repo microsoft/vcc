@@ -1,0 +1,23 @@
+#include <vcc.h>
+
+void foo(unsigned *a, unsigned size)
+  _(writes \array_range(a, size));
+
+void bar()
+{
+  unsigned a[20];
+  foo(a, 20);
+  _(assume \false) // avoid stack-free check
+}
+
+void bar_fail()
+{
+  unsigned a[19];
+  foo(a, 20);
+  _(assume \false) // avoid stack-free check
+}
+`
+Verification of bar succeeded.
+Verification of bar_fail failed.
+testcase(16,3) : error VC8510: Assertion '\array_range(a, size) is writable in call to foo(a, 20)' did not verify.
+`

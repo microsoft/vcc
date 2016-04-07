@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+typedef void (*foo)();
+void test()
+{
+}
+
+int bar(foo fum)
+  _(reads fum)  _(requires fum->\valid)
+{
+  fum(); return 0;
+}
+
+int myn(){
+  return bar((foo)&test);
+}
+`
+Verification of test succeeded.
+Verification of bar succeeded.
+Verification of myn succeeded.
+Verification of myn#fnptr#test_to_foo#1 succeeded.
+`

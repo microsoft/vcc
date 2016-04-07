@@ -1,0 +1,24 @@
+#include "vcc.h"
+
+_(pure, frameaxiom) int foo(int *arr, unsigned int len)
+  _(ensures \result == arr[len-1])
+  _(reads \array_range(arr, len))
+  _(requires len > 0)
+  _(requires \thread_local_array(arr, len))
+{
+  return arr[len-1];
+}
+
+void bar()
+{
+  int a[10];
+  int b[10];
+  int tmp = foo(a, 10);
+  b[5] = 1;
+  _(assert tmp == foo(a, 10))
+ }
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+Verification of foo#reads succeeded.
+`

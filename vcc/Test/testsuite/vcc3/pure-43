@@ -1,0 +1,24 @@
+#include <vcc.h>
+
+struct S {
+int b;
+_(ghost int a)
+};
+
+_(
+_(pure) 
+\bool
+\foo(struct S *p)
+_(reads p)
+_(returns p == ((void *)0) || p->a);
+)
+
+void bar(struct S *p)
+_(requires \foo(p))
+{
+}
+
+`
+Verification of bar succeeded.
+Verification of #foo#reads succeeded.
+`

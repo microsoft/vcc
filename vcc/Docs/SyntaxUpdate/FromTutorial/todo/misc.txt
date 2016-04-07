@@ -1,0 +1,7 @@
+groups
+backing_member
+(proper) array_range
+lambda with guard
+on_unwrap (macro, which includes 'invariant' in its expansion)
+better way to declare new attributes (which does not require changes from the scanner up)
+skinny_expose

@@ -1,0 +1,42 @@
+#include "vcc.h"
+
+void fill(void *arr, unsigned len, int fill)
+    _(writes \array_range((int*)arr,len))
+    _(ensures \forall unsigned j; j < len ==> (((int*)arr)[j]==fill))
+{
+    unsigned i;
+    for (i = 0; i < len; i++)
+        _(invariant i <= len)
+        _(invariant \forall unsigned j; j < i ==> (((int*)arr)[j]==fill))
+        ((int*)arr)[i] = fill;
+}
+
+void foo(int *arr, unsigned a)
+    _(requires 0 <= a && a < 100)
+    _(maintains \wrapped((int[100])arr))
+    _(writes (int[100])arr)
+    _(ensures \forall unsigned j; {:hint \match_ulong(j)} j < 100 ==> (j < a ? \unchanged(arr[j]) : arr[j]==42))
+{
+    _(unwrap (int[100])arr)
+    fill(arr+a, 100-a, 42);
+    // doesn't help: assert(forall(unsigned j; a <= j; arr+j == (((int*)((void*)arr))+a)+(j-a)));
+    _(assert \forall unsigned j; {\match_ulong(j)} a <= j ==> (arr+j == (arr+a)+(j-a)))
+    _(wrap (int[100])arr)
+}
+
+void bar(int *arr, unsigned a, unsigned b)
+    _(requires a && a < b && b < 100)
+    _(maintains \wrapped((int[100])arr))
+    _(writes (int[100])arr)
+    _(ensures \forall unsigned j; {:hint \match_ulong(j)} j < 100 ==> (a <= j && j < b ? arr[j]==42 : \unchanged(arr[j])))
+{
+    _(unwrap (int[100])arr)
+    fill(arr+a, b-a, 42);
+    _(wrap (int[100])arr)
+    _(assert \forall unsigned j; {\match_ulong(j)} a <= j ==> (arr+j == (arr+a)+(j-a)))
+}
+`
+Verification of fill succeeded.
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

@@ -1,0 +1,35 @@
+#include "vcc.h"
+
+struct A {
+	int x;
+};
+
+struct B {
+	int y;
+};
+
+union U {
+	struct A a;
+	struct B b;
+};
+
+struct C {
+	union U u;
+};
+
+void f() {
+	struct C c;
+	struct C d;
+	struct C *pc = &c;
+	struct C *pd = &d;
+
+        *pc = *pd;
+        _(wrap pd)
+        *pc = *pd;
+        _(unwrap pd)
+}
+
+
+`
+Verification of f succeeded.
+`

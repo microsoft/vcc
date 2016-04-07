@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+typedef unsigned long long U8;
+typedef unsigned char U1;
+U8 rcx;
+U8* MSRs;
+
+void RtlpZeroSinglePage()
+  _(requires \program_entry_point())
+  _(requires \thread_local_array(MSRs+0x0C0000080,8))
+{
+  _(assume rcx == 0x0C0000080)
+  _(assert \thread_local_array(MSRs+0x0C0000080,8))
+  _(assert \thread_local_array(MSRs+rcx,8))
+}
+`
+Verification of RtlpZeroSinglePage succeeded.
+`

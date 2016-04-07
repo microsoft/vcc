@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+_(record) struct S {
+  int a;
+};
+
+_(record) struct T {
+  struct S s;
+};
+
+void foo(_(ghost struct T t)) {
+  _(ghost struct T s)
+  _(ghost s = t / { .s = t.s / { .a = 5 } })
+  _(assert s == t / { .s = t.s / { .a = 5 } })
+}
+`
+Verification of foo succeeded.
+`

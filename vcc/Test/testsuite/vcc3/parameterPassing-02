@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+void foo()
+{
+  
+    _(ghost \objset s;)
+    _(ghost \object x;)
+    _(assume \forall \object p; p \in s==> p \is int)
+    _(assume x \in s)
+    _(assert x \is int)
+    _(assert \false)
+}
+`
+Verification of foo failed.
+testcase(11,14) : error VC9500: Assertion '\false' did not verify.
+`

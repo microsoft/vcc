@@ -1,0 +1,13 @@
+#include <vcc.h>
+#include <limits.h>
+
+void foo(unsigned int x)
+{
+  _(unchecked)(x += 1);
+  _(assert \old(x) == UINT_MAX ==> x == 0);
+  _(unchecked)(++x);
+  _(assert \old(x) == UINT_MAX - 1 ==> x == 0);
+}
+`
+Verification of foo succeeded.
+`

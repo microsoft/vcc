@@ -1,0 +1,166 @@
+#include <vcc2test.h>
+
+typedef _(dynamic_owns) _(claimable) struct _X {
+  volatile int v;
+  int f;
+} X;
+
+void test1()
+{
+  X *p = malloc(sizeof(*p));
+
+  if (p != NULL) {
+    p->v = 1;
+    p->f = 2;
+    _(wrap p)
+    _(assert p->v == 1) // OK, we didn't simulate other threads yet
+
+    _(atomic p) {
+      _(assert p->f == 2)
+    }
+  }
+}
+
+void test2()
+{
+  X *p = malloc(sizeof(*p));
+  if (p != NULL) {
+    p->v = 1;
+    p->f = 2;
+    _(wrap p)
+
+    // no not_shared
+
+    _(atomic p) {
+      _(assert p->v == 1)
+    }
+  }
+}
+
+void test3()
+{
+  X *p = malloc(sizeof(*p));
+
+  if (p != NULL) {
+    p->v = 1;
+    p->f = 2;
+    _(wrap p)
+    _(assert \not_shared(p))
+
+    _(atomic p) {
+      _(assert p->v == 1)
+    }
+  }
+}
+
+void test4()
+{
+  X *p = malloc(sizeof(*p));
+
+  if (p != NULL) {
+    p->v = 1;
+    p->f = 2;
+    _(wrap p)
+    _(assert \not_shared(p))
+
+    _(atomic p) {
+      _(assert p->v == 1)
+      p->v = 12;
+    }
+    _(assert \not_shared(p))
+
+    _(atomic p) {
+      _(assert p->v == 12)
+    }
+  }
+}
+
+void test5()
+{
+  X *p = malloc(sizeof(*p));
+
+  if (p != NULL) {
+    p->v = 1;
+    p->f = 2;
+    _(wrap p)
+    _(assert \not_shared(p))
+
+    _(atomic p) {
+      _(assert p->v == 1)
+      p->v = 12;
+    }
+
+    // no not_shared, error
+
+    _(atomic p) {
+      _(assert p->v == 12)
+    }
+  }
+}
+
+void test6()
+{
+  X *p = malloc(sizeof(*p));
+  _(ghost \claim c)
+
+  if (p != NULL) {
+    p->v = 1;
+    p->f = 2;
+    _(wrap p)
+
+     _(ghost c = \make_claim({p}, \true);) 
+
+    _(assert \not_shared(p)) // error, p has claims
+  }
+}
+
+void test7()
+{
+  X *p = malloc(sizeof(*p));
+  X *q = malloc(sizeof(*q));
+  _(ghost \claim c)
+
+  if (p != NULL && q != NULL) {
+    p->v = 1;
+    p->f = 2;
+    _(wrap p)
+
+    _(ghost q->\owns =  {p});
+    _(wrap q)
+
+    _(assert \not_shared(p)) // error, p is nested
+  }
+}
+
+void test8()
+{
+  X *p = malloc(sizeof(*p));
+  X *q = malloc(sizeof(*q));
+  _(ghost \claim c)
+
+  if (p != NULL && q != NULL) {
+    p->v = 1;
+    p->f = 2;
+    _(wrap p)
+
+    _(ghost q->\owns =  {p});
+    _(wrap q)
+
+    _(assert \not_shared(q))
+  }
+}
+
+`
+Verification of test1 succeeded.
+Verification of test2 failed.
+testcase(35,16) : error VC9500: Assertion 'p->v == 1' did not verify.
+Verification of test3 succeeded.
+Verification of test4 succeeded.
+Verification of test5 failed.
+testcase(96,16) : error VC9500: Assertion 'p->v == 12' did not verify.
+Verification of test6 failed.
+testcase(113,14) : error VC9500: Assertion '\not_shared(p)' did not verify.
+Verification of test7 failed.
+testcase(131,14) : error VC9500: Assertion '\not_shared(p)' did not verify.
+Verification of test8 succeeded.
+`

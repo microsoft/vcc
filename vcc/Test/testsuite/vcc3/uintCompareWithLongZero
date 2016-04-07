@@ -1,0 +1,9 @@
+#include <vcc.h>
+
+void foo(unsigned int i) {
+  if (i > 0L) { }
+}
+
+`
+Verification of foo succeeded.
+`

@@ -1,0 +1,13 @@
+#include <vcc.h>
+
+//#define X (255u)
+#define X ((unsigned __int8) -1)
+
+unsigned foo() {
+    int x = (int) X;
+    _(assert \false)
+}
+`
+Verification of foo failed.
+testcase(8,14) : error VC9500: Assertion '\false' did not verify.
+`

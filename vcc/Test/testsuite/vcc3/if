@@ -1,0 +1,19 @@
+#include <vcc.h>
+
+void IfTest(int x, int y){ int z;
+  z = 2;
+  if(x==y){
+    z = 3;
+    if(z==x){
+      z = 11;
+    } else {
+      z = 12;
+    }
+  } else {
+    z = 4;
+  }
+  z = 5;
+}
+`
+Verification of IfTest succeeded.
+`

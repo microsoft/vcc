@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+void foo()
+{
+  int i;
+  int j = 0;
+  
+  for (i = 0; i < 10; i++)
+    _(invariant j < 100)
+  {
+    j += 10;
+  }
+}
+`
+Verification of foo failed.
+testcase(9,17) : error VC9500: Loop body invariant 'j < 100' did not verify.
+`

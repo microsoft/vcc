@@ -1,0 +1,90 @@
+\subsection{Overflows and unchecked arithmetic}
+\label{sect:overflows}
+Note: this section can be skipped on first reading.
+
+Consider the C expression \vcc{a+b}, when \vcc{a} and \vcc{b} are,
+say, \vcc{unsigned int}s. This might represent one of two programmer
+intentions. Most of the time, it is intended to mean ordinary
+arithmetic addition on numbers; program correctness is then likely to
+depend on this addition not causing an overflow. However, sometimes
+the program is designed to cope with overflow, so the programmer means
+\vcc{(a + b) % UINT_MAX+1}. 
+It is always sound to use this second interpretation, but VCC
+nevertheless assumes the first by default, for several reasons:
+\begin{itemize}
+\item The first interpretation is much more common.
+\item The second interpretation introduces an implicit \vcc{%}
+  operator, turning linear arithmetic into nonlinear arithmetic and
+  making subsequent reasoning much more difficult.
+\item If the first interpretation is intended but the addition can in
+  fact overflow, this potential error will only manifest later in the
+  code, making the source of the error harder to track down.
+\end{itemize}
+
+Here is an example where the second interpretation is intended, but
+VCC complains because it assumes the first:
+\vccInput[linerange={begin-}]{c/4.1.hash_fail.c}
+
+\noindent
+VCC complains that the hash-computing operation might overflow.
+To indicate that this possible overflow behavior is desired we use \vcc{_(unchecked)},
+with syntax similar to a regular C type-cast.
+This annotation applies to the following expression, and indicates that
+you expect that there might be overflows in there.
+Thus, replacing the body of the loop with the following
+makes the program verify:
+
+\vccInput[linerange={update-endupdate}]{c/4.2.hash.c}
+
+Note that ``unchecked'' does not mean ``unsafe''.
+The C standard mandates the second interpretation for unsigned overflows,
+and signed overflows are usually implementation-defined to use two-complement.
+It just means that VCC will loose information about the operation.
+For example consider:
+\begin{VCC}
+int a, b;
+// ...
+a = b + 1;
+_(assert a < b)
+\end{VCC}
+This will either complain about possible overflow of \vcc{b + 1} or succeed.
+However, the following might complain about \vcc{a < b}, if VCC does not know
+that \vcc{b + 1} doesn't overflow.
+\begin{VCC}
+int a, b;
+// ...
+a = _(unchecked)(b + 1);
+_(assert a < b)
+\end{VCC}
+Think of \vcc{_(unchecked)E} as computing the expression using mathematical 
+integers, which never overflow, and then casting the result to the desired range.
+VCC knows that
+\begin{itemize}
+\item if the value of \vcc{E} lies within the range of its type, then 
+\vcc{E == _(unchecked) E};
+\item if \vcc{x} and \vcc{y} are \vcc{unsigned}, then 
+\vcc{_(unchecked)(x+y) == (x+y <= UINT_MAX ? x+y : x + y - UINT_MAX)},
+and similarly for other types;
+\item if \vcc{x} and \vcc{y} are \vcc{unsigned}, then
+\vcc{_(unchecked)(x-y) == (x >= y ? x - y : UINT_MAX - y + x + 1)}, and
+similarly for other types.
+\end{itemize}
+
+If these aren't enough, you will need to resort to bit-vector
+reasoning (below), or use ghost code to prove what you need \footnote{
+In particular, you can use iteration or recursion to prove things by
+induction.}.
+
+\subsubsection{Bitvector Reasoning}
+\label{sect:bv}
+
+Every now and then, you need to prove some low-level fact that VCC
+can't prove using ordinary logical reasoning. If the fact involves
+can be expressed over a relatively small number of bits, you can ask
+VCC to prove it using boolean reasoning at the level of bits, by 
+putting \lstinline|{:bv}| after the \vcc{assert} tag. For example:
+
+\vccInputSC[linerange={begin-}]{c/4.3.min5.c}
+
+Assertions proved in this way cannot mention program variables, and
+can use only variables of primitive C types.

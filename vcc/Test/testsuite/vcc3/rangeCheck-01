@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+void foo(int a) { }
+
+void bar(__int64 b) {  foo((int)b); }
+`
+Verification of foo succeeded.
+Verification of bar failed.
+testcase(5,33) : error VC8518: Assertion 'b fits range of int32_t' did not verify.
+`

@@ -1,0 +1,2 @@
+#!/bin/sh
+time vcc3 -s -smt -smoke "$@" vcc3 vcc3from2 examples3

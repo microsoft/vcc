@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+
+typedef union bla {
+  _(backing_member) int val;
+  struct blubb {
+    int a:2; // x[1:0]
+    int b:30; // x[31:2]
+  } fld;
+} BF_t;
+
+
+void foo() {
+  BF_t x;
+  x.val=3;
+  _(assert x.val == 3)   
+  _(assert x.fld.a == -1)
+  _(assert x.fld.b == 0) 
+}
+`
+Verification of foo succeeded.
+`

@@ -1,0 +1,13 @@
+#include <vcc.h>
+
+int foo(int i) 
+  _(ensures \result == _(unchecked)(-i))
+{
+  _(assert {:bv}  \forall  int a; _(unchecked)(-a) == _(unchecked)(~a + 1))
+  return _(unchecked)(~i + 1);
+}
+`
+testcase(7,23) : warning VC9326: [possible unsoundness]: signed overflow (of '+') has undefined behavior in C
+Verification of foo succeeded.
+Verification of foo#bv_lemma#0 succeeded.
+`

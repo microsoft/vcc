@@ -1,0 +1,137 @@
+#include <vcc.h>
+
+void foo()
+{
+  int a, b, c;
+  _(assert a > b && b > c)
+}
+
+void bar()
+{
+  int a, b, c;
+  while (1)
+  _(invariant b > 0)
+  _(invariant a > b && b > c)
+  {
+    a  = b;
+  }
+}
+
+void baz()
+{
+   _(ghost int m[int];) 
+   _(ghost int n[int];) 
+
+  _(ghost m = (\lambda int i; 7);) 
+
+  _(assert {:split} \forall int i; i > 0 ==> m[i] > 0 && n[i] < 0)
+}
+
+void baz2()
+{
+   _(ghost int m[int];) 
+   _(ghost int n[int];) 
+
+  _(ghost m = (\lambda int i; 7);) 
+
+  _(assert {:split} \forall int i,j; m[j] > 0 && n[i] < 0)
+}
+
+
+_(logic \bool And(\bool a, \bool b) = (a && b);)
+
+void foo2()
+{
+  int a, b, c;
+  _(assert And(a > b, b > c && b > 0))
+}
+
+struct Node {
+  int d;
+  struct Node *next;
+  struct Node *prev;
+};
+
+#define NULL 0
+
+_(logic \bool nextClosed(\bool S[struct Node *]) = (\forall struct Node *n; S[n] && n->next != NULL ==> S[n->next] && n->next->d < n->d);)
+
+void testQ(_(ghost \bool s[struct Node *]))
+{
+  _(assert nextClosed(s))
+}
+
+void testQ2(_(ghost \bool s[struct Node *]))
+{
+  _(assert {:split} nextClosed(s))
+}
+
+_(logic \bool nextClosed2(\bool S[struct Node *]) = ({:split} \forall struct Node *n; S[n] && n->next != NULL ==> S[n->next] && n->next->d < n->d);)
+
+void testQ3(_(ghost \bool s[struct Node *]))
+{
+  _(assert nextClosed2(s))
+}
+
+
+_(logic \bool nextClosed3(\bool S[struct Node *]) = ((\forall struct Node *n; S[n] && n->next != NULL ==> S[n->next] && n->next->d < n->d) &&
+  \forall struct Node *n; S[n] && n->prev != NULL ==> S[n->prev] && n->prev->d < n->d);)
+
+void testQN(_(ghost \bool s[struct Node *]))
+{
+  _(assert nextClosed3(s))
+}
+
+void testQN2(_(ghost \bool s[struct Node *]))
+{
+  _(assert {:split} nextClosed3(s))
+}
+
+`
+Verification of foo failed.
+testcase(6,12) : error VC9500: Assertion 'a > b' did not verify.
+testcase(6,21) : error VC9500: Assertion 'b > c' did not verify.
+Verification of bar failed.
+testcase(13,15) : error VC9500: Loop entry invariant 'b > 0' did not verify.
+testcase(14,15) : error VC9500: Loop entry invariant 'a > b' did not verify.
+testcase(14,24) : error VC9500: Loop entry invariant 'b > c' did not verify.
+testcase(14,15) : error VC9500: Loop body invariant 'a > b' did not verify.
+Verification of baz failed.
+testcase(27,21) : error VC9500: Assertion 'i > 0 ==> n[i] < 0 in \forall int i; i > 0 ==> m[i] > 0 && n[i] < 0)' did not verify.
+Verification of baz2 failed.
+testcase(37,21) : error VC9500: Assertion 'n[i] < 0 in \forall int i,j; m[j] > 0 && n[i] < 0)' did not verify.
+Verification of foo2 failed.
+testcase(46,16) : error VC9500: Assertion 'a > b' did not verify.
+testcase(41,3) : error VC9599: (related information) from expansion of 'And(a > b, b > c && b > 0)'.
+testcase(46,23) : error VC9500: Assertion 'b > c' did not verify.
+testcase(41,3) : error VC9599: (related information) from expansion of 'And(a > b, b > c && b > 0)'.
+testcase(46,32) : error VC9500: Assertion 'b > 0' did not verify.
+testcase(41,3) : error VC9599: (related information) from expansion of 'And(a > b, b > c && b > 0)'.
+Verification of testQ failed.
+testcase(61,12) : error VC9500: Assertion '\forall struct Node *n; S[n] && n->next != 0 ==> S[n->next] && n->next->d < n->d)' did not verify.
+testcase(57,53) : error VC9599: (related information) from expansion of 'nextClosed(s)'.
+Verification of testQ2 failed.
+testcase(66,21) : error VC9500: Assertion 'S[n] && n->next != 0 ==> S[n->next] in \forall struct Node *n; S[n] && n->next != 0 ==> S[n->next] && n->next->d < n->d)' did not verify.
+testcase(57,53) : error VC9599: (related information) from expansion of 'nextClosed(s)'.
+testcase(66,21) : error VC9500: Assertion 'S[n] && n->next != 0 ==> n->next->d < n->d in \forall struct Node *n; S[n] && n->next != 0 ==> S[n->next] && n->next->d < n->d)' did not verify.
+testcase(57,53) : error VC9599: (related information) from expansion of 'nextClosed(s)'.
+Verification of testQ3 failed.
+testcase(73,12) : error VC9500: Assertion 'S[n] && n->next != 0 ==> S[n->next] in \forall struct Node *n; S[n] && n->next != 0 ==> S[n->next] && n->next->d < n->d)' did not verify.
+testcase(69,63) : error VC9599: (related information) from expansion of 'nextClosed2(s)'.
+testcase(73,12) : error VC9500: Assertion 'S[n] && n->next != 0 ==> n->next->d < n->d in \forall struct Node *n; S[n] && n->next != 0 ==> S[n->next] && n->next->d < n->d)' did not verify.
+testcase(69,63) : error VC9599: (related information) from expansion of 'nextClosed2(s)'.
+Verification of testQN failed.
+testcase(82,12) : error VC9500: Assertion '\forall struct Node *n; S[n] && n->next != 0 ==> S[n->next] && n->next->d < n->d)' did not verify.
+testcase(77,55) : error VC9599: (related information) from expansion of 'nextClosed3(s)'.
+testcase(82,12) : error VC9500: Assertion '\forall struct Node *n; S[n] && n->prev != 0 ==> S[n->prev] && n->prev->d < n->d)' did not verify.
+testcase(78,3) : error VC9599: (related information) from expansion of 'nextClosed3(s)'.
+Verification of testQN2 failed.
+testcase(87,21) : error VC9500: Assertion 'S[n] && n->next != 0 ==> S[n->next] in \forall struct Node *n; S[n] && n->next != 0 ==> S[n->next] && n->next->d < n->d)' did not verify.
+testcase(77,55) : error VC9599: (related information) from expansion of 'nextClosed3(s)'.
+testcase(87,21) : error VC9500: Assertion 'S[n] && n->next != 0 ==> n->next->d < n->d in \forall struct Node *n; S[n] && n->next != 0 ==> S[n->next] && n->next->d < n->d)' did not verify.
+testcase(77,55) : error VC9599: (related information) from expansion of 'nextClosed3(s)'.
+testcase(87,21) : error VC9500: Assertion 'S[n] && n->prev != 0 ==> S[n->prev] in \forall struct Node *n; S[n] && n->prev != 0 ==> S[n->prev] && n->prev->d < n->d)' did not verify.
+testcase(78,3) : error VC9599: (related information) from expansion of 'nextClosed3(s)'.
+testcase(87,21) : error VC9500: Assertion 'S[n] && n->prev != 0 ==> n->prev->d < n->d in \forall struct Node *n; S[n] && n->prev != 0 ==> S[n->prev] && n->prev->d < n->d)' did not verify.
+testcase(78,3) : error VC9599: (related information) from expansion of 'nextClosed3(s)'.
+`

@@ -1,0 +1,12 @@
+`/ps:32 
+
+#include <vcc.h>
+
+void foo() { 
+  _(assert sizeof(int*) == sizeof(int))
+  _(assert sizeof(long*) == sizeof(long))
+  _(assert sizeof(int) == sizeof(long))
+}
+`
+Verification of foo succeeded.
+`

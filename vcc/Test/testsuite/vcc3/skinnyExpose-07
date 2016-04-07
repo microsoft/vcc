@@ -1,0 +1,59 @@
+#include "vcc.h"
+
+struct B {
+  int x;
+  int y;
+};
+
+struct A {
+  int z;
+  struct B *b;
+  _(invariant \mine(b))
+};
+
+ 
+
+void works(struct A *a)
+  _(maintains \wrapped(a))
+  _(writes a)
+  _(ensures \domain_updated_at(a, {&a->b->x, &a->b->y}))
+{
+
+  _(unwrapping a, a->b)
+    _(writes &a->b->x)
+	_(writes &a->b->y)
+  {
+    a->b->x = 12;
+    a->b->y = 144;
+  }
+  
+  _(assert \domain_updated_at(a, {&a->b->x, &a->b->y}))
+}
+
+
+void now_also_works(struct A *a)
+  _(maintains \wrapped(a))
+  _(writes a)
+  _(ensures \domain_updated_at(a, {&a->b->x, &a->b->y}))
+{
+
+  _(unwrapping a, a->b)
+    _(writes &a->b->x)
+  {
+    a->b->x = 12;
+  }
+  _(assert \domain_updated_at(a, {&a->b->x}))
+
+  _(unwrapping a, a->b)
+    _(writes &a->b->y)
+  {
+    a->b->y = 144;
+  }
+  
+  _(assert \domain_updated_at(a, {&a->b->x, &a->b->y}))
+}
+`
+Verification of A#adm succeeded.
+Verification of works succeeded.
+Verification of now_also_works succeeded.
+`

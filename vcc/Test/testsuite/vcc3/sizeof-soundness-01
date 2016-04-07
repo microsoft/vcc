@@ -1,0 +1,28 @@
+#include <vcc.h>
+int main(void)
+{
+char a[10];
+_(assert sizeof(a) > 10)
+return 0;
+}
+int main2(void)
+{
+char a[10];
+int n = sizeof(a);
+_(assert n > 10)
+return 0;
+}
+int main3(void)
+{
+char a[10];
+int n = sizeof(a);
+_(assert n == 10)
+return 0;
+}
+`
+Verification of main failed.
+testcase(5,10) : error VC9500: Assertion 'sizeof(a) > 10' did not verify.
+Verification of main2 failed.
+testcase(12,10) : error VC9500: Assertion 'n > 10' did not verify.
+Verification of main3 succeeded.
+`

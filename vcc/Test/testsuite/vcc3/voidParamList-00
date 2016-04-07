@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+typedef void VOID;
+
+__forceinline VOID foo(VOID) { }
+
+void main()
+{
+  foo();
+}
+`
+Verification of foo succeeded.
+Verification of main succeeded.
+`

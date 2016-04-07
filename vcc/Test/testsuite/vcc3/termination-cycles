@@ -1,0 +1,33 @@
+#include <vcc.h>
+
+_(pure \integer a(\integer x))
+
+_(def \integer b(\integer x)
+{
+  return a(x); // not allowed
+})
+
+_(def \integer c(\integer x)
+{
+  if (x < 0) return 0;
+  return b(x-1); // OK
+})
+
+_(def \integer c2(\integer x)
+{
+  if (x < 0) return 0;
+  return c2(x-1); // OK
+})
+
+_(pure \integer d(\integer x)
+  _(returns c(x))) // OK
+
+_(pure \integer d2(\integer x)
+  _(returns d2(x))) // not allowed
+`
+testcase(7,10) : warning VC9315: [possible unsoundness]: termination checking not enabled for function 'a'; consider supplying _(decreases ...) clause
+testcase(25,3) : warning VC9303: [possible unsoundness]: cycle in pure function calls: d2 -> d2
+Verification of b succeeded.
+Verification of c succeeded.
+Verification of c2 succeeded.
+`

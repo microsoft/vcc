@@ -1,0 +1,18 @@
+#include "vcc.h"
+
+
+_(ghost typedef struct S_str {
+unsigned int id;
+} S_t;)
+
+
+
+_(ghost struct abs_str {
+\bool Sset[S_t];
+
+_(invariant Sset == \lambda S_t s; (s.id < 42))
+} abs;)
+ 
+`
+testcase(4,17) : error VC9702: Illegal type 'struct S_str' in map domain.
+`

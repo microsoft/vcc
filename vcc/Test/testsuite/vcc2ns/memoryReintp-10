@@ -1,0 +1,33 @@
+#include "vcc.h"
+
+
+_(ghost typedef _(dynamic_owns) struct x_str {
+} x_t;)
+
+
+typedef struct big_str {
+    _(ghost x_t x)
+    int dummy; 
+} big_t;
+
+int test(unsigned char *u) 
+    _(requires \object_root((void[sizeof(big_t)])u))
+    _(requires \wrapped((void[sizeof(big_t)])u))
+    _(writes (void[sizeof(big_t)])u)
+{
+   big_t *b;
+//assert(in_domain(as_array(u, sizeof(big_t)), as_array(u, sizeof(big_t))));
+   _(unwrap (void[sizeof(big_t)])u)
+   b = (big_t *)u;
+
+   _(from_bytes b, \false)
+   _(assume (&b->x)->\owns == {})
+   _(wrap &b->x)
+   _(assert \false)
+   return 1;
+}
+
+`
+Verification of test failed.
+testcase(26,13) : error VC9500: Assertion '\false' did not verify.
+`

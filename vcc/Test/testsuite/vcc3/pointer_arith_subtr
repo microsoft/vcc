@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+void test() {
+	int *p, *q;
+	size_t l;
+	_(assume \thread_local_array(p,l))
+	_(assume q == p + l)
+	_(assert (size_t)(q - p) == l)
+}
+`
+Verification of test succeeded.
+`

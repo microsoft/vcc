@@ -1,0 +1,14 @@
+#include <vcc.h>
+void test() 
+{
+
+	int i;
+	for (i = 0; i < 5; i++)
+		_(decreases i)
+	{
+	}
+}
+`
+testcase(7,15) : warning VC9324: [possible unsoundness]: _(decreases ...) is ignored because function 'test' is not checked for termination
+Verification of test succeeded.
+`

@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+extern int global;
+
+void foo()
+  _(writes &global)
+{
+  global = 0;
+  _(assert global == 1)
+}
+`
+Verification of foo failed.
+testcase(9,12) : error VC9500: Assertion 'global == 1' did not verify.
+`

@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+typedef void (*FPTR)();
+
+void foo() {
+  FPTR fptr = (void *)0;
+}
+
+`
+Verification of foo succeeded.
+`

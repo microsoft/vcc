@@ -1,0 +1,22 @@
+#include "vcc.h"
+
+struct S {
+  int a;
+};
+
+_(claimable) struct T {
+  struct S *s;
+  _(invariant \mine(s))
+};
+
+void foo(struct T *p _(ghost \claim c))
+  _(always c, p->\closed)
+  
+{
+  _(assert p->\closed)
+  _(assert (p->s)->\valid)
+}
+`
+Verification of T#adm succeeded.
+Verification of foo succeeded.
+`

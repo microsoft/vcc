@@ -1,0 +1,35 @@
+#include <vcc.h>
+
+#include <vcc.h>
+
+struct S
+{
+  int dummy;
+};
+
+void localShouldFail(void) {
+  struct S *a;
+  {
+    struct S j;
+    a = &j;
+    _(wrap &j)
+  }
+  _(unwrap a)
+}
+
+
+void localShouldFailToo(void) {
+  struct S *a;
+  {
+    struct S j;
+    a = &j;
+  }
+  a->dummy = 5;
+}
+`
+Verification of localShouldFail failed.
+testcase(10,1) : error VC9502: Call 'stack_free(&j)' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the extent of the object being reclaimed is mutable'.
+Verification of localShouldFailToo failed.
+testcase(27,3) : error VC8507: Assertion 'a->dummy is writable' did not verify.
+`

@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+// == used to be not working
+
+int main (){
+  int x = (1==2);
+}
+`
+Verification of main succeeded.
+`

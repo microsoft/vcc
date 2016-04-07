@@ -1,0 +1,44 @@
+#include <vcc.h>
+
+typedef unsigned __int32 UINT32;
+
+typedef union FOO
+{
+    struct
+    {
+        UINT32 Low  :  1;
+        UINT32 Count: 31;
+    };
+
+    _(backing_member) UINT32 AsUINT32;
+    _(ghost unsigned age;)
+    _(invariant age == AsUINT32)
+};
+
+void foo(union FOO *p) 
+  _(requires \wrapped(p))
+  _(writes p)
+{
+  _(unwrapping p) {
+    p->AsUINT32 = 16;
+    _(ghost p->age = 16;)
+  }
+}
+
+void fooShouldFail(union FOO *p) 
+  _(requires \wrapped(p))
+  _(writes p)
+{
+  _(unwrapping p) {
+    p->AsUINT32 = 16;
+    _(ghost p->age = 17;)
+    _(assert p->AsUINT32 == 16)
+  }
+}
+`
+Verification of FOO#adm succeeded.
+Verification of foo succeeded.
+Verification of fooShouldFail failed.
+testcase(32,16) : error VC8014: invariant(age == AsUINT32) of FOO fails on wrap.
+testcase(15,17) : error VC9599: (related information) location of the invariant.
+`

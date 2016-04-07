@@ -1,0 +1,19 @@
+#include <vcc.h>
+
+typedef enum _HK_CACHE_TYPE
+{
+    Hk0         = 0,
+    Hk1   = 1
+} HK_CACHE_TYPE;
+
+
+void foo(HK_CACHE_TYPE ct) 
+  _(requires ct == Hk0 || ct == Hk1)
+{
+  __int32 arr[8] = { 0, 1, 2, 3, 4, 5, 6, 7 };
+  __int32 a = arr[ct];
+}
+
+`
+Verification of foo succeeded.
+`

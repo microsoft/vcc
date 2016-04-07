@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+void foo()
+{
+  _(as_array) short opcode[2] = {0, 0};
+  _(blobify _(short[2])&opcode[0])
+  _(ghost _(unblobify) _(short[2])&opcode[0])
+}
+
+`
+Verification of foo succeeded.
+`

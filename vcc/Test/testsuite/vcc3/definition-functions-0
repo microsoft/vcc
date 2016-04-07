@@ -1,0 +1,37 @@
+#include "vcc.h"
+
+_(def int foo(int x)
+{
+  int y, z;
+  if (x <= 1) return 2;
+  else {
+    if (x == 2) return 3;
+    x--;
+    y = x - 50;
+    z = y + 50;
+    return z;
+  }
+})
+
+void t1()
+{
+  _(assert foo(0) == 2)
+  _(assert foo(2) == 3)
+  _(assert foo(3) == 2)
+  _(assert foo(4) == 3)
+}
+
+void check_soundness()
+{
+  _(assert foo(0) == 2)
+  _(assert foo(2) == 3)
+  _(assert foo(3) == 2)
+  _(assert foo(4) == 3)
+  _(assert \false)
+}
+`
+Verification of foo succeeded.
+Verification of t1 succeeded.
+Verification of check_soundness failed.
+testcase(30,12) : error VC9500: Assertion '\false' did not verify.
+`

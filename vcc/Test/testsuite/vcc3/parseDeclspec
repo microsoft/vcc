@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+__declspec(align(2)) struct S { __int32 x; };
+struct __declspec(align(2)) T { __int32 x; };
+
+typedef struct __declspec(align(2)) _GUID
+{
+     __int32 x;
+} GUID;
+`
+`

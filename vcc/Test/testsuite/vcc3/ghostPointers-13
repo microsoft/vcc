@@ -1,0 +1,9 @@
+#include "vcc.h"
+_(ghost struct S {
+    int a;
+    _(ghost struct S ^s)
+    _(invariant s==\this)
+})
+`
+Verification of S#adm succeeded.
+`

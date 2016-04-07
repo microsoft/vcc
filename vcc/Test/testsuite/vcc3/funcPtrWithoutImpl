@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+typedef void (*TF)();
+
+void bar();
+
+void foo() {
+  TF p = &bar;
+}
+
+`
+Verification of foo succeeded.
+Verification of foo#fnptr#bar_to_TF#1 succeeded.
+`

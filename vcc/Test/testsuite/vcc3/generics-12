@@ -1,0 +1,14 @@
+#include "vcc.h"
+
+template<typename T> int foo(T *x)
+    _(writes \array_range(x,sizeof(T)/4));
+
+vcc_attr("no_infer", "weak_out_param")
+void bar(int *p) 
+  _(writes p)
+{ 
+  foo(p);
+}
+`
+Verification of bar succeeded.
+`

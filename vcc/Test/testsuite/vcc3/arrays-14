@@ -1,0 +1,28 @@
+#include "vcc.h"
+
+#define cnt 64
+
+typedef struct s{
+    int a[cnt];
+}s;
+
+typedef struct m_t{
+    s arr[cnt];
+    int intarr[cnt];
+}m_t;
+
+m_t m;
+
+void foo()
+{
+    s *p;
+    int *j;
+    unsigned __int8 i;
+    i = 5;
+    p = &m.arr[5];
+    j = &m.intarr[i];
+    p = &m.arr[i];
+}
+`
+Verification of foo succeeded.
+`

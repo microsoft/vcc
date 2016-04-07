@@ -1,0 +1,12 @@
+#include "vcc.h"
+
+#define NULL (void*)0
+
+void foo()
+{
+  _(ghost \claim t)
+  _(assert \forall int flag; (flag==0) ==> (\lambda int x; ((x==0 ? t : (void ^)0) ))[flag] \in {t})
+} 
+`
+testcase(8,62) : error VC0000: Type of conditional expression cannot be determined because there are implicit conversions between '\claim_struct^' and 'void^'; try adding an explicit cast to one of the arguments.
+`

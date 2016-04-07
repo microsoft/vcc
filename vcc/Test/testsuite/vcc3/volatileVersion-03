@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+struct A { _(ghost \object x;) int y; };
+
+struct VS1 {
+  struct A a;
+
+  volatile int y;
+  _(ghost \object yappr;)
+
+  _(invariant \approves(yappr, y + 1))
+  _(invariant \approves(a.x, y))
+};
+`
+testcase(11,15) : error VC9669: approves(...) needs this->field as the second parameter
+testcase(12,15) : error VC9670: approves(...) needs owner(this) or this->field as the first parameter
+`

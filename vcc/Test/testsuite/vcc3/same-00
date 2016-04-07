@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+void foo(int *p)
+	_(writes p)
+	_(ensures \same(*p))
+{
+}
+
+void bar() {
+	int i = 5;
+	foo(&i);
+	_(assert i == 5)
+}
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

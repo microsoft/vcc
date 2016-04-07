@@ -1,0 +1,28 @@
+#include <vcc.h>
+
+typedef long long __vcI8;
+typedef unsigned long long __vcU8;
+
+
+
+typedef unsigned int UINT32;
+
+
+UINT32 test(UINT32 a)
+_(ensures \result == (a? _(unchecked)(a+1):1))
+{
+	UINT32 res;
+
+	if(a)
+		res = _(unchecked)(a + 1);
+	else
+		res = 1;
+
+	_(assert res == (a? _(unchecked)(a+1):1))
+
+	return res;
+}
+
+`
+Verification of test succeeded.
+`

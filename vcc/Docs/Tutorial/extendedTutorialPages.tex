@@ -1,0 +1,1172 @@
+\documentclass{report}
+\title{Verifying C code with \VCC}
+\date{\today}
+
+\usepackage{listings}
+\usepackage{color}
+\usepackage{todo}
+
+\newcommand{\Q}[1]{\lstinline~#1~}
+\newcommand{\C}{\Q{C}}
+\newcommand{\Cpp}{\Q{C++}}
+\newcommand{\VS}{VS} %Visual Studio
+\newcommand{\VCC}{VCC}
+\newcommand{\Intellisense}{IntelliSense}
+\newcommand{\Z}{Z3}
+\newcommand{\Def}[1]{\emph{#1}}
+\newcommand{\Ref}[1]{section \ref{#1}}
+\newcommand{\Todo}[1]{\marginpar{#1}}
+\newenvironment{code}{\begin{lstlisting}}{\end{lstlisting}}
+
+\begin{document}
+
+\lstset{language=c}
+\lstset{commentstyle=\textit}
+ 
+\maketitle
+
+\chapter{Introduction}
+
+This book presents a methodology for specifying and verifying
+concurrent \C\ programs, and a tool \VCC\ (the Verifying \C\ Compiler)
+that checks that \C\ functions meet their specification. \VCC\ does
+this by trying to \emph{prove} correctness, rather than by looking for
+things that might go wrong; if \VCC\ says your program meets its spec,
+it really does (unless there is a bug in \VCC\ itself or the platform
+it is running on).
+
+Our intended audience is software engineers, testers, and verification
+engineers who want to produce verified software, or who want to learn
+new ways to think about or communicate software designs.  We expect
+our readers to be able to read \C\ code and be willing to think deeply
+about why programs work.  While there are many excellent program
+validation tools that operate on code with little or no additional
+effort from the users, \VCC\ is not one of them. You will not be able
+to verify your code unless you are willing to understand why you think
+your code works, and willing to put some effort into telling \VCC.
+
+\section{Why Verify Your Code?}
+
+There are many reasons why you might want to verify your code. 
+
+\subsection{Programming is Hard}
+Software is hard to get right. Even the best programmers produce code
+with bugs. Less expert programmers are unlikely to get even simple
+programs right. (Edsger Dijkstra used to challenge professional
+programmers to write on paper simple programs like binary search; he
+almost always found an error in the code they produced.)  Few
+programmers could confidently code up something as complex as an
+efficient sorting algorithm with confidence. (As a thought experiment,
+ask yourself how long it would take you to code up a modest algorithm
+such as quicksort, and then ask yourself how much time you would need if
+you had to pay from your pocket \$1000 if your code has a bug.)
+
+Concurrent programs are even harder to get right. There is a long
+history of researchers publishing (and reviewers certifying) buggy
+concurrent algorithms of 10-20 lines of code. Cryptographic protocols
+(an extreme form of concurrent programming) are even worse; there is a
+long history of widely examined (and deployed) 3-6 line protocols that
+were wrong. Some of these bugs were undiscovered for many years
+despite being studied by hundreds or thousands of readers. (This
+provides evidence that many eyes looking at software is not a very
+effective way to guarantee correctness.)
+
+Today, the only way we have to achieve a high degree of confidence
+that a reasonably complex program is correct is to verify it.  Most
+other approaches produce false negatives (i.e., miss errors),
+in theory and in practice. There are techniques such as model checking
+that are very effective, but do not scale to even moderate-sized
+programs. \Todo{review of other techniques somewhere}
+
+\subsection{Alternatives to Verification are Expensive}
+If you are in the business of manufacturing software, you may find
+this argument unconvincing. Bugs have costs. Verification removes
+these costs, but introduces other costs. Perhaps you don't care about
+having assurance that your software works; you are satisfied if your
+customers are sufficiently satisfied. So, you ask, how can
+verification make the building of software more cost effective?  Here
+are some of the ways.
+
+
+\subsubsection{Software Maintenance}
+Software maintenance is expensive.  As systems grow, they become more
+fragile; because of the number of components to worry about breaking,
+the software becomes harder and harder to safely change. Moreover, it
+becomes increasingly dangerous for developers to modify such systems,
+because nobody knows exactly what dependencies might be broken. Large,
+mature systems typically have many known bugs that are nevertheless
+not fixed because the risk of the fix introducing new bugs is too
+high.
+
+The modular verification methodology described in this book allows you
+to add new code to a large system without looking at any of the old
+code; you only have to look at the specifications of old functions
+that you call and the old data structures you use - even if your new
+code has nontrivial concurrent interactions with your old code. You
+can also modify old code without having to look at any code outside
+the function you are editing (and the specifications of functions you call and
+data structures that you use). (Modification of an old data structure
+may, however, require rechecking code that uses this data structure in
+certain ways.)
+
+\subsubsection{Testing}
+Testing, the main alternative to verification, is hard. Good unit
+tests are difficult to synthesize and to set up. Concurrency testing
+is particularly hard; the state of the art today in concurrent testing
+of real software amounts to running stress tests on a functioning
+system. There are many concurrency bugs that are unlikely to be
+caught this way. Moreover, those that are caught are likely to be
+difficult to reproduce. Finally, there is no good way to judge when
+such testing is complete.
+
+Security testing is even more problematic. Unlike system testing,
+which can (at least in many environments) concern itself with behavior
+under ``typical'' conditions, security breaks arise from unusual
+conditions brought about by an adversary. Testing today can find
+only the very simplest kinds of attacks. 
+
+Testing is expensive. In a typical commercial project, more than half
+of the cost of software development is testing. 
+
+Verification is not yet at the stage where it eliminates the need for
+all testing (e.g., there is no reasonable methodology for providing
+useful performance guarantees for typical software running on modern
+hardware), most types of testing (BVTs, unit tests, concurrent stress
+test, unit fuzzing) is unnecessary for verified software.
+
+That said, some kinds of testing is a cost effective way to find
+certain classes of bugs. Our slogan is that testing is an excellent
+way to find the first bug, but not a very effective way to find the
+last bug.
+
+\subsubsection{Diagnosis}
+When software fails, either in the field or in testing, there is a
+heavy cost in diagnosing the cause of the failure. In many situations,
+it cannot be diagnosed at all (this is actually the norm for stress
+failures). In system code, it is sometimes difficult to tell even whether the
+failure originated in software as opposed to hardware.
+
+If you verify even just some parts of your system, you know that the
+bugs cannot originate in the verified components. This makes diagnosis
+of failures in the remainder of the system. 
+
+\subsubsection{Specifications are Valuable}
+In verifying your software, you  provide precise specifications
+for your \C\ functions and for your data structures. These
+specifications provide much more precise documentation that can be
+found in even the best code produced today. Moreover, because the
+software is verified to meet this specification, there is no danger of
+this documentation falling out of sync with the code. Finally, such
+specifications can be used to drive automatic testing tools.
+
+\subsubsection{Verification is Beautiful}
+
+There is one more, nontechnical reason for verifying code: it is a
+beautiful, intellectually satisfying thing to do.  Verification is one
+of the few places in life where one can realize a degree of
+perfection.  While testers and validators get their pleasure out of
+finding bugs, in verification you get pleasure in checking off a
+function as being verified and certified as correct, once and for all.
+If you have written the code, you get the peace of mind in knowing
+that you never have to worry about the code's correctness ever again.
+
+\subsection{Outline}
+
+\subsection{Acknowledgements}
+
+\chapter{\VCC: the Verifying \C\ Compiler}
+In this chapter, we introduce \VCC. By the end of the chapter, you
+will be able to verify some very simple programs.
+
+\section{What VCC Does}
+
+\VCC\ is a verifier for concurrent \C\ programs. \VCC\ takes a
+(suitably annotated) \C\ program, and tries to prove that the
+program does what it is supposed to do. (In particular, this means
+proving that it doesn't do bad things like crashing the runtime.) When
+we say prove, we mean prove; \VCC\ is (or at least is intended to be)
+sound, which means that if your program verifies successfully, it
+should really be guaranteed to meet its specification. This
+characteristic distinguishes \VCC\ from program analyzers that try to
+find certain classes of bugs in programs by static analysis
+(e.g. Prefix\cite{}, Prefast\cite{}, Lint\cite{}), and from model
+checkers that check program behavior over either a limited domain of
+inputs or over runs of limited length.
+
+Your job as a programmer is to communicate to \VCC\ certain aspects of
+why your code works. You present this information to \VCC\ in the form
+of annotations placed on the source code. These annotations take the
+form of assertions that specify properties of the state that you claim
+to hold at certain points during program execution (e.g., loop
+invariants), and ghost code (\C\ code not seen by the compiler) that
+maintains structural information (``scaffolding'') about the program
+state (such as which chunks of memory a thread can safely use).
+
+\VCC\ uses the information you provide to try to prove a number of
+conjectures that, if all true, guarantee that your program (or the
+part of it you ask \VCC\ to verify) really is correct. Each of these
+conjectures corresponds to an assertion about the program's behavior;
+some of these assertions come from your annotations, some come from
+properties needed to preserve the healthiness of the \C\ runtime
+(e.g., that a dereferenced pointer points to valid memory), and some
+come from properties related to the scaffolding (e.g., that a
+nonvolatile memory reference by a thread is to memory owned by that
+thread). For each proof that fails, \VCC\ tells you which assertion
+about the program it was unable to establish. A failure indicates that
+either the reasoning was too hard for \VCC\ (likely to happen if you
+assert Fermat's last theorem), that you failed to meet the demands of
+the \VCC\ methodology (e.g., by failing to provide a sufficiently
+strong loop invariant), or that there is actually a bug in your
+program (or your programming of the scaffolding) that might lead to
+violation of the conjecture.
+
+Although this tutorial concentrates on toy examples, \VCC\ was
+designed to verify real world \C\ programs, particularly low-level
+system code that was written to be efficient, but not necessarily easy
+to understand or reason about. Of course, you can make your
+verification life easier by writing code with verification in mind,
+but \VCC\ doesn't force you to sacrifice runtime efficiency to verify
+your programs. However, if your program logic is really convoluted,
+you might have to provide \VCC\ with lots of annotations.
+
+Verification in \VCC\ is ``modular'', which (in vague verification
+parlance) means that it follows the scoping rules implicit in the
+underlying language. Thus, just as a compiler can compile a function
+using only the headers of those functions that it calls,
+\VCC\ verifies the code of a function using only the
+specifications\footnote{For \Q{spec-inline}d functions, the code is the
+  spec.} of those functions called in the function
+body\footnote{Currently, \VCC\ also uses the specifications of pure functions
+  in scope, even if they are not called in the body of the function,
+  as these are sometimes used to express lemmas.\todo{Is this
+    correct?}} and the definitions/specifications of types used in the
+body. This has three great advantages. First, because \VCC\ verifies a
+program one function at a time, verification time grows linearly with
+the size of the program. Second, if you verify a program and then
+change the code of just a few functions, you only have to re-verify
+the functions that changed. Third, you can develop or verify code for
+part of the system even though you don't have the code for other parts
+of the system (e.g., because it hasn't been written yet).
+
+Verification in \VCC\ is also ``thread modular'', which means that \VCC\
+verifies concurrent programs one thread at a time. This means that if
+you verify two bodies of code that agree on any shared data types, the
+programs continue to work when run concurrently. This might seem
+surprising, since obviously there are programs that work fine when run
+in isolation but which break when run together. The trick is that for
+programs that share data, annotations on the shared data spell out how
+these programs must cooperate.
+
+\subsection{\VCC\ Workflow}
+
+When using \VCC, you usually start out by providing annotations for
+part or all of your program. You then ask \VCC\ to verify some portion
+of your code (say, the body of some function). Much of the time, this
+will fail (especially if you are a new user or if you are verifying a hard
+program). At this point, there are several possibilities.
+
+First, you might recognize some piece of information
+that \VCC\ needs that you haven't put into your annotations. For
+example, you might have neglected to mention something that
+\VCC\ should assume to be true on entry to a function, or you might
+have forgotten to mention some key property in the specification of a
+function that your code will call. You will then normally
+add additional annotations to the program and try again. Some
+developers like to work this way systematically, using error messages
+to drive the annotation of their program, but most prefer to provide
+as much annotation as they think is necessary for the code they are
+trying to verify, at least for relatively small functions.
+
+Second, you might not understand why \VCC\ is unable to prove some
+assertion. In many cases, \VCC\ will actually provide for
+you a counterexample that shows why it thinks the thing it's trying to
+prove isn't a theorem. You can inspect this model by invoking the
+\VCC\ model viewer (described in depth in \Ref{}).
+
+Third, you might find that \VCC\ appears to get stuck trying to verify
+some function, but you can't tell where, because \VCC\ doesn't return,
+You can use the \VCC\ inspector (described in \Ref{}) to monitor what
+\VCC\ is doing, to see where \VCC\ is getting stuck unexpectedly hard
+to prove. This can also help you to find where annotations might help
+to speed up the verification process.
+
+\section{Installing \VCC} 
+You can use \VCC either from the command line or from Visual Studio
+2008 (\VS).  We recommend the \VS\ interface, but the command line interface
+is sometimes useful for scripting.
+
+If you are using \VS, you should install it before
+installing \VCC\footnote{Does this matter now?}. You can use any
+edition other than the express editions (which do not allow
+plugins). If you neither own nor wish to buy \VS, you can download a
+free 6 month trial from the Microsoft web site.
+
+After installing \VS, install \VCC\ from the installer link on the
+\VCC\ homepage. If you plan to build code verified with VCC (rather
+than just verifying it), you will also want to put the VCC headers
+into the \VS\ include path, as follows: under the \VS\ menu, 
+\begin{enumerate}
+\item Choose Tools$\rightarrow$Options
+\item On the left hand side of the Options dialog box, click on the
+  triangle next to Projects and Solutions, then click on the
+  subheading marked ``VC++ Directories''
+\item On the upper right hand corner of the dialog box, under the
+  label ``Show directories for'' click on the drop-down box and select
+  ``Include files''
+\item Below the drop-down box, click on the second box from the left
+  (the one with the folder icon, labelled ``New Line'').
+\item To the right of the text entry box that opens, click on the box
+  with labelled ``...''.
+\item In the file chooser that opens up, navigate to the \Q{\\Headers}
+  subdirectory of the \VCC installation directory (e.g., \Q{C:\\Program
+    Files\\Microsoft Research\\Vcc\\Headers} is the default location for
+  installations on 32-bit Windows) and click ``select folder''.
+\item Close the options dialog box.
+\end{enumerate}
+
+\section{Running \VCC}
+\subsection{Running \VCC\ from the command line}
+The easiest way to call VCC on a set of files is
+\Todo{I've added some options that currently exist only as options to
+  be passed to Boogie. We should not be exposing boogie to clients,
+  so we should really have separate options to call the proof
+  inspector and/or see error models (though I don't know which one we
+  would display for multiple errors).}
+\Todo{More options}
+\begin{lstlisting}
+vcc [/f:funs] [/Inspector] [/Models] files
+\end{lstlisting}
+The \Q{/f} switch provides a comma-separate list of functions to
+verify. The \Q{/Inspector} switch causes the \VCC\ inspector to be
+displayed while the verification is running, top monitor what \VCC\ is
+trying to do. The \Q{/Models} switch causes \VCC to display models for
+the errors that it finds.
+ 
+\section{Running \VCC\ from \VS}
+There are two ways to invoke \VCC\ from within Visual
+Studio\Todo{Should we bother with the VCC menu also?}. First,
+from the Verify tab at the top of the window, you can ask \VCC\ verify
+the current file. Second, if you right-click within a \C\ source file,
+several \VCC\ commands are made available, depending on what kind of
+construction \Intellisense\ thinks you are in the middle of. The choice
+of verifying the entire file is always available. If you click within
+the definition of a struct type, \VCC\ will offer you the choice of
+checking admissibility for that type (a concept explained in
+\Ref{}). If you click within the body of a function, \VCC\ should offer
+you the opportunity to verify just that function. However,
+\Intellisense\ often gets confused about the syntactic structure of
+\VCC\ code, so it may not give these context-dependent
+options. However, if you select the name of a function and then right
+click, it will allow you to verify just that function.
+
+If you want to run the \VCC\ inspector during verification, this
+option can be selected from the \Q{Verify->settings} menu. If you want
+to look at the error model for a particular error, right-click on
+error (in the source), and choose ``Show VCC error model''\Todo{This
+  should really say ``\VCC\ error model'', to not expose \Z3.}
+
+\section{A Brief Tour}
+Create a new empty \Cpp\ project\footnote{
+  Visual Studio does not distinguish between \C\ and \Cpp\
+  projects. It distinguishes between \C\ and \Cpp\ source code by file
+  extension, using the \Q{.c} extension for \C\ source and \Q{.cpp} for \Cpp\
+  source. So the normal way to create \C\ source from a \Cpp\ project is
+  to use ``add new item'', choose \Cpp\ source file, and then rename the
+  file (in \VS) to have a \Q{.c} extension.} (or open up
+an old one) and create a new \Q{.h} or \Q{.c} file, so that you'll
+have a workspace to experiment in. Type (or paste) the following
+code into the file:
+
+\begin{lstlisting}
+#include <vcc.h>
+
+int inc(int x)
+{
+  return(x+1);
+}
+\end{lstlisting}
+
+You need to \Q{#include <vcc.h>} for any program that you verify with
+\VCC.  This file defines various macros that \VCC\ adds to \C; if the
+macro \Q{VERIFY} (not defined in \Q{<vcc.h>}) is not defined, these
+macros get rid of all of the annotations, allowing the code to be
+compiled by an ordinary \C\ compiler. If \Q{VERIFY} is set, then it
+defines these macros in a way appropriate for verification. The
+verification commands within \VS\ define \Q{VERIFY}, so you can go
+alternate between verifying and ordinary program building/testing
+without changing the code\footnote{You can also use VERIFY to do
+  conditional compilation, i.e. to include a large body of ghost code
+  when verifying but not when compiling.}. From now on, we'll not
+bother to include this inclusion line when showing program listings.
+
+When you try to verify this function, you will see two things that
+indicate a problem. First, in the output window, you will see a
+message something like
+\begin{lstlisting}
+error VC8004: x++ might overflow
+\end{lstlisting}
+which indicates that \VCC\ wasn't able to prove that incrementing \Q{x}
+didn't cause an arithmetic overflow\footnote{For the rare cases where
+  you want to allow arithmetic overflow to happen, you would need to
+  tell \VCC\ this; see \Ref{}}. \VCC\ hasn't guaranteed that such overflow
+is possible; it's just announced that it was unable to prove its
+impossibility. Second, you'll notice that a little red squiggly line
+has appeared under \Q{return(x++)}; if you hover the mouse over it, you'll see
+the same error message. 
+
+If you right click on the error in the editor pane, you'll see that
+one of the options in the context menu is to view the \Z error model
+for this program error. Go ahead and choose this; you'll see a window
+pop up entitled ``VCC Model Viewer''. You'll see that this model has a
+single state, and in this state \Q{x} is assigned the value
+2147483647, which happens to be \Q{INT_MAX} (the largest number
+representable as an int, defined in \Q{limits.h}). In the case that
+the newly allocated stack variable \Q{x} happens to have this value,
+incrementing \Q{x} will cause arithmetic overflow. You'll learn more
+about the Model Viewer in \Ref{}.
+
+So the program as is can result in an arithmetic overflow. One way to
+fix this would be to test the value of \Q{x} before incrementing it
+and do something else (like returning \Q{x} unmodified) if it is equal
+to \Q{INT_MAX}. For example, you could change \Q{inc} as follows:
+\begin{lstlisting}
+#include <limits.h>
+int inc(int x)
+{
+  if (x == INT_MAX)
+    return(x);
+  return(x+1);
+}
+\end{lstlisting}
+(Remember to include \Q{<vcc.h>} also.) You will find that this
+function verifies successfully: the output window reports
+\begin{lstlisting}
+verification of inc succeeded.
+\end{lstlisting}
+and the red squiggly disappears. Congratulations!
+
+While some programming methodologies advocate the kind of ``defensive
+programming'' we used above, it is almost always a bad idea (unless
+the function is really going to be called on \Q{INT_MAX}), for several
+reasons.  First, the extra test slows down the program.  Second, it
+makes the code more complicated.  Third, it makes the behavior of the
+function more complex, because it forces the function to behave
+differently on different parts of its domain.  Fourth, and most
+decisively, it is unnecessary.
+
+A better method is to force the callers of \Q{inc}
+to check that it is not called with the argument \Q{INT_MAX}, which in
+\VCC\ we do as follows:
+\begin{lstlisting}
+int inc(int x)
+requires(x < MAX_INT)
+{
+  return(x+1);
+}
+\end{lstlisting}
+(From now on, we won't bother to mention \Q{#include <limits.h>},
+which you need for any functions that mention implementation limits
+like \Q{INT_MAX}.)  The function specification \Q{requires(p)} is a
+\Def{precondition} that forces callers of the function to prove that
+the formula \Q{p} holds\footnote{In C, this means that \Q{p} evaluates
+  to a nonzero value in the current context.}  (after binding the
+function parameters to their arguments) whenever the function is
+called.  Check that the function now verifies.
+
+\Todo{Demo the inspector}
+That concludes our first tour of \VCC. Now it's turn to learn some of
+the basics.
+
+\chapter{An Overview of the \VCC\ Approach to Program Verification}
+Before we start really doing things with \VCC, you might find it
+helpful to have an overview of what sorts of things we have to
+consider in verifying programs.
+
+
+Let's consider a very simple program that just copies an \Q{int} from
+one memory address to another:
+\begin{lstlisting}
+void copy(int &x, int &y)
+{
+  *y = *x;
+}
+\end{lstlisting}
+
+Let's start out by trying to specify \Q{copy}. What do we expect
+from it? In \VCC\ (as in most other state-oriented methods), a
+function specification relates the state before a call to the function
+to the state after the call. In this case, we want the states to
+differ only in the value stored at location \Q{y}; that location
+should have the value stored at \Q{x} in the initial state.
+\VCC\ lets us specify this as follows:
+\begin{lstlisting}
+ensures(*y == old(*x))
+\end{lstlisting}
+The argument to \Q{ensures} is basically a \C\ expression that is
+supposed to hold\footnote{I.e., it should evaluate to a nonzero
+  value.} when evaluated in poststate of a call to \Q{swap} (except
+that subexpressions surrounded with \Q{old} are evaluated in the
+prestate).
+
+Now, does the function above satisfy this spec? Not in general.
+For example, if \Q{x} or \Q{y} point to invalid regions of
+memory, executing the code will likely cause a segmentation fault. 
+So we need at least that they point to valid memory.
+
+But this isn't enough. Even if the memory is valid when we call
+\Q{copy}, we don't know that it will remain valid. Maybe some evil
+person is sitting waiting for memory to change, and as soon as the
+first byte has been copied, he frees \Q{x} and \Q{y}. Now, this might
+sound farfetched, but the rules of the game in verification is that
+it has to be sound, no matter how farfetched the scenario.
+So we need to know not only that \Q{x} and \Q{y} point to valid
+memory, but that this memory will stay valid while the function
+executes. 
+
+This is but the simplest example of a phenomena that we'll see
+throughout this book: a thread often needs to have knowledge about the
+state that cannot be destroyed by other threads, or through
+``innocent'' actions of the knowing thread. In this case, the thread
+has to have knowledge about the validity of memory. This knowledge
+cannot be permanent - if it was, we would never be able to deallocate
+such memory - but it must be knowledge that the thread cannot lose
+without explicitly giving it away (so that the thread knows when it
+might not hold anymore).
+
+Is \Q{*y == old(*x)} all that we expect in the poststate? No, we
+probably expect that it isn't going to scribble over other relevant
+parts of the state. So we need to say that \Q{swap} doesn't scribble
+over anything other than \Q{*y}. In \VCC, a function by default isn't
+allowed to scribble over stuff. But \Q{swap} certainly has to scribble
+over \Q{*x} and \Q{*y}, so we give it ``permission'' to do so as
+follows:
+\begin{lstlisting}
+writes(x)
+writes(y)
+\end{lstlisting}
+As we'll see later, this doesn't prevent \Q{swap} from writing to all
+other locations in memory, only those that the caller of \Q{swap}
+``cares about'' (which we'll have to define precisely later). For
+example, it doesn't prevent \Q{swap} from writing over local variables
+that it allocates (either on the stack or the heap), or various kinds
+of shared data it might have to access.
+
+This specification still has some problems. Let's consider a typical 
+implementation:
+\begin{lstlisting}
+void swap(int &x, int &y)
+{
+  int z = *x;
+  *x = *y;
+  *y = z;
+}
+\end{lstlisting}
+What could go wrong here? Well, the first problem is that we don't yet
+know that \Q{x} and \Q{y} point to valid regions of memory. (For
+example, one could be a null pointer.) This would typically result in
+an immediate core dump, so we'd have to classify that as an error. So
+at least we need to know that \Q{x} and \Q{y} point to valid regions
+of memory.
+
+But is that really good enough? Just because they pointed to valid
+memory when the call was made, how do we know, in a concurrent
+context, that they still point to valid memory? For example, what if
+they point to some memory that another thread \Q{free}s during the
+execution of \Q{swap}?  Moreover, even there is no problem with the
+validity of \Q{a} or \Q{b}, what if some other thread writes to the
+memory? This could destroy the final state expected by the caller.
+
+Thus, we require something stronger about this memory: we require not
+only that it is valid, but that it will remain valid, and no other
+thread will write to it. As we will see later, this is guaranteed by the 
+\Q{writes} clauses. 
+
+What else can go wrong? What about memory aliasing? Well, there's no
+problem with \Q{x} and \Q{y} being the same (at least with this
+particular implementation), but what if they partially overlap? In
+that case, \Q{*y} will have the right final value, but \Q{*x} might
+not. (In fact, if we allow partial aliasing, there is no program that
+satisfies the specification.) So we better make sure that \Q{x} and
+\Q{y} don't partially overlap.
+
+This is a problem that can't occur in strongly typed languages like
+Java, where two different objects cannot overlap.  
+Even though \C\ has some semblance of a type system, the \C\ memory
+model is fundamentally untyped; it is easy to get around the
+typesystem in various ways.  For example, it is common to use a common
+routine to copy memory objects as byte arrays, even though these
+arrays are simultaneously storing an object of some other type.
+Nevertheless, essentially all software is in fact well-typed or nearly
+so. 
+
+In \VCC, we avoid partial overlap by imposing a typed interpretation
+of memory.  In each state, there is a ``typestate'' that says where
+the ``typed'' objects are in memory. \VCC\ enforces invariants that
+guarantee that there is no partial overlap between valid memory
+objects of base types like \Q{int} and \Q{char}. For structured types,
+partial overlap is possible, but only if one object is a subobject of
+the other.
+
+
+\chapter{Function Specifications}
+
+Now, let's try making a test function that calls \Q{inc}. Let's start with
+a function that just calls it once. Add the following code to the file
+and annotate it so that it verifies:
+\begin{lstlisting}
+int test(int x)
+{
+  return(inc(x+2));
+}
+\end{lstlisting}
+As you'll see, the new function requires a precondition such as
+\Q{requires(x+2 < INT_MAX)}.
+
+Next, consider a more interesting function that calls \Q{inc}
+twice. Is there any way to annotate this function to make it verify?
+\begin{lstlisting}
+int inc2(int x)
+{
+  int y = inc(x);
+  return inc(y);
+}
+\end{lstlisting}
+The answer is no (short of a precondition that prevents \Q{inc2} from
+ever being called, such as \Q{requires(0)}); you'll find that
+\VCC\ complains that the second call to \Q{inc} might violate the
+precondition that the argument to \Q{inc} is less that
+\Q{INT_MAX}. (Note that \VCC\ also puts a red error squiggly under the
+precondition of \Q{inc} that it can't prove.) You might wonder what
+\VCC\ is talking about; obviously there's no way that this
+precondition could fail in this program. Go ahead and look at the
+error model; you'll find a model that assigns to \Q{y} the value
+\Q{INT_MAX}, regardless of how you constrain \Q{x}. What is going on
+here?
+
+The problem is that when reasoning about a call to \Q{inc},
+\VCC\ doesn't look at the code of \Q{inc} at all; it only looks at its
+specification (stuff that appears before the function body). When
+verifying \Q{inc2}, \VCC\ knows nothing about the value returned from
+the first call to \Q{inc}, because the specification of \Q{inc}
+doesn't say anything about what \Q{inc} actually does.
+
+We can fix the problem by adding to \Q{inc} a specification of what it
+does. In \VCC\ we do this with a clause that constrains the state
+resulting from execution of the function, as follows:
+\begin{lstlisting}
+int inc(int x)
+requires(x < MAX_INT)
+ensures(result == x+1)
+{
+  return(x+1);
+}
+\end{lstlisting}
+The specification \Q{ensures(p)} is a \Def{postcondition} that claims
+that the predicate \Q{p} holds when the function returns. In addition
+to the state and variables in scope, \Q{p} can mention the special
+variable \Q{result}, which gives the value being returned from the
+function. 
+Postconditions are dual to preconditions: a function gets to
+assume its preconditions and is obliged to establish its
+postconditions, while its callers are obliged to establish the
+preconditions and get to assume the postconditions. 
+
+Go ahead and check that the program now verifies.
+
+\section{Global Memory}
+So far we have only considered functions that operate on local variables,
+with all information passed through value parameters. Let's now
+consider programs where information is passed through locations.
+
+As a first example, try to verify the following program:
+\begin{lstlisting}
+int x;
+int getX() {
+  return x;
+}
+\end{lstlisting}
+\VCC\ will complain that it was unable to show that \Q{x} is
+``thread-local''. While we won't discuss concurrency for a little
+while yet, it is important to recognize that \VCC\ keeps track of
+which memory objects a thread is ``allowed'' to access in different
+ways. There are essentially three ways a thread might access
+memory. For a nonvolatile read, we need to know that the memory object
+is ``valid'' (e.g., in accessible memory) and that it is not
+changing. For a nonvolatile write, the thread has to additionally know
+that no other thread is trying to read or write it. For a volatile
+read, we would have to know that no other thread is doing a
+nonvolatile write (which would allow the read to get garbage), and for
+a volatile write, we need to know that no other thread is doing
+nonvolatile reading or writing. (We will see that volatile writes also
+have to respect certain invariants \Ref{}.)
+
+In \VCC, these properties are not established directly, but rather
+through some scaffolding that will have to wait for a later
+chapter. The conditions coming from this scaffolding are that, for
+nonvolatile reading, an object must be \Q{thread-local} (the name is
+an unfortunate historical legacy), and for writing it must be \Q{mutable}.
+For this chapter, we will not distinguish the two, so any memory
+access requires that the object being accessed is \Q{mutable}.
+
+When a thread allocates a new stack variable, the new variable is
+mutable. Similarly, \Q{malloc} ensures that the memory it returns is
+\Q{mutable}. Conversely, when a variable goes out of scope or when
+memory is explicitly freed, \VCC\ asserts that the variable is
+\Q{mutable}. (This check is necessary because threads can pass ownership of
+data -- even data on the stack -- to other threads or into objects;
+for example, freeing data passes ownership to the memory manager, so
+this check prevents double-freeing of memory.) Global variables are
+mutable on program entry (\Ref{}).
+
+
+\section{Side Effects and Framing}
+
+To understand the effect of a function, it suffices to understand what
+it guarantees about the state when it returns. To specify the function
+completely, we would have to specify all of the data in the world that
+it is guaranteed not to change. In practice, it is easier to instead specify
+those parts of the state that the state the function might change. 
+Thus, \VCC\ requires that you specify those changes to the state that
+might effect your callers.
+
+In \VCC, this is usually done by specifying the possibly modified
+state in \Q{writes} clauses, as follows:
+\begin{lstlisting}
+int x;
+void inc() 
+writes(&x)
+{
+  x=0;
+}
+\end{lstlisting}
+Check that this function verifies, and experiment with commenting out
+the \Q{writes} clause from the specification, you'll see that
+\VCC\ complains that \Q{x} is not ``writable''. 
+
+It is convenient to think of a function as having ``permission'' to
+write to certain parts of the state. In a function specification, a
+clause of the form \Q{writes(p)} gives the function permission to
+modify the object pointed to by \Q{p}; the caller can give this
+permission only if he has it himself.  When a function allocates a
+variable (either on the stack or on the heap), permission to write to
+this variable gets added to its set of permissions. On each write,
+\VCC\ asserts that the function has permission to write to the written
+location.
+
+It is important to note that a function does not have to report
+(through a writes clause) every part of the state that it might
+change. For example, it doesn't have to report changes it made to
+memory it allocated. The reason for this is that callers carry
+information only about certain state objects; we refer to such objects
+as \Q{mutable}. (Mutability is with respect to a particular thread; we
+will see that data can only be mutable in at most one thread.) An
+object that is writable is necessarily mutable, but not vice-versa.
+In \Ref{}, we will see that this allows functions operating
+on a large data structure to appear to operate on one object.
+
+We can now say what a function call looks like to a caller: a function
+call translates to asserting the function precondition, followed by a
+change of state that preserves the values of all mutable objects no in
+the writes set of the function, and finally assuming in the resulting
+state the postcondition of the function.
+
+\section{Loops}
+Next, let's consider a function that uses a loop to add two numbers.
+\begin{lstlisting}
+int add(int x, int y)
+{
+  while (x > 0) {
+    x--;
+    y++;
+  }
+}
+\end{lstlisting}
+Try to verify this; \VCC\ will complain that \Q{y++} might
+overflow. This could happen even if neither \Q{x} nor \Q{y} is close
+to \Q{MAX_INT}, because their sum might be. So your first thought
+might be to add to the function a precondition like \Q{requires(x+y <=
+  INT_MAX)}. Try this and see what happens. You'll find that you get
+the same error, even if you require that \Q{x} is initially 0.
+
+The explanation is that to reason about loops, \VCC\ treats them
+almost like function calls. For each loop, VCC constructs a loop
+\Def{invariant}. The loop body, considered as a function, requires
+and ensures the loop invariant. The body of this function consists of
+execution of the loop test, an assumption that this test returned a
+nonzero value, followed by the loop proper. (This structure allows for
+loop tests that have side effects.) 
+
+The only real difference between a loop and a function of no arguments
+is that, by default, a loop body does not have \Q{writes} clauses
+(though \VCC\ allows you to provide them explicitly). Instead,  by
+default the loop
+body uses the write permissions of the surrounding function body.
+\VCC\ tries to be clever to deduce that certain locals are not
+modified by the loop (implicitly putting these properties into the
+loop invariant), but if it can't deduce that a local is unchanged and
+you need to make sure that it isn't, you can make this an explicit
+part of the loop invariant or provide your own \Q{writes} clauses.
+
+Returning to our example, what invariant do we need to guarantee that
+\Q{y} doesn't overflow? We can't use \Q{y < INT_MAC} as an invariant,
+because we couldn't guarantee that it holds at the end of the loop
+body. Instead, we use the invariant that \Q{x+y <= INT_MAX}:
+\begin{lstlisting}
+int add(int x, int y) {
+  while (x > 0)
+  invariant(x+y <= INT_MAX)
+  {
+    x--;
+    y++;
+  }
+}
+\end{lstlisting}
+This invariant is evidently preserved by the loop body, but if we try
+to verify this function, \VCC\ will report that the loop invariant
+might not hold on loop entry. We can fix this by making it a
+precondition of \Q{add}. Add this precondition to the function and
+check that the function verifies.
+
+In summary, when \VCC\ sees a loop, it computes a loop invariant (the
+conjunction of the invariants given by explicit invariants given by
+the user, along with some others deduced heuristically by \VCC) and a
+a set of writes clauses for the loop. \VCC\ verifies the loop body as
+described above. In the loop context, 
+the loop is treated like a function call that requires and ensures the 
+loop invariant and writes the write set computed for the loop,
+followed by execution of the loop test, and finally assumption that
+this test returned 0. This structure is suitably modified for do-while loops.
+
+\section{Assertions}
+
+In addition to assertions made by \VCC, you can add your own
+assertions to the code. For example,
+\begin{lstlisting}
+void test() {
+  assert(2+3 == 5);
+}
+\end{lstlisting}
+Put this program into \VCC\ and verify it. (This should succeed.)
+
+Verification of a function guarantees that any time control reaches
+any of its assertions, the expression given as its argument evaluates
+to a nonzero value (in C, 0 is treated as false while other values are
+treated as true). If \VCC\ is unable to prove that an assertion holds
+(assuming that all previous assertions held), it reports an
+error. (For example, try changing the assertion to something false,
+like \Q{2+2==3}; \VCC\ will report that it failed to verify it.)
+
+Almost all verification in \VCC\ amounts to proving that assertions
+hold when control reaches them\footnote{The exception is admissibility
+  for data invariants \Ref{} and stability of claims \Ref{}.}. Most of
+these assertions are inserted tacitly by \VCC, rather than being
+provided by the programmer; in describing \VCC, we'll often say that
+it ``asserts'' some property at some point in the code. For example,
+for every memory access, \VCC\ asserts that the memory being accessed
+is valid (i.e., is known to exist). This check is necessary because
+the semantics of C allows arbitrary behavior if such requirements are
+violated. \VCC\ also introduces many assertions related to its own
+scaffolding, such as that the memory is actually owned by a thread
+when it accesses it using nonvolatile memory operations.
+
+The important thing is that if \VCC\ is able to discharge all of these
+assertions, then the program is guaranteed to be free from runtime
+errors, and each asserted property actually holds whenever program
+execution reaches the assertion (when executed on a correct
+implementation).
+
+Note that if \VCC\ reports some errors, it doesn't necessarily mean that
+those are the only errors in the program. For example, if we replace
+the assertion above with
+\begin{lstlisting}
+assert(false); 
+assert(false); 
+\end{lstlisting}
+the first assertion will fail (\VCC\ will report an error), but the
+second assertion will succeed. One way to think about this is
+operationally: we can view assertion failure as causing the program to
+exit.  Thus, control can never reach the second assertion, so it can
+never fail. In other words, if an assertion verifies, it is guaranteed
+to not be the first assertion to fail in any execution.
+
+Do not confuse \VCC\ assertions with the assert macro provided by the
+standard C library <assert.h>. The latter are actually evaluated at
+runtime in checked builds, throwing a runtime error if they are
+violated. \VCC\ assertions, on the other hand, are not passed on to the
+C compiler (they are removed by the preprocessor), so the expressions
+inside of assertions are never actually executed. This allows \VCC\
+assertions to contain constructions that cannot be handled by a C
+compiler, such as operations on ghost data (more on this later) and
+quantification. For example, the following function also verifies:
+\begin{lstlisting}
+assert(forall(int x; 0 < x ==> x <= x*x));
+\end{lstlisting}
+
+On the other hand, there are some things that can appear in C
+expressions that cannot appear in \VCC\ assertions. This is because we
+want to exclude subexpressions that might change the state (such as \Q{x
+= 3}), as well as subexpressions that return different values when
+called twice from the same state (such as \Q{x == random()}). Thus, \VCC\
+allows within assertions only pure expressions -- expressions without
+side effects whose return value is determined by the state in which
+they are evaluated. Within assertions, you can use program variables
+(in scope), built-in C operators, and functions declared as pure (as
+well as \VCC\ operators to be described later).
+
+Because assertions can mention variables in scope, they can be used to
+talk about the state, rather than just mathematics, e.g.:
+
+\begin{lstlisting}
+int x = 2;
+assert(x+x == 4);
+\end{lstlisting}
+
+\section{\VCC\ Types}
+
+In C, each type has a well-defined length (the number of bytes needed
+to represent it in memory), which is subject to a relatively modest
+implementation-specific limit. In specifying and reasoning about
+programs, it is often convenient to talk about values that can't be
+represented within such stringent storage limits, so \VCC\ provides some
+additional sorts of ``mathematical types'' to the programmer. These
+types can appear within code seen by \VCC\ (e.g., assertions), but not
+in code seen by the C compiler.
+
+First, the type mathint represents the mathematical integers (as
+opposed to the n-bit integers provided by C). They support the C
+arithmetic operators \Q{+}, \Q{-}, \Q{*}, \Q{/}, \Q{\%} and the
+comparison operations \Q{==}, \Q{!=}, \Q{<}, \Q{>}, \Q{<=}, and
+\Q{>=}. Conversion from machine integers (of any size, signed or not)
+to mathint is implicit and can never fail. Conversion from a mathint
+to a machine integer types requires an explicit cast, and asserts that
+the value fits within the target representation.
+
+Second, \VCC\ provides maps between from arbitrary base types to
+arbitrary types. (By a base type, we mean a C scalar type, a C pointer
+type, a ghost pointer type, or mathint.) These use array syntax for
+both declarations, access, and update, except that in declaration,
+instead of giving the size of the map, you give a type. For example,
+\begin{lstlisting}
+Foo x[mathint][int][unsigned int];
+\end{lstlisting}
+declares \Q{x} to be a map from mathints to (maps from ints to (maps
+from \Q{unsigned int}s to things of type \Q{Foo})).  (Note that such
+declarations cannot occur in ordinary C code, but they can occur in
+spec code or in assertions, and in quantifiers.) Maps support the same
+operators as arrays. In addition, map values can be created by lambda
+expressions: the expression
+\begin{lstlisting}
+lambda(T x; 1; e)
+\end{lstlisting}
+where \Q{e} is a pure expression, is the map from type \Q{T} to the type
+of the expression \Q{e} that, for each argument \Q{x}, gives the value given
+by \Q{e} in the current state. (\Q{e} can mention variables in scope,
+including \Q{x}.) For example, we could define the map from mathematical
+integers to their squares by
+\begin{lstlisting}
+spec(mathint square[mathint];)
+speconly(square = lambda(mathint x; 1; x*x);)
+\end{lstlisting}
+
+Third, \VCC\ provides record types. These are similar to C struct types,
+but are pure values. They are declared using the same syntax as C
+structs (including typedefs), but are marked with the vcc(record)
+attribute after the ``struct'' keyword.
+
+Record fields can be of base types, maps, or record types (but
+recursion in record types is not allowed). If \Q{r} is a value of a
+record type with a field \Q{f} of type \Q{t}, then \Q{r.f} (of type
+\Q{T}) gives the value of the \Q{f} field of \Q{r}, and \Q{r / \{.f =
+  v\}} gives the value of \Q{r} with the \Q{f} field updated to the
+value \Q{v} (updates to multiple fields can be separated by
+commas). Finally, if \Q{R} is a declared record type, \Q{(struct R)
+  \{.f = v\}} gives a value of type \Q{R} with the field \Q{f} set to
+\Q{v} (again, allowing multiple fields initializations to be given
+separated by commas). Record types provide no expressive advantage
+over struct types, but are more efficient to reason about.
+
+Any mathematical type can be used as the type of a variable bound by a
+quantification.
+
+\section{What \VCC\ Knows About Math}
+
+(This section can be skipped on first reading.)
+
+Ideally, you shouldn't have to know much about how \VCC\ (or more
+precisely \Z, the theorem prover \VCC\ uses to prove things)
+works. Unfortunately, not every valid assertion that you can write in
+\VCC\ can be proved by \VCC, so it's a good to have a rough idea of what
+\VCC\ does and doesn't know about.
+
+One way to do this is to try replacing the assertion in the function
+test() above with various other formulas, to see which ones \VCC\ can
+and cannot prove. Here are some you might want to try; the type
+mathint represents the mathematical integers (as opposed to the 64-bit
+integers).
+
+\begin{lstlisting}
+assert(forall(int x; x*x >10000 && 0 <= x ==> x > 100)); //succeeds
+assert(forall(mathint x,y; 0 < x && 0 < y ==> (y%x + ((y/x) * x) < x)));  //fails
+assert(forall(mathint x,y,z; 0 <= x && 0 <= y && 0 < z ==> ((x+y)%z == ((x%z) + (y%z))%z))); //fails
+assert(exists(mathint x; 1));  //succeeds
+assert(exists(int x; 1)); //fails; talk about /z3:SATURATE=true
+...
+\end{lstlisting}
+
+\begin{itemize}
+\item
+\VCC\ knows all about (i.e., has a decision procedure for) integer
+linear arithmetic. What that means is that if \Z\ has a bunch of linear
+equalities or inequalities where the terms on either size are sums,
+and each summand is an unknown (possibly multiplied by a known integer
+constant), \Z\ is good at proving that there is no way to simultaneously
+satisfy all of these (in)equations.
+\item
+\VCC\ knows a little about nonlinear arithmetic -- formulas where
+(non-constants) are multiplied together -- but not very much. In
+particular, it knows almost nothing about division or modular
+arithmetic.
+\item
+\VCC\ sometimes has to ``guess'' which instances of a formula are
+important. For example, to prove a formula with an existential
+quantification, \VCC\ has to guess how to instantiate the
+quantifier. Dually, if \VCC\ is trying to make use of hypotheses with
+universal quantifiers, it has to guess which instances are relevant to
+what it has to prove. By default, \VCC\ does this based on the terms it
+sees under the quantifier. However,\dots\Todo{quantifier instantiation
+  and patterns}
+\item
+\Todo{something about bitvectors}
+\end{itemize}
+
+\section{Assumption}
+Assumptions take the form \Q{assume(p)} where \Q{p} is a pure
+expression. Semantically, we can think of this is a statement as
+checking whether p holds; if it does, then (like \Q{assert(p)}) it is
+executed by doing nothing. However, when an assert fails, the program
+exits with an error, whereas when an assume fails, the program exits
+with success (and so \VCC\ doesn't report assumptions that might
+fail). Thus, one way to restate the guarantee that \VCC\ provides is
+that if a program verifies, then no assertion will be violated as long
+as no assumption is violated first.
+
+Ideally, when you have finished verifying a program, there should be
+no assumptions left. However, assumptions are still useful for several
+reasons:
+
+\begin{itemize}
+\item
+Assumptions are a convenient way to document what parts of a
+verification are unfinished. For example, if you choose to publish a
+function that doesn't quite verify, you should add enough assumptions
+so that it does verify, so that readers can see easily remains to be
+done.
+\item
+Assumptions provide a way to tell \VCC\ things that it can't figure out
+for itself. For example, you might use assumption to inform \VCC\ about
+a mathematical theorem that it is unable to prove on its own (more
+about this later).
+\item
+Assumptions provide a way to describe infinite mathematical objects
+that form part of the background theory of certain algorithms (e.g.,
+you might assume the injectivity of a pairing function on mathematical
+integers).
+\item
+There are some computational possibilities that you might wish to
+ignore. For example, if you are reasoning about cryptographic
+protocols, you probably want to ignore the possibility that an
+attacker hits upon a collision in a cryptographic hash function.
+\end{itemize}
+
+Assertions and assumptions appear in some other guises within
+annotations, some of which we'll look at now.
+
+\end{document}
+
+(Incidentally, \VCC\ doesn't actually mind the fact that \Q{x} is uninitialized;
+unlike some programming languages, \C\ has no problem with you reading
+an uninitialized \Q{int}\footnote{Pointers are another matter;
+  pointers may have so-called ``trap representations'' that
+  \C\ defines to be problematic even to copy.}\footnote{Indeed, we'll see later
+that uninitialized variables can even be useful; see \Ref{}.}.)
+
+Most C functions are not designed to be called with arbitrary
+arguments from arbitrary states. For example, a square root function
+might be designed to operate only on nonnegative arguments ; a
+function that zeroes out some memory needs to assume that its pointer
+argument points to a valid chunk of memory of appropriate size; an
+operation on a data structure might need to assume that the structure
+is properly initialized. Such requirements are typically called
+``preconditions'' in the verification literature. The code of a function
+gets to assume preconditions on function entry; it is up to the
+callers of a function to make sure that all of a functions
+preconditions hold at each call site.
+
+Dually, most callers cannot cope with functions that leave the world
+in an arbitrary state afterwards. (After all, there would be little
+purpose to calling such a function.) For example, a square root
+function might guarantee that the square of its result is no bigger
+than its input; a function that clears memory might guarantee that it
+returns with the memory clear. Such guarantees are called
+``post-conditions'' in verification literature. The code if the function
+is obliged to establish all of the function's post-conditions on
+return from the function; the callers of a functions get to assume
+that these post-conditions hold immediately after a function call.
+
+\section{Function Specification: Requires and Ensures}
+
+In \VCC, pre- and post-conditions are written as part of the
+declaration of a function. (In C, a function can have multiple
+declarations, but \VCC\ allows at most one of them to contain function
+specifications.) Pre- and post-conditions take the form
+\begin{lstlisting}
+requires(p) // precondition
+ensures(p)  // postcondition
+\end{lstlisting}
+
+where \Q{p} is a pure expression whose scope includes the declarations
+of the function parameters; additionally, the scope of a postcondition
+includes a special parameter called result that gives the value
+returned from the function.  For example,
+\begin{lstlisting}
+int sqrt(int x)
+requires(0 <= x)
+ensures((sqr(result) <= x) && (sqr(result + 1) > x));
+\end{lstlisting}
+(This is how a specification might appear in a header file; the
+semicolon would be omitted if this declaration contained a body
+also. )
+
+\VCC\ translates these specifications as assuming the preconditions at the
+beginning of the function and asserting the post-conditions at each
+return point. At any call site (including recursive calls), \VCC\
+asserts the preconditions before the call (after assigning the
+argument values to the formal parameters of the call) and assumes the
+post-conditions after the call.
+
+For C functions with side effects, we often need to talk about both
+the state before the call and the state after the call. To allow this,
+within a postcondition, \Q{old(e)} gives the value that the expression \Q{e}
+had at the beginning of the function (after assignment to the formal
+parameters). For example,
+
+ \begin{lstlisting}
+int x;
+
+void incX()
+requires(0 <= x && x < 10)
+writes(&x)
+ensures(x == old(x)+1)
+{
+  x++;
+}
+\end{lstlisting}
+
+We'll get to the \Q{writes(\&x)} shortly. 
+
+Similarly, within assertions and assumptions inside a function, \Q{old(e)}
+gives the value that e had on function entry (after binding formal
+parameters). Note, however, that e can also contain variables that are
+in scope but were not in scope at function entry; for such variables,
+the current value is used. (For variables not bound within the
+assertion/assumption, \VCC\ will produce a warning.)

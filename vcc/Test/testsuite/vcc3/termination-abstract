@@ -1,0 +1,34 @@
+#include <vcc.h>
+
+_(abstract int foo0()
+  _(ensures \result > 0)
+{
+  return 7;
+})
+
+_(def int foo1()
+  _(ensures \result > 0)
+{
+  return 7;
+})
+
+_(def int bar0()
+  
+  _(ensures \result > 0)
+{
+  return foo0();
+})
+
+_(def int bar1()
+  
+  _(ensures \result > 0)
+{
+  return foo1();
+})
+
+`
+Verification of foo0 succeeded.
+Verification of foo1 succeeded.
+Verification of bar0 succeeded.
+Verification of bar1 succeeded.
+`

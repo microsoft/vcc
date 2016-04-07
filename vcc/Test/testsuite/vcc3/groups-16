@@ -1,0 +1,20 @@
+#include <vcc.h>
+
+struct A {
+  int x;
+
+  struct {
+    _(group C)
+    _(:C) int z;
+
+    _(group D)
+    _(:D) int zz;
+  } y;
+  
+  _(invariant \mine(&\this->y::C))
+  _(invariant \mine(&\this->y::D))
+};
+
+`
+Verification of A#adm succeeded.
+`

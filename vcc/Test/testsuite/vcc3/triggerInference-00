@@ -1,0 +1,48 @@
+` /dt:1
+#include "vcc.h"
+
+_(typedef \bool set_t[unsigned];)
+
+_(typedef set_t set2_t[unsigned];)
+
+_(ghost \bool _(pure) f1(unsigned); )
+_(ghost unsigned _(pure) f2(unsigned); )
+
+void trg2(unsigned *m _(ghost set_t s) _(ghost set2_t s2))
+{
+  int *p;
+
+  _(assume \false)
+
+  _(assert \forall unsigned x; p[x] > 0)
+  _(assert \forall unsigned k; s[k])
+  _(assert \forall unsigned x; s[x] ==> p[x] > 0)
+  _(assert \forall unsigned x; f1(f2(x)))
+  _(assert \forall unsigned x; f1(x) ==> f2(f2(x)) > 7)
+  _(assert \forall unsigned i, j; i < j ==> p[i] <= p[j])
+  _(assert \forall unsigned i, j; i < j ==> s[i] ==> p[j] > 0)
+  _(assert \forall unsigned i, j; i < j ==> s[i] ==> s[j] && p[j] > 0)
+  _(assert \forall unsigned i, j; i < j ==> s[i] ==> p[j] > 0 && s[j])
+  _(assert \forall unsigned i, j, k; s[i] && s[j] && s[k] ==> s2[i][j] && s2[i][k])
+  _(assert \forall unsigned i, j; int *q; s[i] && s[j] ==> q[i])
+  _(assert \forall unsigned i, j; p[i+j] > 0)
+  _(assert \forall unsigned i, j; i + j < 0 ==> p[i] > 0 && p[j] > 0)
+  _(assert \forall unsigned i, j; i + j < 0 ==> p[i] > 0 && p[j+i] > 0)
+}
+`
+testcase(16,12) : warning VC9122: inferred triggers at {:level 2}: {(&)p[x]} for '\forall unsigned x; p[x] > 0)'
+testcase(17,12) : warning VC9122: inferred triggers at {:level 1}: {s[k]} for '\forall unsigned k; s[k])'
+testcase(18,12) : warning VC9122: inferred triggers at {:level 1}: {s[x]} for '\forall unsigned x; s[x] ==> p[x] > 0)'
+testcase(19,12) : warning VC9122: inferred triggers at {:level 1}: {f2(x)} for '\forall unsigned x; f1(f2(x)))'
+testcase(20,12) : warning VC9122: inferred triggers at {:level 1}: {f1(x)} {f2(f2(x))} for '\forall unsigned x; f1(x) ==> f2(f2(x)) > 7)'
+testcase(21,12) : warning VC9122: inferred triggers at {:level 3}: {(&)p[i], (&)p[j]} for '\forall unsigned i, j; i < j ==> p[i] <= p[j])'
+testcase(22,12) : warning VC9122: inferred triggers at {:level 3}: {s[i], (&)p[j]} for '\forall unsigned i, j; i < j ==> s[i] ==> p[j] > 0)'
+testcase(23,12) : warning VC9122: inferred triggers at {:level 3}: {s[i], s[j]} for '\forall unsigned i, j; i < j ==> s[i] ==> s[j] && p[j] > 0)'
+testcase(24,12) : warning VC9122: inferred triggers at {:level 3}: {s[i], s[j]} for '\forall unsigned i, j; i < j ==> s[i] ==> p[j] > 0 && s[j])'
+testcase(25,12) : warning VC9122: inferred triggers at {:level 3}: {s2[i][j], s[k]} for '\forall unsigned i, j, k; s[i] && s[j] && s[k] ==> s2[i][j] && s2[i][k])'
+testcase(26,12) : warning VC9122: inferred triggers at {:level 3}: {s[i], s[j], (&)q[i]} for '\forall unsigned i, j; int *q; s[i] && s[j] ==> q[i])'
+testcase(27,12) : warning VC9122: inferred triggers at {:level 4}: {i+j} for '\forall unsigned i, j; p[i+j] > 0)'
+testcase(28,12) : warning VC9122: inferred triggers at {:level 3}: {(&)p[i], (&)p[j]} for '\forall unsigned i, j; i + j < 0 ==> p[i] > 0 && p[j] > 0)'
+testcase(29,12) : warning VC9122: inferred triggers at {:level 4}: {i + j} {j+i} for '\forall unsigned i, j; i + j < 0 ==> p[i] > 0 && p[j+i] > 0)'
+Verification of trg2 succeeded.
+`

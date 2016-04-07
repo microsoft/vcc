@@ -1,0 +1,26 @@
+#include <vcc.h>
+
+#define BUF_LEN	100
+
+typedef struct MyCtx_s
+{
+  int buf[BUF_LEN];
+	_(ghost size_t bound)
+	_(invariant bound == BUF_LEN)
+} MyCtx_t;
+
+void set(MyCtx_t *pCtx, size_t idx, int *pX )
+  _(maintains \wrapped(pCtx))
+  _(requires \thread_local(pX) && \object_root(pX))
+  _(requires idx < pCtx->bound)
+  _(writes pCtx)
+{
+  int i = *pX;
+  _(unwrapping pCtx) {
+    pCtx->buf[idx] = *pX;
+  }
+}
+`
+Verification of MyCtx_s#adm succeeded.
+Verification of set succeeded.
+`

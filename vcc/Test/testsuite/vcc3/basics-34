@@ -1,0 +1,16 @@
+#include "vcc.h"
+
+void foo(int *a) {
+    if (a) {
+        *a++;
+    }
+    
+    while (a) {
+      *a++;
+    }
+}
+`
+Verification of foo failed.
+testcase(5,10) : error VC8512: Assertion 'a is thread local' did not verify.
+testcase(9,8) : error VC8512: Assertion 'a is thread local' did not verify.
+`

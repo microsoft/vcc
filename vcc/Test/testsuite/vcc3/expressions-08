@@ -1,0 +1,30 @@
+#include <vcc.h>
+
+_(pure)
+int sin(int x);
+
+_(axiom \forall int x; (-1 <= sin(x)) && (sin(x) <= 1))
+
+#define RHS sin(a)*b
+#define LHS c
+
+void test006a(int a, int b, int c2)
+{
+    int LHS;
+    int tmpRHS = _(unchecked)(RHS);
+    LHS = tmpRHS;
+    _(assert LHS == tmpRHS)
+}
+
+void test006b(int a, int b, int c2)
+{
+    int LHS;
+    LHS = _(unchecked)(RHS);
+    _(assert LHS == _(unchecked)(RHS))
+}
+`
+testcase(14,31) : warning VC9326: [possible unsoundness]: signed overflow (of '*') has undefined behavior in C
+testcase(22,22) : warning VC9326: [possible unsoundness]: signed overflow (of '*') has undefined behavior in C
+Verification of test006a succeeded.
+Verification of test006b succeeded.
+`

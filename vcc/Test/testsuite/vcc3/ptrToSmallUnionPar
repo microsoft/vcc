@@ -1,0 +1,19 @@
+#include <vcc.h>
+
+union U {
+  _(backing_member) unsigned __int64 AsUINT64;
+  unsigned __int64 b;
+};
+
+void foo(union U Entry);
+
+void bar(union U *Entry);
+
+void baz(union U Entry) {
+  bar(&Entry);
+  foo(Entry);
+}
+
+`
+Verification of baz succeeded.
+`

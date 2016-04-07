@@ -1,0 +1,13 @@
+#include <vcc.h>
+
+void foo(int a)
+    _(requires a == 0)
+{
+                a = a + 10;
+                _(assert a != \old(a)) // this verifies
+                _(assert (a == \old(a)) ==> \false) // this doesn't
+}
+
+`
+Verification of foo succeeded.
+`

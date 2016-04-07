@@ -1,0 +1,16 @@
+`/smoke 
+#include <vcc.h>
+
+int bar(int a)
+  _(requires a)
+{
+  int x;
+  x = 42;
+  if (a) x = 13;
+  // empty else should not be unreachable
+  return 42;
+}
+
+`
+Verification of bar succeeded.
+`

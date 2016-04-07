@@ -1,0 +1,25 @@
+#include <vcc.h>
+
+typedef __w64 unsigned int   size_t;
+
+void f8()
+{
+  unsigned int i = 1;
+  unsigned int j = 1;
+  j <<= i + i;
+
+  _(assert j == 4)
+}
+
+void f9()
+{
+  unsigned int i = 1;
+  unsigned int j = 4;
+  j >>= i + i;
+
+  _(assert j == 1)
+}
+`
+Verification of f8 succeeded.
+Verification of f9 succeeded.
+`

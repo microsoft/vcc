@@ -1,0 +1,10 @@
+#include "vcc.h"
+
+typedef struct S { int a; } S, *PS;
+
+void foo(_(ghost PS out) _(ghost \claim c))
+    _(always c,out->\closed)
+{ }
+`
+Verification of foo succeeded.
+`

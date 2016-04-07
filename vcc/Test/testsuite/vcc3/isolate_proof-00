@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+_(isolate_proof)
+void foo()
+{
+}
+
+void bar() {
+}
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

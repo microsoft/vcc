@@ -1,0 +1,13 @@
+#include <vcc.h>
+
+typedef __w64 unsigned int   size_t;
+
+void foo() 
+{
+  int i = 2;
+  int j = -(i * i - -i);
+  _(assert j == -6)
+}
+`
+Verification of foo succeeded.
+`

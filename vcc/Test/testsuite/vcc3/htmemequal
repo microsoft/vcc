@@ -1,0 +1,26 @@
+#include <vcc.h>
+
+typedef unsigned __int8 BOOLEAN;
+typedef const void *PCVOID;
+
+int
+__cdecl
+memcmp(
+     const void* Buffer1,
+     const void* Buffer2,
+     size_t SizeInBytes
+    );
+
+BOOLEAN
+HtEqualMemory(
+     PCVOID Buffer1,
+     PCVOID Buffer2,
+     size_t CountOfBytes
+    )
+{
+    return (BOOLEAN)(memcmp(Buffer1, Buffer2, CountOfBytes) == 0);
+}
+
+`
+Verification of HtEqualMemory succeeded.
+`

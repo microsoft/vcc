@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+struct A {
+  int x;
+  _(invariant \this->x>0)
+};
+
+
+_(ghost _(admissibility)
+void adm_A(struct A* x)
+{
+})
+`
+Verification of A#adm succeeded.
+Verification of adm_A failed.
+testcase(9,11) : error VC8002: state was altered after havoc_others().
+`

@@ -1,0 +1,11 @@
+#include "vcc.h"
+
+_(dynamic_owns) struct wa {
+  int a[10];
+  _(invariant *(a + 5) == 6) // works
+  _(ghost int sa[10])
+  _(invariant *(sa + 5) == 6) // fails
+}; 
+`
+Verification of wa#adm succeeded.
+`

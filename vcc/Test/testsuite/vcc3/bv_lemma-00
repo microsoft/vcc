@@ -1,0 +1,13 @@
+#include "vcc.h"
+
+_(pure) unsigned int bar(unsigned int x);
+
+void foo()
+{
+  _(assert {:bv} \forall unsigned int x; (bar(x) & 3) <= 3)
+  _(assert {:bv} \forall unsigned int *x; 1)
+}
+`
+testcase(7,43) : error VC9660: unsupported expression in _(assert {:bv} ...): bar(x) (bar(x))
+testcase(8,18) : error VC9689: type 'uint32_t*' is not supported for bitvector translation (in \forall unsigned int *x; 1))
+`

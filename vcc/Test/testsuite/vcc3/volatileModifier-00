@@ -1,0 +1,43 @@
+#include <vcc.h>
+
+struct S {
+  int nonvol;
+  volatile int vol;
+  _(ghost  volatile int specvol;)
+  _(ghost  int specnonvol;)
+};
+
+int ok1(struct S *s)
+  _(requires \thread_local(s))
+{
+  return s->nonvol;
+}
+
+int nok1(struct S *s)
+  _(requires \thread_local(s))
+{
+  return s->vol;
+}
+
+_(ghost 
+int ok2(struct S *s)
+  _(requires \thread_local(s))
+{
+  return s->specnonvol;
+})
+
+
+_(ghost 
+int ok21(struct S *s)
+  _(requires \thread_local(s))
+{
+  return s->specvol;
+})
+
+`
+Verification of ok1 succeeded.
+Verification of nok1 failed.
+testcase(19,10) : error VC8512: Assertion 's is mutable (accessing volatile field vol)' did not verify.
+Verification of ok2 succeeded.
+Verification of ok21 succeeded.
+`

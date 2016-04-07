@@ -1,0 +1,28 @@
+#include <vcc.h>
+
+_(claimable) struct A {
+  int dummy;
+};
+
+void succeeds(struct A *a, struct A *b _(ghost \claim d))
+  _(writes a)
+  _(requires \wrapped(a))
+  _(requires \wrapped(d) && \claims_object(d, b))
+{
+  _(ghost \claim c)
+  _(atomic d, b) {
+    _(ghost c = \make_claim({a}, \claims_object(c,a)))
+  }
+}
+
+void usedToFail(struct A *a)
+  _(writes a)
+  _(requires \wrapped(a))
+{
+  _(ghost \claim c)
+  _(ghost c = \make_claim({a}, \claims_object(c,a)))
+}
+`
+Verification of succeeds succeeded.
+Verification of usedToFail succeeded.
+`

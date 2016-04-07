@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="richTextBox1.Text" xml:space="preserve">
+    <value>The usage is either:
+
+Z3AxiomProfiler.exe
+
+(and then load log file through menu) or
+
+Z3AxiomProfiler.exe file1.bpl file2.bpl /l:logfile
+
+The logfile can be obtained by running Z3 v2 with TRACE=true option. It goes to stdout. The overhead is about 50% in most cases. The option should not alter the search direction.
+
+QUANTIFIERS:
+
+The top level entries in the tree are quantifiers. H-over an entry to get a tooltip referring to the BPL file (which needs to specified in the command line or specified in the loading form). Every information that one can get with mouse H-over, is also displayed in the bottom pane, provided it is enabled (button on the right).
+
+In each quantifier entry the first number there is a “cost”, while after “direct:” you get number of instances of that quantifier. The cost is roughly the number of quantifier instances which the current instance/quantifier caused.
+
+After expanding a top level entry you get to choose if you want to see:
+-	DEEP instances, i.e. instances that appeared only after long chains of dependencies
+-	COSTLY instances, i.e. instances that caused a lot of other instances to be generated
+-	FIRST and LAST instances from the log file
+-	ALL instances of that quantifier from the log file
+
+For each instance you get the following information:
+&lt;name of quantifier&gt; &lt;depth&gt; (&lt;weighted depth&gt;) / |&lt;size of bindings&gt;| @&lt;line in log file&gt;  &lt;cost&gt;  &lt;head of binding 0&gt; |&lt;size of binding 0&gt;| ...
+
+The size of terms is given as two numbers: the first one is number of symbols (function applications and constants), the second one is maximal depth of the term.
+
+The size of bindings is sum of sizes and maximal depth of bindings.
+
+After expanding an instantiation you get access to:
+-	the terms that are BLAMED for the instantiation
+-	the terms that are BOUND to free variables of the quantifier
+-	YIELDS, i.e. the instantiations that blame the current instantiation for their existence
+-	and the instantiations that we can blame for the current instantiation (they are given directly, at the top)
+
+The depth of an instantiation is 1 + maximum of depths of instantiations that are blamed. The weighted depth of an instantiation is its weight (as determined from the Boogie {:weight ...} attribute) plus the maximum of weighted depths of blamed instantiations.
+
+The initial cost of an instantiation is 1. If an instantiation has cost C and is blaming N other instantiation for its existence, C/N is added to the cost of each of those blamed.
+
+The nodes in the tree corresponding to complex terms you can unfold. The “C: ...” is more or less C-programming-language transliteration of the term.
+
+CONFLICTS
+
+The top-level node labeled CONFLICTS gives access to all conflicts created during the search. 100 CONFLICTS gives a random, weighted sampling from the conflicts. The cost of a conflict is number of quantifier instantiations needed to deduce it. It is given as the first number in conflict description. Looking at SCOPES output is generally more useful than looking at bare conflicts.
+
+SCOPES
+
+They reflect the way the SMT solver performs the search: it performs a number of decisions (case-splits), finds a conflict clause and then backtracks from some decisions. Therefore one can think of the search as a tree, where nodes are labeled with literals and leafs are additionally labeled with conflicts. There are however very long sequences of nodes with just one child. We collapse such sequences into a single node and label it with entire sequence of literals. The SCOPE tree is exactly this tree with some addition information.
+
+Each decision can cause other literals to be asserted. Those are called implied literals.
+
+The asserted literals can give rise to quantifier instantiations. Such instantiations are accounted to the current scope.
+
+The scope entries are described as follows:
+
+Scope: &lt;total instances&gt; / &lt;current-level instances&gt;, &lt;decisions&gt; lits, &lt;child scope#&gt; children [rec: &lt;descended scope#&gt;, &lt;cost&gt; inst/cnfl]
+
+where &lt;total instances&gt; is the total number of instances for this scope and childe scopes, &lt;current-level instances&gt; is the # of instances in the current scope only, &lt;decisions&gt; is the number of decision literals, &lt;child scope#&gt; is the number of child scopes (children in the search tree) of the current scope, while &lt;descended scope#&gt; is the same number but applied transitively, finally &lt;cost&gt; is the average cost in instance of a conflict generated from this scope (that is &lt;total instances&gt;/&lt;descended scope#&gt;).
+
+Each scope has a list of literals and children scopes when you unfold it.
+
+Each literal has again several nodes attached as children:
+-	its explanation (which is irrelevant for decision literals, and kind of cryptic anyhow)
+-	the literals that it implied
+-	and in case it was a decision literal made during left-to-right case-splitting search, an entry showing the clause that contained the literal
+
+PROOFS
+
+AxProf can also parse proofs produced by Z3. To produce a proof specify DISPLAY_PROOF=true PROOF_MODE=2 in addition to TRACE=true. This will however disable certain optimization and alter the search (which will be generally much slower). AxProf can figure out which of the instances created during the search were actually useful. 
+
+The proof can be browsed (at node labeled th-lemma or unit-resolution), but I haven’t yet anyone who would be able to make sense out of it.
+
+Instead at the node labeled PROOF-INST one can search for quantifier instantiation chains that were particularly deep AND used in the proof. The list is sorted by the weighted depth. The greyed entries are ones that have the weight of zero.
+
+
+MODELS
+
+AxProf can also read models produced by Z3 v2 and also the ones that Boogie prints (which are in Z3 v1 format). To get such a model from Boogie you should use:
+
+Boogie myprelude.bpl file.bpl /printModel:1 /printModelToFile:mymodel.log
+
+and then run:
+
+Z3AxiomProfiler.exe myprelude.bpl file.bpl /l:mymodel.log
+
+The models will be displayed in entries labeled MODEL #n per each model found.
+
+The model consists of a number of partitions, or equivalence classes and a table of function symbols and their results when applied to a tuple of partitions. We call a function applied to a tuple (including 0-tuple) of partitions, a model entry.
+
+The model description is divided into sections for literals (integers, true, false, etc), constants (uninterpreted functions of arity zero) and other functions.
+
+Entries for literals and constants unfold to show:
+-	the list of model entries in partition of the literal/constant (EQ [n], where n is the number of such entries).
+-	the list of entries that use the partition of the literal/constant in question
+
+Entries for function applications (grouped by function symbol) unfold to additionally show the list of arguments.</value>
+  </data>
+</root>

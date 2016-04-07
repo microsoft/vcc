@@ -1,0 +1,35 @@
+#include <vcc.h>
+
+_(abstract \integer PRNGen(\integer seed) {return;})
+
+_(typedef _(record) struct {
+    \integer root;
+    \bool foo[\integer][\integer];
+} log;)
+
+_(def \bool bar[\integer][\integer](log L, \integer seed)
+
+{
+  \bool res[\integer][\integer];
+
+  res = \lambda \integer k0; \lambda \integer k1; (k0 == L.root && k1 == PRNGen(seed)) || L.foo[k0][k1];
+  
+  return res;
+})
+
+_(def \bool bar2[\integer][\integer](log L, \integer seed)
+  
+{
+  \bool res[\integer][\integer];
+  \bool innerMap[\integer];
+  
+  innerMap = \lambda \integer k1; k1 == PRNGen(seed) || L.foo[L.root][k1];
+  res = \lambda \integer k0; k0 == L.root ? innerMap : L.foo[k0];
+  
+  return res;
+})
+`
+Verification of PRNGen succeeded.
+Verification of bar succeeded.
+Verification of bar2 succeeded.
+`

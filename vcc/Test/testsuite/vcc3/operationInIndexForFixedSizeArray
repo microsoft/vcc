@@ -1,0 +1,27 @@
+#include <vcc.h>
+#include <sal.h>
+
+enum _vcHintKind {
+  _vcMemorySafety,
+  _vcStructuralIntegrity,
+  _vcFunctionalCorrectness
+};
+
+
+
+
+struct S {
+  unsigned __int8 a[8];
+  unsigned __int64 b;
+};
+
+void foo(struct S *p, unsigned __int32 idx) 
+  _(requires idx < 16)
+  _(writes \extent(p))
+{
+  p->a[idx >> 3] |= 3;
+}
+
+`
+Verification of foo succeeded.
+`

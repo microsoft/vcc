@@ -1,0 +1,29 @@
+#include <vcc.h>
+
+struct S {
+	int i;
+	int a[10];
+};
+
+_(dynamic_owns)
+struct T {
+	int i;
+	int a[10];
+	struct S s;
+	_(invariant \mine(&s))
+};
+
+void foo(struct T *x, struct T *y)
+	_(requires \wrapped(x) && \wrapped(y))
+	_(requires \deep_eq(*x, *y))
+{
+	_(assert x->i == y->i)
+	_(assert x->a[3] == y->a[3])
+	_(assert x->s.i == y->s.i)
+	_(assert x->s.a[3] == y->s.a[3])
+}
+	
+`
+Verification of T#adm succeeded.
+Verification of foo succeeded.
+`

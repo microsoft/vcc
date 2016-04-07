@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+int main(){
+  unsigned i = 0;
+  int j = (int)((2 >> 1) * i);
+  _(assert j == 0)
+}
+`
+Verification of main succeeded.
+`

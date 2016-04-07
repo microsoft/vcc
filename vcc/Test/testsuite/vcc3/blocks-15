@@ -1,0 +1,26 @@
+#include <vcc.h>
+
+#define SIZE 5
+
+typedef struct _S {
+	int data[SIZE];
+} S;
+
+void test(S *s) 
+	_(requires \wrapped(s))
+	_(writes s)
+{
+	_(unwrap s)
+	_(requires \mutable(s))
+	_(ensures \mutable(s))
+	_(writes \span(s))
+	{
+		for (unsigned i = 0; i<SIZE; i++) s->data[i] = 0;
+	}
+	_(wrap s)
+}
+
+`
+Verification of test succeeded.
+Verification of test#block#0 succeeded.
+`

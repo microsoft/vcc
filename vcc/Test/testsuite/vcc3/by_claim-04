@@ -1,0 +1,26 @@
+#include <vcc.h>
+
+struct A {
+  unsigned x:1;
+  unsigned y:1;
+};
+
+struct B {
+  struct A a;
+   _(ghost \claim c;) 
+  _(invariant \mine(c))
+  _(invariant \claims(c, (&a)->\closed))
+  _(invariant _(by_claim c)(a.x) == 1)
+};
+
+struct B2 {
+  struct A a;
+   _(ghost \claim c;) 
+  _(invariant \mine(c))
+  _(invariant \claims(c, (&a)->\closed))
+  _(invariant a.x == 1)
+};
+`
+Verification of B#adm succeeded.
+Verification of B2#adm succeeded.
+`

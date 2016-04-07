@@ -1,0 +1,31 @@
+#include "vcc.h"
+
+
+struct _S
+{
+  struct  vcc_attr("member_name", "U") _U 
+  {
+    int a;
+    int b;
+  } U;
+
+  _(invariant \mine(&\this->U))
+  _(invariant \mine(&U))
+};
+
+void foo() {
+	struct _S s;
+	_(wrap &s.U)
+	_(unwrap &s.U)
+}
+
+void bar() {
+	struct _S s;
+	_(wrap &(&s)->U)
+	_(unwrap &(&s)->U)
+}
+`
+Verification of _S#adm succeeded.
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

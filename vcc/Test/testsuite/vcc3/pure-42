@@ -1,0 +1,17 @@
+
+#include <vcc.h>
+#include <limits.h>
+
+_(logic \bool foo(int a) = \forall int blob; a <= blob)
+
+int main()
+{
+_(assert \forall int blob; blob == INT_MIN ==> foo(blob))
+return 0;
+}
+
+`
+testcase(9,58) : warning VC9121: failed to infer triggers for '\forall int blob; a <= blob)'
+testcase(9,10) : warning VC9121: failed to infer triggers for '\forall int blob; blob == (-2147483647 - 1) ==> foo(blob))'
+Verification of main succeeded.
+`

@@ -1,0 +1,394 @@
+\section{Verifying Simple Programs}
+We begin by describing how VCC verifies ``simple programs'' ---
+sequential programs without loops,  function calls, or concurrency. This
+might seem to be a trivial subset of C, but in fact VCC reasons about
+more complex programs by reducing them to reasoning about simple programs.
+
+\subsection{Assertions}
+\label{sect:assert-assume}
+
+Let's begin with a simple example:
+
+\vccInputSC[linerange={begin-}]{c/2.1.minInline.c}
+This program sets \vcc{z} to the minimum of \vcc{x} and
+\vcc{y}. In addition to the ordinary C code, this program includes an
+\Def{annotation}, starting with \vcc{_(}, terminating with a closing
+parenthesis, with balanced parentheses inside. The first identifier
+after the opening parenthesis (in the program above it's \vcc{assert})
+is called an \Def{annotation tag} and
+identifies the type of annotation provided (and hence its function).
+(The tag plays this role only 
+at the beginning of an annotation; elsewhere, it is treated as
+an ordinary program identifier.)
+Annotations are used only by VCC, and are not seen by the C compiler.
+When using the regular C compiler the \vcc{<vcc.h>} header file defines:
+\begin{VCC}
+#define _(...) /* nothing */
+\end{VCC}
+VCC does not use this definition, and instead parses the inside of \vcc{_( ... )}
+annotations.
+
+
+An annotation of the form \vcc{_(assert E)}, called an \Def{assertion}, asks VCC to prove that
+\vcc{E} is guaranteed to hold (\ie evaluate to a value other than \vcc{0})
+whenever control reaches the assertion.%
+\footnote{
+  This interpretation changes slightly if \vcc{E} refers to
+  memory locations that might be concurrently modified by other
+  threads; see \secref{concurrency}}  
+Thus, the line \vcc|_(assert z <= x)| says
+that when control reaches the assertion, \vcc{z} is no larger than \vcc{x}.
+If VCC successfully verifies a program, it promises that this will hold throughout 
+every possible execution of the program, regardless of inputs, how concurrent
+threads are scheduled, etc. More generally, VCC might verify some, but not all of your assertions; 
+in this case, VCC promises that the first assertion to be violated will not be one of the verified ones.
+
+\begin{note}
+It is instructive to compare \vcc{_(assert E)} with the macro
+\lstinline|assert(E)| (defined in \lstinline|<assert.h>|), which
+evaluates \vcc{E}  at runtime and aborts execution if \vcc{E}
+doesn't hold. First, \lstinline|assert(E)| requires runtime overhead (at least
+in builds where the check is made), whereas \vcc{_(assert E)} does
+not. Second, \lstinline|assert(E)| will catch failure of the 
+assertion only when it actually fails in an execution, whereas 
+\vcc{_(assert E)} is guaranteed to catch the failure if it is
+possible in \emph{any} execution. Third, because
+\vcc{_(assert E)} is not actually executed, \vcc{E} can include
+unimplementable mathematical operations, such as
+quantification over infinite domains.
+\end{note}
+
+To verify the function using VCC from the command line, save the
+source in a file called (say) \lstinline|minimum.c| and run VCC as follows:
+
+\begin{VCC}
+/*`C:\Somewhere\VCC Tutorial> vcc.exe minimum.c
+Verification of main succeeded.
+C:\Somewhere\VCC Tutorial>`*/
+\end{VCC}
+
+If instead you wish to use VCC Visual Studio plugin, load the solution
+\lstinline|tutorial.sln| in
+\lstinline|<vcc source dir>\vcc\vcc\Docs\Tutorial|, 
+locate the file with the example, and
+right-click on the program text.  You should get options to verify the
+file or just this function (either will work). The solution has the
+examples from this tutorial arrange by section, named so that they
+will appear within the project in textual order.
+
+If you right-click within a C source file,
+several VCC commands are made available, depending on what kind of
+construction IntelliSense thinks you are in the middle of. The choice
+of verifying the entire file is always available. If you click within
+the definition of a struct type, VCC will offer you the choice of
+checking admissibility for that type (a concept explained in \secref{admissibility0}).
+If you click within the body of a function, VCC should offer
+you the opportunity to verify just that function. However,
+IntelliSense often gets confused about the syntactic structure of
+VCC code, so it might not always present these context-dependent
+options. However, if you select the name of a function and then right
+click, it will allow you to verify just that function.
+
+VCC verifies this function successfully, which means that its
+assertions are indeed guaranteed to hold and that the program cannot
+crash.%
+\footnote{
+  VCC will not check that this program terminates, because the program
+  hasn't been specified as having to terminate; we will see later how
+  to provide such specifications. VCC also doesn't check that the
+  program doesn't run out of stack space, but this feature may be
+  provided in some future version.  
+}
+If VCC is unable
+to prove an assertion, it reports an error.  Try changing the
+assertion in this program to something that isn't true and see what
+happens. (You might also want to try coming up with some complex
+assertion that is true, just to see whether VCC is smart enough to
+prove it.)
+
+To understand how VCC works, and to use it successfully, it is useful to
+think in terms of what VCC ``knows'' at each control point
+of your program. In the current example, just before the first conditional,
+VCC  knows nothing about the local variables,
+since they can initially hold any value. 
+Just before the first assignment, VCC knows that 
+\vcc{x <= y} (because execution followed that branch of the conditional), and
+after the assignment, VCC also knows that \vcc{z == x}, 
+so it knows that \vcc{z <= x}. Similarly, in the \vcc{else} branch,
+VCC knows that \vcc{y < x} (because execution didn't follow the
+\vcc{if} branch), and after the assignment to \vcc{z}, it also knows
+that \vcc{z == y}, so it also knows \vcc{z <= x}. Since 
+\vcc{z <= x} is known to hold at the end of each branch of the
+conditional, it is known to hold at the end of the conditional, so the
+assertion is known to hold when control reaches it.
+In general,
+VCC doesn't lose any information when reasoning about assignments and
+conditionals. However, we will see that VCC may lose
+some information when reasoning about loops; you will then need to 
+provide annotations to make sure that it doesn't lose ``too much''.
+
+When we talk about what VCC knows, we mean what it knows in an ideal
+sense, where if it knows \vcc{E}, it also knows any logical
+consequence of \vcc{E}. In such a world, adding an assertion that
+succeeds would have no effect on whether later assertions succeed.
+VCC's ability to deduce consequences is indeed complete for many types
+of formulas (e.g. formulas that use only equalities, inequalities,
+addition, subtraction, multiplication by constants, and boolean
+connectives), but not for all formulas, so VCC will sometimes fail to
+prove an assertion, even though it ``knows'' enough to prove it.
+Conversely, an assertion that succeeds can sometimes cause later
+assertions that would otherwise fail to succeed, by drawing VCC's
+attention to a crucial fact it needs to prove the later assertion.
+This is relatively rare, and typically involves ``nonlinear
+arithmetic'' (e.g. where variables are multiplied together), bitvector
+reasoning (\secref{bv}) or quantifiers.
+
+When VCC surprises you by failing to verify something that you think
+it should be able to verify, it is usually because it doesn't know
+something you think it should know. An assertion provides one way to
+check whether VCC knows what you think it knows.
+
+
+\subsection*{Exercises}
+\begin{enumerate}
+\item Can the assertion at the end of the example function be made
+  stronger? What is the strongest valid assertion one could write? Try 
+  verifying the program with your stronger assertion.
+\item Write an assertion that says that the \vcc{int} \vcc{x} is the average of
+  the \vcc{int}s \vcc{y} and \vcc{z}.
+\item Modify the example program so that it sets \vcc{x} and \vcc{y} to values
+that differ by at most \vcc{1} and sum to \vcc{z}. Prove that your program 
+does this correctly.
+\end{enumerate}
+
+\subsection*{Solutions}
+\begin{enumerate}
+\item The strongest postcondition is 
+\vcc{_(assert z<=x && z<=y && (z == x || z == y))}. 
+\item 
+\vcc{_(assert 2 * x == y + z)}. (Note that \vcc{_(x == (y + z)/2)}
+doesn't quite do the job; you might get a false positive because
+division rounds down.)
+\item 
+\begin{VCC}
+int main() {
+  int x,y,z;
+  x = z/2;
+  y = z-x;
+  _(assert y-x <= 1 && x-y <= 1 && x+y == z)
+  return 0;
+}
+\end{VCC}
+\end{enumerate}
+
+\subsection{Logical Operators and Quantifiers}
+
+VCC provides a number of C extensions that can be used within VCC
+annotations (such as assertions):
+\begin{itemize}
+\item
+The Boolean operator \vcc{==>} denotes logical implication; formally,
+\vcc{P ==> Q} means \vcc{((!P) || (Q))}, and is usually 
+read as ``\vcc{P} implies \vcc{Q}''. Because \vcc{==>} has lower
+precedence than the C operators, it is typically not necessary to
+parenthesize \vcc{P} or \vcc{Q}.
+\item
+The expression \vcc{\forall T v; E} evaluates to \vcc{1} if the
+expression \vcc{E} evaluates to a nonzero value for every value 
+\vcc{v} of type \vcc{T}. For example, the assertion
+\begin{VCC}
+_(assert x > 1 &&
+  \forall int i; 1 < i && i < x ==> x % i != 0)
+\end{VCC}
+\noindent checks that (\vcc{int}) \vcc{x} is a prime number. If \vcc{b}
+is an \vcc{int} array of size \vcc{N}, then
+\begin{VCC}
+_(assert \forall int i; \forall int j;
+  0 <= i && i <= j && j < N ==> b[i] <= b[j])
+\end{VCC}
+checks that \vcc{b} is sorted.
+
+\item
+Similarly, the expression \vcc{\exists T v; E} evaluates to \vcc{1} if there
+is some value of \vcc{v} of type \vcc{T} for which \vcc{E} evaluates
+to a nonzero value. For example, if \vcc{b} is an \vcc{int} array of
+size \vcc{N}, the assertion
+\begin{VCC}
+_(assert \exists int i; 0 <= i && i < N && b[i] == 0)
+\end{VCC}
+asserts that  \vcc{b} contains a zero element.
+\vcc{\forall} and \vcc{\exists} are jointly referred to as
+\Def{quantifiers}. 
+\item
+The type \vcc{\integer} represents the type of mathematical integers;
+the type \vcc{\natural} denotes the type of natural numbers.
+
+\item
+VCC provides map types; they are declared and used like arrays, but with a type
+instead of a size. For example, \vcc{\integer x[int]} declares \vcc{x}
+to be a map from C \vcc{int}s to \vcc{\integer}s, and \vcc{x[-5]} is
+the \vcc{\integer} to which \vcc{x} maps \vcc{-5}. We'll see map types
+used in \secref{ghosts}.
+
+\item
+Expressions within VCC annotations are restricted in their use of 
+functions: you can only use functions that are proved to be 
+\Def{pure}, \ie free from side effects (\secref{pureFunctions}).
+\end{itemize}
+
+
+\subsection*{Exercises}
+\begin{enumerate}
+\item Write an assertion that says that the \vcc{int} \vcc{x} is a
+  perfect square (\ie a number being a square of an integer).
+\item Write an assertion that says that the \vcc{int} \vcc{x} occurs
+  in the \vcc{int} array \vcc{b[10]}.
+\item Write an assertion that says that the \vcc{int} array \vcc{b},
+  of length \vcc{N}, contains no duplicates.
+\item Write an assertion that says that all pairs of adjacent elements
+  of the \vcc{int} array \vcc{b} of length \vcc{N} differ by at most
+  \vcc{1}.
+\item Write an assertion that says that an array \vcc{b} of length
+  \vcc{N} contains only perfect squares.
+\end{enumerate}
+
+\subsection*{Solutions}
+\begin{enumerate}
+\item \vcc{_(assert \exists unsigned y; x == y*y)}
+\item \vcc{_(assert \exists unsigned i; i < 10 && b[i] == x)}
+\item 
+\vcc{_(assert \forall unsigned i,j; i < j && j < N ==> b[i] != b[j])}
+\item 
+\begin{VCC}
+_(assert \forall unsigned i,j; 0 <= i && i+1 < N 
+        ==> -1 <= b[i] - b[i+1] && b[i] - b[i+1] <= 1)
+\end{VCC}
+\item 
+\vcc{_(assert \forall unsigned i; i < N ==> \exists unsigned j;  b[i] == j * j)} 
+\end{enumerate}
+
+
+\subsection{Assumptions}
+
+You can add to what VCC knows at a particular point with a second
+type of annotation, called an \Def{assumption}.
+The assumption \vcc{_(assume E)} tells VCC to ignore
+the rest of an execution if \vcc{E} fails to hold (\ie if
+\vcc{E} evaluates to \vcc{0}). 
+Reasoning-wise, the assumption simply adds \vcc{E} to what VCC
+knows for subsequent reasoning. For example:
+\begin{VCC}
+int x, y;
+_(assume x != 0)
+y = 100 / x;
+\end{VCC}
+Without the assumption, VCC would complain about possible division by
+zero. (VCC checks for division by zero because it would cause the
+program to crash.)  Assuming the assumption, this error cannot happen.  
+Since assumptions (like all annotations) are not seen by the compiler,
+assumption failure won't cause the program to stop, and subsequent assertions
+might be violated. To put it another way, if VCC verifies a program,
+it guarantees that in any prefix of an execution
+where all (user-provided) assumptions hold, all assertions will also
+hold. Thus, your verification goal should be to eliminate as many assumptions as
+possible (preferably all of them).
+
+\begin{note}
+Although assumptions are generally to be avoided, they are nevertheless
+sometimes useful:
+\begin{inparaenum}
+\item In an incomplete verification, assumptions can be used to mark
+  the knowledge that VCC is missing, and to coordinate further
+  verification work (possibly performed by other people). If you
+  follow a discipline of keeping your code in a state where the whole 
+  program verifies, the verification state can be judged by browsing
+  the code (without having to run the verifier).
+
+\item When debugging a failed verification, you can use assumptions to
+  narrow down the failed verification to a more specific failure
+  scenario, perhaps even to a complete counterexample. 
+
+\item Sometimes you want to assume something even though VCC can
+  verify it, just to stop VCC from spending time proving it. For
+  example, assuming \vcc{\false} allows VCC to 
+  easily prove subsequent assertions, thereby focussing its
+  attention on other parts of the code. Temporarily adding assumptions
+  is a common tactic when developing annotations for complex functions.
+
+\item Sometimes you want to make assumptions about the operating
+  environment of a program. For example, you might want to assume that
+  a 64-bit counter doesn't overflow, but don't want to justify it
+  formally because it depends on extra-logical assumptions (like the
+  speed of the hardware or the lifetime of the software). 
+
+\item Assumptions provide a useful tool in explaining how VCC
+  reasons about your program. We'll see examples of this throughout
+  this tutorial.
+\end{inparaenum}
+\end{note}
+
+An assertion can also change what VCC knows after the assertion, if
+the assertion fails to verify: although VCC will report the failure as an error,
+it will assume the asserted fact holds afterward. For example, in the following
+VCC will report an error for the first assumption, but not for the second:
+\begin{VCC}
+int x;
+_(assert x == 1)
+_(assert x > 0)
+\end{VCC}
+
+\subsection*{Exercises}
+\begin{enumerate}
+\item
+In the following program fragment, which assertions will fail?
+\begin{VCC}
+int x,y; 
+_(assert x > 5) 
+_(assert x > 3) 
+_(assert x < 2) 
+_(assert y < 3)
+\end{VCC}
+\item
+Is there any difference between 
+\begin{VCC}
+_(assume p)
+_(assume q)
+\end{VCC}
+and 
+\begin{VCC}
+_(assume q) 
+_(assume p)
+\end{VCC}
+? What if the assumptions are replaced by assertions?
+\item
+Is there any difference between
+\begin{VCC}
+_(assume p)
+_(assert q)
+\end{VCC}
+and 
+\begin{VCC}
+_(assert (!p) || (q))
+\end{VCC}
+? 
+
+\end{enumerate}
+
+\subsection*{Solutions}
+\begin{enumerate}
+\item
+\begin{VCC}
+int x,y; 
+_(assert x > 5) // fails
+_(assert x > 3) // succeeds
+_(assert x < 2) // fails
+_(assert y < 3) // fails
+\end{VCC}
+\item
+No difference for assumptions. For assertions, the order does matter,
+because the first assertion might allow the second to succeed.
+\item
+If one of the assertions succeeds, the other will also. However,
+assuming and then asserting leaves the assumption in effect for the
+code that follows, whereas asserting the conditional does not.
+\end{enumerate}

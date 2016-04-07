@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+void foo(int i) { }
+
+void foo(_(ghost int t)) { }
+
+void foo(_(out int i)) { }
+`
+Verification of foo#overload#void#int32_t succeeded.
+Verification of foo#overload#void#spec_int32_t succeeded.
+Verification of foo#overload#void#out_int32_t succeeded.
+`

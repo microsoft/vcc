@@ -1,0 +1,163 @@
+`
+#include <vcc.h>
+
+struct S
+{
+  int x;
+};
+
+_(dynamic_owns) struct Td
+{
+  struct S* s;
+  _(invariant \mine(s))
+};
+
+struct Ts
+{
+  struct S* s;
+  _(invariant \mine(s))
+};
+
+
+void wd1(struct Td* p)
+{
+  _(wrap p, p)
+}
+
+void wd2(struct Td* p)
+  _(requires \mutable(p))
+  _(requires p->\owns == {p->s})
+{
+  _(wrap p, p)
+}
+
+void wd3(struct Td* p)
+  _(requires \wrapped(p->s))
+  _(requires p->\owns == {p->s})
+  _(writes \extent(p))
+{
+  _(wrap p, p)
+}
+
+void wd4(struct Td* p)
+  _(requires \wrapped(p->s))
+  _(requires p->\owns == {p->s})
+  _(writes \extent(p))
+  _(writes p->s)
+  _(ensures \wrapped(p))
+{
+  _(wrap p, p)
+}
+
+void ud1(struct Td* p)
+{
+  _(unwrap p, p)
+}
+
+void ud2(struct Td* p)
+  _(requires \wrapped(p))
+{
+  _(unwrap p, p)
+}
+
+void ud3(struct Td* p)
+  _(requires \wrapped(p))
+  _(writes p)
+{
+  _(unwrap p, p)
+}
+
+
+void ws1(struct Ts* p)
+{
+  _(wrap p, p)
+}
+
+void ws2(struct Ts* p)
+  _(requires \mutable(p))
+{
+  _(wrap p, p)
+}
+
+void ws3(struct Ts* p)
+  _(requires \wrapped(p->s))
+  _(writes \extent(p))
+{
+  _(wrap p, p)
+}
+
+void ws4(struct Ts* p)
+  _(requires \wrapped(p->s))
+  _(writes \extent(p))
+  _(writes p->s)
+  _(ensures \wrapped(p))
+{
+  _(wrap p, p)
+}
+
+void us1(struct Ts* p)
+{
+  _(unwrap p, p)
+}
+
+void us2(struct Ts* p)
+  _(requires \wrapped(p))
+{
+  _(unwrap p, p)
+}
+
+void us3(struct Ts* p)
+  _(requires \wrapped(p))
+  _(writes p)
+{
+  _(unwrap p, p)
+}
+
+`
+Verification of Td#adm succeeded.
+Verification of Ts#adm succeeded.
+Verification of wd1 failed.
+testcase(23,10) : error VC8510: Assertion 'p is writable in call to wrap(...)' did not verify.
+testcase(23,10) : error VC8510: Assertion 'p->\owns is writable in call to wrap(...)' did not verify.
+testcase(23,13) : error VC8510: Assertion 'p->\owns is writable in call to wrap(...)' did not verify.
+testcase(23,5) : error VC9502: Call 'wrap p, p' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the objects being wrapped are mutable'.
+testcase(0,0) : error VC9599: (related information) Precondition: 'every object in the dynamic owns sets is wrapped'.
+testcase(23,10) : error VC8014: invariant(\mine(s)) of Td fails on wrap.
+testcase(11,15) : error VC9599: (related information) location of the invariant.
+Verification of wd2 failed.
+testcase(30,10) : error VC8510: Assertion 'p is writable in call to wrap(...)' did not verify.
+testcase(30,10) : error VC8510: Assertion 'p->\owns is writable in call to wrap(...)' did not verify.
+testcase(30,13) : error VC8510: Assertion 'p->\owns is writable in call to wrap(...)' did not verify.
+testcase(30,5) : error VC9502: Call 'wrap p, p' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'every object in the dynamic owns sets is wrapped'.
+Verification of wd3 failed.
+testcase(38,10) : error VC8510: Assertion 'p->\owns is writable in call to wrap(...)' did not verify.
+testcase(38,13) : error VC8510: Assertion 'p->\owns is writable in call to wrap(...)' did not verify.
+Verification of wd4 succeeded.
+Verification of ud1 failed.
+testcase(53,12) : error VC8016: 'p' is not wrapped before unwrap.
+testcase(53,12) : error VC8510: Assertion 'p is writable in call to unwrap(...)' did not verify.
+Verification of ud2 failed.
+testcase(59,12) : error VC8510: Assertion 'p is writable in call to unwrap(...)' did not verify.
+Verification of ud3 succeeded.
+Verification of ws1 failed.
+testcase(72,10) : error VC8020: 'p' is not writable before wrapping it.
+testcase(72,10) : error VC8018: 's' is not wrapped before wrapping 'p' (its owner).
+testcase(72,10) : error VC8019: 's' is not writable before wrapping 'p' (its owner).
+testcase(72,5) : error VC9502: Call 'wrap p, p' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the objects being wrapped are mutable'.
+Verification of ws2 failed.
+testcase(78,10) : error VC8020: 'p' is not writable before wrapping it.
+testcase(78,10) : error VC8018: 's' is not wrapped before wrapping 'p' (its owner).
+testcase(78,10) : error VC8019: 's' is not writable before wrapping 'p' (its owner).
+Verification of ws3 failed.
+testcase(85,10) : error VC8019: 's' is not writable before wrapping 'p' (its owner).
+Verification of ws4 succeeded.
+Verification of us1 failed.
+testcase(99,12) : error VC8016: 'p' is not wrapped before unwrap.
+testcase(99,12) : error VC8021: 'p' is not writable before unwrapping it.
+Verification of us2 failed.
+testcase(105,12) : error VC8021: 'p' is not writable before unwrapping it.
+Verification of us3 succeeded.
+`

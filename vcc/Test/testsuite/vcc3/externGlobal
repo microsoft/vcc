@@ -1,0 +1,13 @@
+#include <vcc.h>
+
+extern int global;
+
+void foo()
+  _(writes &global)
+{
+  global = 0;
+  _(assert global == 0)
+}
+`
+Verification of foo succeeded.
+`

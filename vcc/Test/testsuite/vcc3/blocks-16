@@ -1,0 +1,33 @@
+
+#include <vcc.h>
+
+void foo() {
+	int i;
+	int j;
+
+	_(ensures \normal_exit() ==> i == 5)
+	_(ensures !\normal_exit() ==> i == 6)
+	{
+		if (j > 10) {
+			i = 6;
+			goto Cleanup;
+		} else if (j > 0) {
+			i = 6;
+			goto Cleanup1;
+		}
+		i = 5;
+	}	
+
+	_(assert i == 5)
+	return;
+  
+ Cleanup1:
+	;
+  
+ Cleanup:  
+	_(assert i == 6)
+}
+`
+Verification of foo succeeded.
+Verification of foo#block#0 succeeded.
+`

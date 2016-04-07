@@ -1,0 +1,24 @@
+#include <vcc2test.h>
+
+struct Node {
+  struct Node *next;
+  int data;
+};
+
+struct List {
+  int x;
+  _(ghost \bool followers[struct Node *][int];)
+  _(invariant followers[NULL] == \lambda int k; \false)
+};
+
+int member(struct List *l, int k)
+  _(requires \wrapped(l))
+{
+  struct Node *n;
+  _(assume n == NULL)
+  _(assert !l->followers[n][k])
+}
+`
+Verification of List#adm succeeded.
+Verification of member succeeded.
+`

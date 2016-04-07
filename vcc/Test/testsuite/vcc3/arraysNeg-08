@@ -1,0 +1,17 @@
+#include "vcc.h"
+
+void x(unsigned *X, unsigned z, unsigned j, unsigned k)
+    _(ensures \disjoint(\array_range(X, z - k + 1), \array_range(X + j, k - j + 1)))
+{ }
+
+unsigned y() {
+    unsigned Y[4712];
+    x(Y, 0, 0, 0);
+    _(assert 0)
+}
+`
+Verification of x failed.
+testcase(5,3) : error VC9501: Post condition '\disjoint(\array_range(X, z - k + 1), \array_range(X + j, k - j + 1))' did not verify.
+testcase(4,15) : error VC9599: (related information) Location of post condition.
+Verification of y succeeded.
+`

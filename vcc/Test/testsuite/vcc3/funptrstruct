@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+struct foo{
+int (*var)(), xx;
+};
+  
+int main(){}
+`
+Verification of main succeeded.
+`

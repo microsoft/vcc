@@ -1,0 +1,33 @@
+#include "vcc.h"
+#include <limits.h>
+
+
+unsigned binary_search(int *a, unsigned len, int v)
+	_(requires \thread_local_array(a, len))
+	_(requires len >= 1)
+	_(ensures \result != UINT_MAX ==> a[\result] == v)
+	_(ensures \result == UINT_MAX ==> \forall unsigned i; i < len ==> a[i] != v)
+{
+	unsigned low, hi;
+	low = 0;
+	hi = len - 1;
+	while (low < hi)
+		_(assert low < hi)
+	{
+		unsigned mid = low + (hi - low) / 2;
+
+		if (a[mid] < v)
+			low = mid + 1;
+		else
+			hi = mid;
+	}
+
+	if (low < len && a[low] == v)
+		return low;
+
+	return UINT_MAX;
+}
+`
+testcase(15,5) : warning VC0000: This loop body contains only specification code.
+Verification of binary_search succeeded.
+`

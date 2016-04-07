@@ -1,0 +1,26 @@
+#include <vcc.h>
+
+struct S {
+	int a;
+};
+
+int foo(struct S *s) 
+	_(writes s)
+	_(requires \mutable(s))
+{
+	_(wrap s)
+	return 0;
+}
+
+void bar(struct S *s) 
+	_(writes s)
+	_(requires \wrapped(s))
+{
+	_(unwrap s)
+	s->a = foo(s);
+}
+`
+Verification of foo succeeded.
+Verification of bar failed.
+testcase(20,2) : error VC8507: Assertion 's->a is writable' did not verify.
+`

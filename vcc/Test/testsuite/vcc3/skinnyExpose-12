@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+struct A {
+  int x;
+  int y;
+};
+
+void up1(struct A *a)
+  _(writes a)
+  _(maintains \wrapped(a))
+  _(ensures \domain_updated_at(a, {&a->x, &a->y}))
+{
+  _(unwrapping a)
+      _(writes &a->y, &a->x)
+  {
+    a->x = 1;
+    a->y = 1;
+  }
+}
+`
+Verification of up1 succeeded.
+`

@@ -1,0 +1,9 @@
+#include <vcc.h>
+
+void foo(int i) {
+  _(ghost unsigned M[unsigned] = (\lambda unsigned j; (j == 0 ? _(unchecked)((unsigned)i) : 0)))
+  _(assert M[0] == _(unchecked)((unsigned) i))
+}
+`
+Verification of foo succeeded.
+`

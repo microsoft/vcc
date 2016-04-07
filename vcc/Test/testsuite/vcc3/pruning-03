@@ -1,0 +1,12 @@
+`/a /functions:LeaveTurnstile 
+#include <vcc.h>
+
+void LeaveTurnstile()
+{
+    _(ghost \bool snapmap[unsigned][unsigned];)
+    _(ghost \bool snapmap_tmp[unsigned][unsigned];)
+    _(ghost snapmap = \lambda unsigned s; \lambda unsigned i; i < s &&  (i==s+1) ? \false : \true;)
+}
+`
+Verification of LeaveTurnstile succeeded.
+`

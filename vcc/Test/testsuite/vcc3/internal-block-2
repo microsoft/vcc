@@ -1,0 +1,40 @@
+#include "vcc.h"
+
+void barOk(int *p)
+ _(requires *p == 3)
+{
+ _(requires \full_context())
+ {
+ }
+ _(assert *p == 3)
+}
+
+struct A { int x; };
+
+void barFail(int *p, struct A *a)
+ _(requires *p == 3)
+ _(requires \wrapped(a))
+{
+ _(requires \full_context())
+ {
+   _(atomic a) { }
+ }
+ _(assert *p == 3)
+}
+
+void barFail2(int *p, struct A *a)
+ _(writes p)
+{
+ _(requires \full_context())
+ {
+   *p = 7;
+ }
+}
+
+`
+Verification of barOk succeeded.
+Verification of barFail failed.
+testcase(22,11) : error VC9500: Assertion '*p == 3' did not verify.
+Verification of barFail2 failed.
+testcase(30,5) : error VC8507: Assertion 'p is writable' did not verify.
+`

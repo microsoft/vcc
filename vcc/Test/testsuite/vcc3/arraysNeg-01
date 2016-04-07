@@ -1,0 +1,26 @@
+#include "vcc.h"
+
+int sumup(int *p, int sz)
+  _(requires \thread_local_array(p, (size_t)sz))
+{
+  int i;
+  int sum;
+
+  _(assume sz < 10000)
+
+  sum = 0;
+  i = 0;
+  while (i <= sz)  // ERR
+    _(invariant i >= 0)
+  {
+    sum = _(unchecked)(sum + p[i]);
+    i = i + 1;
+  }
+
+  return sum;
+}
+`
+testcase(16,24) : warning VC9326: [possible unsoundness]: signed overflow (of '+') has undefined behavior in C
+Verification of sumup failed.
+testcase(16,30) : error VC8512: Assertion 'p[i] is thread local' did not verify.
+`

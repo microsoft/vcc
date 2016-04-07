@@ -1,0 +1,37 @@
+#include "vcc.h"
+typedef unsigned __int64 uint64;
+typedef unsigned int uint;
+
+
+    _(ghost typedef _(record) struct Core{
+        uint64 RIP;
+        uint64 R[uint];
+    } Core;)
+
+
+#define let(x, X, y, f) (\exists X x; x == (y) && (f))
+
+
+_(ghost _(pure) \bool mov_reg_excp(uint regidx, uint64 data, Core c)
+    _(returns regidx >= 8);)
+
+
+
+_(ghost _(pure) Core mov_reg(uint regidx, uint64 data, Core c)
+    _(requires !mov_reg_excp(regidx, data, c))
+    _(ensures 
+        let (c1, Core, c / {.R = \lambda uint i; i == regidx ? data : c.R[i]},
+        \result == c1))
+;)
+
+
+
+_(ghost void test_mov_reg()
+{
+    Core c;
+    c = mov_reg(1, 16, c);
+    _(assert c.R[1] == 16)
+})
+`
+Verification of test_mov_reg succeeded.
+`

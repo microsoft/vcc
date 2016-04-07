@@ -1,0 +1,41 @@
+#include <vcc.h>
+
+typedef _(claimable) struct _counter {
+ int xxx;
+
+ _(invariant \depends(\this->\owner, \this))
+ _(invariant :volatile \depends(\this->\owner, \this))
+} counter;
+
+typedef volatile counter vcounter;
+
+struct sum {
+ vcounter c[10];
+ int sum;
+
+ _(invariant \mine(&c[0]))
+ _(invariant \mine(&c[1]))
+ _(invariant sum==c[0].xxx + c[1].xxx)
+};
+
+void test(struct sum *s _(ghost \claim c))
+ _(requires \wrapped(s))
+ _(writes s)
+    _(always c, (&s->c[0])->\closed && (&s->c[1])->\closed)
+{
+ int i,j;
+
+ _(atomic c, &s->c[0]) {
+  i=s->c[0].xxx;
+ }
+
+ _(atomic c, &s->c[1]) {
+  j=s->c[1].xxx;
+ }
+}
+`
+Verification of _counter#adm succeeded.
+Verification of sum#adm succeeded.
+Verification of test succeeded.
+Verification of volatile#_counter#adm succeeded.
+`

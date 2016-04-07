@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+typedef unsigned __int8 uint8_t;
+
+void foo(uint8_t *arr)
+  _(requires \object_root(_(blob 100) arr))
+  _(requires \mutable(_(blob 100) arr))
+  _(writes _(blob 100) arr)
+{
+  _(split_blob _(blob 100) arr, 50)
+  _(split_blob _(blob 50) (arr+50), 25)
+  _(split_blob _(blob 50) arr, 25)
+  _(split_blob _(blob 25) (arr+25), 10)
+}
+
+`
+Verification of foo succeeded.
+`

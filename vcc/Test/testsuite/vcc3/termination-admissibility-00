@@ -1,0 +1,37 @@
+#include <vcc.h>
+
+struct S { int a; };
+
+struct T {
+  struct S s;
+  _(invariant s.a == 0)
+};
+
+ _(pure) int  no_return()
+  _(ensures \false)
+{
+  while (1) { }
+  _(assert \false)
+}
+
+_(ghost _(admissibility)
+void adm_T(struct T* p)
+{
+  _(havoc_others p)  
+  no_return();
+  _(assert \false)
+})
+
+`
+testcase(21,3) : warning VC9315: [possible unsoundness]: termination checking not enabled for function 'no_return'; consider supplying _(decreases ...) clause
+Verification of T#adm succeeded.
+testcase(7,15) : warning : found unreachable code, possible soundness violation, please check the axioms or add an explicit assert(false)
+testcase(5,1) : warning : trace to unreachable location
+testcase(5,1) : warning : trace to unreachable location
+testcase(5,1) : warning : trace to unreachable location
+Verification of no_return succeeded.
+testcase(11,13) : warning : found unreachable code, possible soundness violation, please check the axioms or add an explicit assert(false)
+testcase(13,3) : warning : trace to unreachable location
+testcase(13,3) : warning : found unreachable code, possible soundness violation, please check the axioms or add an explicit assert(false)
+Verification of adm_T succeeded.
+`

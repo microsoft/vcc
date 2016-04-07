@@ -1,0 +1,36 @@
+
+#include <vcc.h>
+
+struct S {
+	volatile int a;
+};
+
+_(pure) int add(int a, int b) 
+	_(ensures \result == _(unchecked)(a+b))
+{
+	return _(unchecked)(a+b);
+}
+
+void foo(struct S *s)
+	_(requires \wrapped(s))
+{
+	_(atomic s) {
+		s->a = add(3,4);
+	}
+}
+
+void barReportSoundnessWarning(struct S *s)
+	_(requires \wrapped(s))
+{
+	_(atomic s) {
+		s->a = add(3,s->a);
+	}
+}
+
+`
+testcase(26,16) : warning VC9302: [possible unsoundness]: more than one access to physical memory in atomic block ('s->a' and 's->a'); extra accesses might be due to bitfield operations
+testcase(11,22) : warning VC9326: [possible unsoundness]: signed overflow (of '+') has undefined behavior in C
+Verification of add succeeded.
+Verification of foo succeeded.
+Verification of barReportSoundnessWarning succeeded.
+`

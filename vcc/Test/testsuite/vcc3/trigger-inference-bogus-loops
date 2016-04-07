@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+typedef int List;
+
+typedef _(dynamic_owns) struct DB {
+
+List *head;
+
+_(ghost volatile \bool reach[List *][List *])
+
+_(invariant \forall List *x; List *y;  reach[x][y] || reach [y][x] ==> reach[head][x])
+
+} DB;
+
+`
+Verification of DB#adm succeeded.
+`

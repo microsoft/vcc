@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+// this is an interesting case because we actually allow an overflow here because 
+// in case of an overflow we never read the value again
+
+
+
+typedef unsigned __int64 UINT64;
+
+void foo(UINT64 i)
+{
+  UINT64 j = 0;
+  
+  while(i--)
+  {
+  } 
+}
+
+`
+Verification of foo failed.
+testcase(14,9) : error VC8004: i-- might overflow.
+`

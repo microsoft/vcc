@@ -1,0 +1,39 @@
+#include <vcc.h>
+
+union X {
+	_(backing_member) unsigned a;
+	int b;
+	_(ghost int c)
+};
+
+struct S {
+  unsigned a;
+  _(ghost int b)
+};
+
+
+union X GetX() {
+	union X y;
+	return y;
+}
+
+void CallGetX() {
+	union X z;
+	z = GetX();
+}
+
+struct S GetS() {
+  struct S s;
+  return s;
+}
+
+void CallGetS() {
+  struct S s = GetS();
+}
+
+`
+Verification of GetX succeeded.
+Verification of CallGetX succeeded.
+Verification of GetS succeeded.
+Verification of CallGetS succeeded.
+`

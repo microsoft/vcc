@@ -1,0 +1,17 @@
+#include "vcc.h"
+
+void f(int *a) 
+	_(requires \mutable_array(a, 0))
+{
+}
+
+void g(int *a)
+	_(requires \mutable_array(a, 1)) 
+{
+	f(a + 1);
+}
+
+`
+Verification of f succeeded.
+Verification of g succeeded.
+`

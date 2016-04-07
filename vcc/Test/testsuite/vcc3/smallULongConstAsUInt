@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+void foo() {
+  unsigned __int32 x = ((unsigned __int64) 1024 * 1024 * 1024) / (1UI64 << 18);
+}
+
+void main(){}
+`
+Verification of foo succeeded.
+Verification of main succeeded.
+`

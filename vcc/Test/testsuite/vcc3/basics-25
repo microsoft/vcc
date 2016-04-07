@@ -1,0 +1,12 @@
+#include "vcc.h"
+
+#ifdef VERIFY
+_(pure)
+int foo(int a)
+  _(reads a);
+
+#endif
+  
+`
+testcase(6,11) : error VC9648: non-pointers are not supported in reads clauses
+`

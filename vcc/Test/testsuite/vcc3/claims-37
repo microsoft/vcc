@@ -1,0 +1,20 @@
+#include <vcc.h>
+
+typedef struct S {
+	int x;
+	_(invariant \on_unwrap(\this,\false))
+} S;
+
+void test()
+{
+	S *s;
+	S **p = &s;
+	_(ghost \claim c)
+	_(assume s->\closed)
+	_(ghost c = \make_claim({},s->\closed)) // fails "step of the machine" check
+}
+
+`
+Verification of S#adm succeeded.
+Verification of test succeeded.
+`

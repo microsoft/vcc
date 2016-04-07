@@ -1,0 +1,26 @@
+#include <vcc.h>
+
+struct S {
+  int a;
+  int b;
+};
+
+struct T {
+  int c;
+  struct S s;
+};
+
+void foo(struct T *t)
+{
+  _(assert &t->c \in \span(t))
+  _(assert !(&t->s \in \span(t)))
+  _(assert &t->s \in \extent(t))
+  _(assert &t->s.a \in \extent(t))
+  _(assert &t->s.b \in \extent(t))
+  _(assert &t->s.a \in \span(&t->s))
+  _(assert &t->s.b \in \span(&t->s))
+}
+
+`
+Verification of foo succeeded.
+`

@@ -1,0 +1,37 @@
+#include <vcc.h>
+
+_(def \integer loop(\integer x)
+  _(decreases x)
+{
+  return loop(x);
+})
+
+_(def \integer loop2(\integer x)
+  _(decreases x)
+{
+  return loop2(x + 1);
+})
+
+
+_(def \integer f1(\integer x, \integer y)
+  _(recursive_with f2)
+  _(decreases x, y)
+{
+  return f2(x);
+})
+
+_(def \integer f2(\integer x)
+  _(decreases x)
+{
+  return f1(x, x); // this one is ok, because missing elements are treated as Top
+})
+
+`
+Verification of loop failed.
+testcase(6,10) : error VC8029: the call 'loop(x)' might not terminate.
+Verification of loop2 failed.
+testcase(12,10) : error VC8029: the call 'loop2(x + 1)' might not terminate.
+Verification of f1 failed.
+testcase(20,10) : error VC8029: the call 'f2(x)' might not terminate.
+Verification of f2 succeeded.
+`

@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+int a[1000];
+
+void foo()
+  _(requires \thread_local_array(a, 10)) {
+}
+
+`
+Verification of foo succeeded.
+`

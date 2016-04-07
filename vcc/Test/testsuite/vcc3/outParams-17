@@ -1,0 +1,14 @@
+#include <vcc.h>
+#include <limits.h>
+
+void foo(_(out int x));
+
+
+void bar() {
+  _(ghost int i)
+  foo(_(out i));
+  _(assert i <= INT_MAX)
+}
+`
+Verification of bar succeeded.
+`

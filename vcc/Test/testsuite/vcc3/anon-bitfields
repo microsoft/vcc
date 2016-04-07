@@ -1,0 +1,15 @@
+#include "vcc.h"
+
+struct A {
+  int : 3;
+  int y : 2;
+  int : 2;
+};
+
+void foo()
+{
+}
+
+`
+Verification of foo succeeded.
+`

@@ -1,0 +1,11 @@
+#include <vcc.h>
+void foo(int i)
+{
+  switch (i)
+  {
+    default:
+  }
+}
+`
+Verification of foo succeeded.
+`

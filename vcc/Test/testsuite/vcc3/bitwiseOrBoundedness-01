@@ -1,0 +1,13 @@
+#include <vcc.h>
+
+struct S {
+  unsigned int a : 4;  
+  unsigned int b : 28;
+};
+
+void foo(struct S s) {
+  s.a |= 0x1;
+}
+`
+Verification of foo succeeded.
+`

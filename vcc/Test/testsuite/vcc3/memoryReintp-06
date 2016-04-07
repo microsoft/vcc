@@ -1,0 +1,25 @@
+#include "vcc.h"
+
+typedef unsigned __int8 byte;
+
+typedef struct C { int dummy; } C;
+
+typedef struct B { C c; int c0; } B;
+
+typedef struct A1 { B b; int b0; } A1;
+
+typedef struct gA { A1 g[10]; } gA;
+
+void one()
+    _(requires \object_root(_(blob sizeof(gA)) (void *) 1024))
+    _(writes \extent(_(blob sizeof(gA)) (void *) 1024))
+{
+    gA* a = _(unblobify) (gA*) 1024;
+    _(assert &a->g[0].b0 \in \extent(a))
+    _(assert &a->g[0].b.c0 \in \extent(a))
+    _(assert &a->g[0].b.c.dummy \in \extent(a))
+    a->g[0].b.c.dummy = 42;
+}
+`
+Verification of one succeeded.
+`

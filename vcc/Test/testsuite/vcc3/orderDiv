@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+typedef long long __vcI8;
+typedef unsigned long long __vcU8;
+
+
+
+
+void orderDivTestU(unsigned int a, unsigned int b)
+  _(requires 0 < b)
+{
+  _(assert a / b <= a)
+}
+
+`
+Verification of orderDivTestU succeeded.
+`

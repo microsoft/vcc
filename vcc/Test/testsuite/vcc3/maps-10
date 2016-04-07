@@ -1,0 +1,24 @@
+#include "vcc.h"
+
+void xxx(unsigned i) {
+   _(ghost \bool map1[unsigned]) 
+   _(ghost \bool map2[unsigned]) 
+   _(ghost map2 = ((i==2)? map1: map2))
+}
+
+void bar(unsigned i) {
+   _(ghost \bool map[unsigned]) 
+   _(ghost map = (\lambda unsigned j; (i==j || map[j])))
+   //error VC9600: OOPS: error in expr
+}
+
+
+void works(unsigned i) {
+   _(ghost unsigned map[unsigned]) 
+   _(ghost map = (\lambda unsigned j; (((i==j)? i: (map[j])))))
+}
+`
+Verification of xxx succeeded.
+Verification of bar succeeded.
+Verification of works succeeded.
+`

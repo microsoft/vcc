@@ -1,0 +1,7 @@
+#include <vcc.h>
+
+struct x { int a; };
+void foo() { _(assert x.a==x.a) }
+`
+testcase(4,23) : error VC0000: left of '.a' must have struct/union type
+`

@@ -1,0 +1,30 @@
+#include <vcc.h>
+
+struct X { int a, b; };
+struct Y { short a, b; };
+union U {
+  struct X x;
+  struct Y y;
+};
+
+void bar(union U *u)
+  _(writes \extent(u))
+{
+  _(assert (&u->x)->\owner == \me || (&u->y)->\owner == \me)
+}
+
+void blah(int *p) _(writes p) { }
+
+void baz(union U *u, int *p)
+  _(writes \extent(u), p)
+  _(requires !(\embedding(p) \in \extent(u)))
+{
+  blah(p);
+  bar(u);
+}
+
+`
+Verification of bar succeeded.
+Verification of blah succeeded.
+Verification of baz succeeded.
+`

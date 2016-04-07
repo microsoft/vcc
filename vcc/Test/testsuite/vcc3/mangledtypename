@@ -1,0 +1,19 @@
+#include <vcc.h>
+
+typedef struct mystruct {
+	long lc_handle[6]; 
+} my;
+
+int main()
+{
+	my myvar;
+	
+	char * str;
+	str = "%s: ***** PASSED *****\n"; 
+	//str = "%s: ----- FAILED -----\n"; 
+	
+	return 0;
+}
+`
+Verification of main succeeded.
+`

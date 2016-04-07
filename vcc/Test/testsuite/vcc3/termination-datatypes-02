@@ -1,0 +1,50 @@
+#include <vcc.h>
+
+_(type foo)
+_(datatype bar {
+  case f(foo);
+  case b();
+})
+_(datatype foo {
+  case bb(bar);
+  case aa();
+})
+
+_(def \integer sz(foo f)
+  _(recursive_with sz2)
+{
+  switch (f) {
+  case bb(b): return sz2(b);
+  case aa(): return 1;
+  }
+})
+
+_(def \integer sz2(bar bl)
+{
+  switch (bl) {
+  case f(x): return sz(x);
+  case b(): return 2;
+  }
+})
+
+
+_(def \integer szX(foo f)
+  _(recursive_with sz2X)
+{
+  switch (f) {
+  case bb(b): return sz2X();
+  case aa(): return 1;
+  }
+})
+
+_(def \integer sz2X()
+{
+  return 7;
+})
+`
+testcase(35,22) : warning VC9321: [possible unsoundness]: no measure to decrease when calling 'sz2X()'; consider using _(level ...)
+Verification of sz succeeded.
+Verification of sz2 succeeded.
+Verification of szX succeeded.
+Verification of sz2X succeeded.
+`

@@ -1,0 +1,11 @@
+#include <vcc.h>
+// conversion from Boolean to other integral types.
+int main()
+{
+   int i = -1;
+   _(assert  1 || i)
+	
+}
+`
+Verification of main succeeded.
+`

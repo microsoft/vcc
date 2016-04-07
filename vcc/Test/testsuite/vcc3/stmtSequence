@@ -1,0 +1,9 @@
+#include <vcc.h>
+
+void foo() {
+  int x, y;
+  x = 0, y = 0;
+}
+`
+Verification of foo succeeded.
+`

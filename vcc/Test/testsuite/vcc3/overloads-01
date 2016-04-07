@@ -1,0 +1,45 @@
+#include "vcc.h"
+
+struct S {
+  int a;
+};
+
+void foo(struct S *s)
+  _(writes s)
+  _(maintains \wrapped(s)) 
+  _(ensures s->a == 0)
+{
+  if (s->a != 0) {
+    _(unwrapping s) {
+    s->a = 0;
+    }
+  }
+}
+
+_(ghost 
+void foo(struct S ^s)
+  _(writes s)
+  _(maintains \wrapped(s)) 
+  _(ensures s->a == 1)
+{
+  if (s->a != 1) {
+    _(unwrapping s) {
+    s->a = 1;
+    }
+  }
+})
+
+void bar(struct S *s _(ghost struct S ^t))
+  _(writes s,t)
+  _(requires \wrapped(s) && \wrapped(t))
+{
+  foo(s);
+  _(assert s->a == 0)
+  _(ghost foo(t);)
+  _(assert t->a == 1)
+}
+`
+Verification of foo#overload#void#struct_S. succeeded.
+Verification of foo#overload#void#spec_struct_S^ succeeded.
+Verification of bar succeeded.
+`

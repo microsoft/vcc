@@ -1,0 +1,218 @@
+`
+#include <vcc.h>
+
+struct S
+{
+  int x;
+};
+
+_(dynamic_owns) struct Td1
+{
+  struct S* s;
+  _(invariant \mine(s))
+};
+
+_(dynamic_owns) struct Td2
+{
+  struct S s;
+  _(invariant \mine(&s))
+};
+
+struct Ts1
+{
+  struct S* s;
+  _(invariant \mine(s))
+};
+
+struct Ts2
+{
+  struct S s;
+  _(invariant \mine(&s))
+};
+
+
+
+void Td1_wrap(struct Td1* p)
+  _(requires \mutable(p))
+  _(requires \wrapped(p->s))
+  _(requires p->\owns == {p->s})
+  _(writes \extent(p))
+  _(writes p->s)
+  _(ensures \wrapped(p))
+{
+  _(wrap p)
+}
+
+void Td1_unwrap(struct Td1* p)
+  _(requires \wrapped(p))
+  _(writes p)
+  _(ensures \mutable(p))
+  _(ensures \wrapped(p->s))
+{
+  _(unwrap p)
+}
+
+void Td1_wrap_set(struct Td1* p)
+  _(requires \mutable(p))
+  _(requires \wrapped(p->s))
+  _(requires p->\owns == {p->s})
+  _(writes \extent(p))
+  _(writes p->s)
+  _(ensures \wrapped(p))
+{
+  _(wrap p, p)
+}
+
+void Td1_unwrap_set(struct Td1* p)
+  _(requires \wrapped(p))
+  _(writes p)
+  _(ensures \mutable(p))
+  _(ensures \wrapped(p->s))
+{
+  _(unwrap p, p)
+}
+
+
+
+void Td2_wrap(struct Td2* p)
+  _(requires \mutable(p))
+  _(requires \wrapped(&p->s))
+  _(requires p->\owns == {&p->s})
+  _(writes \span(p))
+  _(writes &p->s)
+  _(ensures \wrapped(p))
+{
+  _(wrap p)
+}
+
+void Td2_unwrap(struct Td2* p)
+  _(requires \wrapped(p))
+  _(writes p)
+  _(ensures \mutable(p))
+  _(ensures \wrapped(&p->s))
+{
+  _(unwrap p)
+}
+
+void Td2_wrap_set(struct Td2* p)
+  _(requires \mutable(p))
+  _(requires \wrapped(&p->s))
+  _(requires p->\owns == {&p->s})
+  _(writes \span(p))
+  _(writes &p->s)
+  _(ensures \wrapped(p))
+{
+  _(wrap p, p)
+}
+
+void Td2_unwrap_set(struct Td2* p)
+  _(requires \wrapped(p))
+  _(writes p)
+  _(ensures \mutable(p))
+  _(ensures \wrapped(&p->s))
+{
+  _(unwrap p, p)
+}
+
+
+
+void Ts1_wrap(struct Ts1* p)
+  _(requires \mutable(p))
+  _(requires \wrapped(p->s))
+  _(writes \extent(p))
+  _(writes p->s)
+  _(ensures \wrapped(p))
+{
+  _(wrap p)
+}
+
+void Ts1_unwrap(struct Ts1* p)
+  _(requires \wrapped(p))
+  _(writes p)
+  _(ensures \mutable(p))
+  _(ensures \wrapped(p->s))
+{
+  _(unwrap p)
+}
+
+void Ts1_wrap_set(struct Ts1* p)
+  _(requires \mutable(p))
+  _(requires \wrapped(p->s))
+  _(writes \extent(p))
+  _(writes p->s)
+  _(ensures \wrapped(p))
+{
+  _(wrap p, p)
+}
+
+void Ts1_unwrap_set(struct Ts1* p)
+  _(requires \wrapped(p))
+  _(writes p)
+  _(ensures \mutable(p))
+  _(ensures \wrapped(p->s))
+{
+  _(unwrap p, p)
+}
+
+
+
+void Ts2_wrap(struct Ts2* p)
+  _(requires \mutable(p))
+  _(requires \wrapped(&p->s))
+  _(writes \span(p))
+  _(writes &p->s)
+  _(ensures \wrapped(p))
+{
+  _(wrap p)
+}
+
+void Ts2_unwrap(struct Ts2* p)
+  _(requires \wrapped(p))
+  _(writes p)
+  _(ensures \mutable(p))
+  _(ensures \wrapped(&p->s))
+{
+  _(unwrap p)
+}
+
+void Ts2_wrap_set(struct Ts2* p)
+  _(requires \mutable(p))
+  _(requires \wrapped(&p->s))
+  _(writes \span(p))
+  _(writes &p->s)
+  _(ensures \wrapped(p))
+{
+  _(wrap p, p)
+}
+
+void Ts2_unwrap_set(struct Ts2* p)
+  _(requires \wrapped(p))
+  _(writes p)
+  _(ensures \mutable(p))
+  _(ensures \wrapped(&p->s))
+{
+  _(unwrap p, p)
+}
+
+`
+Verification of Td1#adm succeeded.
+Verification of Td2#adm succeeded.
+Verification of Ts1#adm succeeded.
+Verification of Ts2#adm succeeded.
+Verification of Td1_wrap succeeded.
+Verification of Td1_unwrap succeeded.
+Verification of Td1_wrap_set succeeded.
+Verification of Td1_unwrap_set succeeded.
+Verification of Td2_wrap succeeded.
+Verification of Td2_unwrap succeeded.
+Verification of Td2_wrap_set succeeded.
+Verification of Td2_unwrap_set succeeded.
+Verification of Ts1_wrap succeeded.
+Verification of Ts1_unwrap succeeded.
+Verification of Ts1_wrap_set succeeded.
+Verification of Ts1_unwrap_set succeeded.
+Verification of Ts2_wrap succeeded.
+Verification of Ts2_unwrap succeeded.
+Verification of Ts2_wrap_set succeeded.
+Verification of Ts2_unwrap_set succeeded.
+`

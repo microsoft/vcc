@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+int foo(){
+  int i = 0;
+  while (i >= 0 && i < 10){
+    if (i < 20) ++i; else _(assert 0)
+    if (i == 1) continue;
+    if (i == 2) goto xx; // previous version triggered bogus smoke test error
+  }
+xx: return i;
+}
+`
+Verification of foo succeeded.
+`

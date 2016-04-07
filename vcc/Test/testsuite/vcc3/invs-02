@@ -1,0 +1,24 @@
+#include <vcc.h>
+
+struct A {
+  int f;
+  struct B *b;
+  int g;
+
+  _(invariant f == b->f + b->g)
+};
+
+struct B {
+  int f;
+  struct A *b;
+  int g;
+
+  _(invariant f == b->f + b->g)
+};
+
+`
+Verification of A#adm failed.
+testcase(8,15) : error VC8012: invariant(f == b->f + b->g) of A is not admissible.
+Verification of B#adm failed.
+testcase(16,15) : error VC8012: invariant(f == b->f + b->g) of B is not admissible.
+`

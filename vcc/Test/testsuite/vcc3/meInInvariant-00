@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+struct S {
+  int i;
+  _(ghost \thread t)
+  _(invariant t == \me)
+};
+
+`
+testcase(6,20) : error VC9749: Cannot refer to '\me' in invariant
+`

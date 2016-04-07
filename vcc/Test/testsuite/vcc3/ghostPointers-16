@@ -1,0 +1,13 @@
+#include "vcc.h"
+
+_(ghost struct S { int a; })
+
+void foo() {
+    _(ghost struct S s1, s2)
+    _(assume \deep_eq(s1,s2))
+    _(assume \shallow_eq(s1,s2))
+    _(assert \deep_eq(s1,s2))
+}
+`
+Verification of foo succeeded.
+`

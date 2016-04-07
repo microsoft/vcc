@@ -1,0 +1,25 @@
+#include <vcc2test.h>
+
+typedef  _(claimable) struct { int dummy; } Seal;
+
+_(volatile_owns) _(claimable) struct Mut {
+  volatile int af, bf;
+   _(ghost Seal afs;) 
+  _(invariant \on_unwrap(\this,  !(&afs)->\closed))
+};
+
+void alice(struct Mut *m _(ghost \claim c))
+  _(always c, m->\closed)
+  _(requires \wrapped(&m->afs))
+  _(writes &m->afs)
+{
+_(ghost \claim c2)
+  _(assert \active_claim(c))
+  _(assert m->\closed)
+   _(ghost c2 = \make_claim({&m->afs}, m->\closed);) 
+}
+
+`
+Verification of Mut#adm succeeded.
+Verification of alice succeeded.
+`

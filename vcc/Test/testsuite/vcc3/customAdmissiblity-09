@@ -1,0 +1,26 @@
+#include <vcc.h>
+
+struct B {
+  int y;
+};
+
+struct A {
+  int x;
+  struct B b;
+  
+  _(invariant \this->b.y > 0)
+};
+
+struct C {
+  int x;
+  struct B b;
+
+  _(invariant \old(b.y) == 7)
+};
+`
+testcase(18,15) : warning VC9115: '\old' in invariant does not refer to volatile state
+Verification of A#adm failed.
+testcase(11,15) : error VC8012: invariant(\this->b.y > 0) of A is not admissible.
+Verification of C#adm failed.
+testcase(18,15) : error VC8013: invariant(\old(b.y) == 7) is not admissible (stuttering).
+`

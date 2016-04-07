@@ -1,0 +1,72 @@
+#include <vcc.h>
+
+// Old VCC keywords must not be recognized as such
+void foo() {
+  __specification
+  __unchecked
+  __invariant
+  __decreases
+  __requires
+  __ensures
+  __writes
+  __lambda
+  __forall
+  __exists
+  __assume
+  __assert
+  __reads
+  __block
+  __axiom
+  __old p;
+}
+
+`
+testcase(6,3) : error VC0000: ; expected.
+testcase(7,3) : error VC0000: ; expected.
+testcase(8,3) : error VC0000: ; expected.
+testcase(9,3) : error VC0000: ; expected.
+testcase(10,3) : error VC0000: ; expected.
+testcase(11,3) : error VC0000: ; expected.
+testcase(12,3) : error VC0000: ; expected.
+testcase(13,3) : error VC0000: ; expected.
+testcase(14,3) : error VC0000: ; expected.
+testcase(15,3) : error VC0000: ; expected.
+testcase(16,3) : error VC0000: ; expected.
+testcase(17,3) : error VC0000: ; expected.
+testcase(18,3) : error VC0000: ; expected.
+testcase(19,3) : error VC0000: ; expected.
+testcase(20,3) : error VC0000: ; expected.
+testcase(20,9) : error VC0000: ; expected.
+testcase(5,3) : warning VC9001: The expression '__specification' has no side effect; expected operation with side effect.
+testcase(5,3) : error VC0000: The name '__specification' does not exist in the current context.
+testcase(6,3) : warning VC9001: The expression '__unchecked' has no side effect; expected operation with side effect.
+testcase(6,3) : error VC0000: The name '__unchecked' does not exist in the current context.
+testcase(7,3) : warning VC9001: The expression '__invariant' has no side effect; expected operation with side effect.
+testcase(7,3) : error VC0000: The name '__invariant' does not exist in the current context.
+testcase(8,3) : warning VC9001: The expression '__decreases' has no side effect; expected operation with side effect.
+testcase(8,3) : error VC0000: The name '__decreases' does not exist in the current context.
+testcase(9,3) : warning VC9001: The expression '__requires' has no side effect; expected operation with side effect.
+testcase(9,3) : error VC0000: The name '__requires' does not exist in the current context.
+testcase(10,3) : warning VC9001: The expression '__ensures' has no side effect; expected operation with side effect.
+testcase(10,3) : error VC0000: The name '__ensures' does not exist in the current context.
+testcase(11,3) : warning VC9001: The expression '__writes' has no side effect; expected operation with side effect.
+testcase(11,3) : error VC0000: The name '__writes' does not exist in the current context.
+testcase(12,3) : warning VC9001: The expression '__lambda' has no side effect; expected operation with side effect.
+testcase(12,3) : error VC0000: The name '__lambda' does not exist in the current context.
+testcase(13,3) : warning VC9001: The expression '__forall' has no side effect; expected operation with side effect.
+testcase(13,3) : error VC0000: The name '__forall' does not exist in the current context.
+testcase(14,3) : warning VC9001: The expression '__exists' has no side effect; expected operation with side effect.
+testcase(14,3) : error VC0000: The name '__exists' does not exist in the current context.
+testcase(15,3) : warning VC9001: The expression '__assume' has no side effect; expected operation with side effect.
+testcase(15,3) : error VC0000: The name '__assume' does not exist in the current context.
+testcase(16,3) : warning VC9001: The expression '__assert' has no side effect; expected operation with side effect.
+testcase(16,3) : error VC0000: The name '__assert' does not exist in the current context.
+testcase(17,3) : warning VC9001: The expression '__reads' has no side effect; expected operation with side effect.
+testcase(17,3) : error VC0000: The name '__reads' does not exist in the current context.
+testcase(18,3) : warning VC9001: The expression '__block' has no side effect; expected operation with side effect.
+testcase(18,3) : error VC0000: The name '__block' does not exist in the current context.
+testcase(19,3) : warning VC9001: The expression '__axiom' has no side effect; expected operation with side effect.
+testcase(19,3) : error VC0000: The name '__axiom' does not exist in the current context.
+testcase(20,3) : warning VC9001: The expression '__old' has no side effect; expected operation with side effect.
+testcase(20,3) : error VC0000: The name '__old' does not exist in the current context.
+`

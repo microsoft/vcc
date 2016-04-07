@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+void foo(unsigned short n, unsigned short m) {
+  _(assert (n >> 8) < 256)
+  _(assert (m >> 8) < 256)
+  _(assert ((n >> 8) ^ (m >> 8)) < 256)
+  _(assert ((n >> 8) ^ (m >> 8)) >= 0)
+}
+`
+Verification of foo succeeded.
+`

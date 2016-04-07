@@ -1,0 +1,24 @@
+#include <vcc.h>
+
+struct A {
+  volatile int x;
+  _(invariant x == 0)
+};
+
+void foo(struct A *a, struct A *aa)
+  _(requires \wrapped(aa) && \wrapped(a) && aa != a)
+{
+  struct A *a0;
+
+  a0 = a;
+  _(atomic a0) {
+    a0 = aa;
+    a0->x = 12;
+    a0 = a;
+  }
+}
+`
+Verification of A#adm succeeded.
+Verification of foo failed.
+testcase(16,5) : error VC8507: Assertion 'a0->x is writable' did not verify.
+`

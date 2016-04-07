@@ -1,0 +1,52 @@
+`/functions:foo /a 
+
+#include <vcc.h>
+
+typedef unsigned __int32 UINT32;
+
+_(ghost typedef \bool BITMAP32[UINT32])
+
+
+_(ghost _(pure) BITMAP32 ToBm32(UINT32 n);) 
+
+
+
+_(ghost _(pure) BITMAP32 Bm32Singleton(UINT32 i) _(ensures \result == \lambda UINT32 j; (j == i));)
+
+
+
+_(ghost _(pure) BITMAP32 Bm32Union(BITMAP32 bm1, BITMAP32 bm2)  _(ensures \result == \lambda UINT32 i; i < 32 ==> (bm1[i] || bm2[i]));)
+
+
+
+_(ghost _(pure) BITMAP32 Bm32Intersect(BITMAP32 bm1, BITMAP32 bm2)
+  _(ensures \result == \lambda UINT32 i; i < 32 ==> (bm1[i] && bm2[i]));)
+
+
+
+_(ghost _(pure) BITMAP32 Bm32SymmetricDiff(BITMAP32 bm1, BITMAP32 bm2)
+  _(ensures \result == \lambda UINT32 i; i < 32 ==> (bm1[i] != bm2[i]));)
+
+
+
+_(ghost _(pure) \bool Bm32SpecialValue(UINT32 bm)
+  _(ensures \result == \true);)
+
+
+_(axiom \forall UINT32 i; { ToBm32(0)[i] } i < 32 ==> !ToBm32(0)[i])
+_(axiom \forall UINT32 i; { ToBm32((UINT32)-1)[i] } i < 32 ==> ToBm32((UINT32)-1)[i])
+_(axiom \forall UINT32 i; { ToBm32(1UI32 << i)[i] } i < 32 ==> ToBm32(1UI32 << i) == Bm32Singleton(i))
+_(axiom \forall UINT32 x; {Bm32SpecialValue(x)} (\forall UINT32 i; i < 32 ==> !ToBm32(x)[i]) ==> x == 0)
+_(axiom \forall UINT32 x; {Bm32SpecialValue(x)} (\forall UINT32 i; i < 32 ==> ToBm32(x)[i]) ==> x == (UINT32)-1)
+_(axiom \forall UINT32 x,y; { ToBm32(x & y) } ToBm32(x & y) == Bm32Intersect(ToBm32(x), ToBm32(y)))
+_(axiom \forall UINT32 x,y; { ToBm32(x | y) } ToBm32(x | y) == Bm32Union(ToBm32(x), ToBm32(y)))
+_(axiom \forall UINT32 x,y; { ToBm32(x ^ y) } ToBm32(x ^ y) == Bm32SymmetricDiff(ToBm32(x), ToBm32(y)))
+_(axiom \forall UINT32 x, i; i < 32 ==> ToBm32(x)[i] <==> (x & (1UI32 << i)) != 0)
+
+
+void foo() {
+  _(assert \forall UINT32 i; i < 32 ==> !(ToBm32(0)[i]))
+}
+`
+Verification of foo succeeded.
+`

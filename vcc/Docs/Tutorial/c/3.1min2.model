@@ -1,0 +1,607 @@
+*** MODEL
+%lbl%+306 -> true
+%lbl%+34426 -> true
+$position_marker -> true
+%lbl%@34563 -> false
+^^f8 -> *2
+$decreases_level -> 2147483647
+$max.i4 -> 2147483647
+^^null_type -> *4
+$max.i8 -> 9223372036854775807
+cev_global -> *6
+$fk_owns -> *7
+$fk_base -> *8
+$fk_emb_array -> *9
+#tok$1^11.1 -> *10
+^^u8 -> *11
+$arch_ptr_type -> *11
+$set_empty -> *12
+lambda@13 -> *12
+$ctype_ptr -> *13
+$s -> *14
+$fk_vol_version -> *15
+$untyped_owner_owner -> *16
+$max.u1 -> 255
+^^i1 -> *18
+^^object -> *19
+$max.u4 -> 4294967295
+$max.u8 -> 18446744073709551615
+$arch_spec_ptr_start -> 18446744073709551615
+$ctype_spec_ptr -> *22
+$fk_ref_cnt -> *23
+^^void -> *24
+^^field -> *25
+$max.u2 -> 65535
+$fk_active_option -> *27
+$ctype_array -> *28
+$ctype_flat -> *29
+$fk_as_array_first -> *30
+loop_entered -> *31
+cev_local -> *32
+#tok$1^14.7 -> *33
+$ctype_map -> *34
+loop_register -> *35
+@MV_state_const -> 77
+$null -> *37
+^^i4 -> *38
+$fk_allocation_root -> *39
+#wrTime$1^11.1 -> 358
+^$#state_t -> *41
+^$#struct -> *42
+^$#seq_version -> *43
+^^u4 -> *44
+^^nat -> *45
+^$#volatile_version_t -> *46
+$ctype_blob -> *47
+$max.i2 -> 32767
+loop_exited -> *49
+L#x -> -2147483648
+$min.i4 -> -2147483648
+$min.i2 -> -32768
+cev_implicit -> *52
+#file^C?3A?5Cvcc?5Cvcc?5CDocs?5CTutorial?5Cc?5C3.1min2.c -> *53
+call267formal@$result@0 -> -2147483647
+$s@0 -> *55
+^^u2 -> *56
+$min.i8 -> -9223372036854775808
+^^u1 -> *58
+$primitive_emb_type -> *59
+^^f4 -> *60
+$no_claim -> *61
+lambda@20 -> *62
+^^claim -> *63
+took_else_branch -> *64
+L#y -> -160
+^^i8 -> *66
+took_then_branch -> *67
+#tok$1^4.1 -> *68
+$me -> *69
+^^bool -> *70
+L#z -> -245
+$max.i1 -> 127
+cev_parameter -> *73
+^$##thread_id -> *74
+$untyped_owner -> *75
+^$#ptrset -> *76
+$untyped_owner_type -> *77
+^^i2 -> *78
+^^mathint -> *79
+^$#thread_id_t -> *80
+^$##club -> *81
+$arch_ptr_size -> 8
+^$#vol_version -> *83
+$struct_zero -> *84
+conditional_moment -> *85
+$min.i1 -> -128
+$cev_pc -> **$cev_pc
+$result -> **$result
+#stackframe -> **#stackframe
+$cev_pc@0 -> **$cev_pc@0
+tickleBool -> {
+  true -> true
+  false -> true
+  else -> true
+}
+$vs_state -> {
+  *84 -> *87
+  else -> *87
+}
+$is_proper_field -> {
+  *88 -> true
+  *89 -> true
+  *90 -> true
+  *91 -> true
+  *92 -> true
+  *93 -> true
+  *94 -> true
+  else -> true
+}
+$field_offset -> {
+  *95 -> -18446744073709565230
+  *88 -> 0
+  *89 -> 0
+  *90 -> 0
+  else -> 0
+}
+$addr0 -> {
+  *37 -> 0
+  *61 -> 0
+  *69 -> 824
+  *75 -> 5875
+  *16 -> 361
+  else -> 0
+}
+$is_proper -> {
+  *69 -> true
+  *75 -> true
+  *16 -> true
+  else -> true
+}
+$field -> {
+  *69 -> *88
+  *75 -> *89
+  *16 -> *88
+  *61 -> *95
+  *37 -> *90
+  else -> *88
+}
+$file_name_is -> {
+  1 *53 -> true
+  else -> true
+}
+$field_arr_root -> {
+  *90 -> *90
+  *88 -> *88
+  *89 -> *89
+  *91 -> *91
+  *92 -> *92
+  *93 -> *93
+  *94 -> *94
+  else -> *90
+}
+$is_volatile_field -> {
+  *93 -> true
+  *94 -> true
+  else -> true
+}
+$field_kind -> {
+  *90 -> *39
+  *88 -> *39
+  *89 -> *39
+  *91 -> *7
+  *92 -> *7
+  *93 -> *7
+  *94 -> *7
+  else -> *7
+}
+$as_composite_field -> {
+  *88 -> *88
+  *89 -> *89
+  else -> *88
+}
+$f_owns -> {
+  *63 -> *91
+  *46 -> *92
+  *80 -> *93
+  *77 -> *94
+  else -> *91
+}
+$ptr -> {
+  *90 0 -> *37
+  *95 18446744073709558279 -> *61
+  *88 824 -> *69
+  *89 5875 -> *75
+  *88 361 -> *16
+  else -> *37
+}
+$function_entry -> {
+  *14 -> true
+  else -> true
+}
+@MV_state -> {
+  77 0 -> true
+  77 1 -> true
+  77 2 -> true
+  77 3 -> true
+  77 4 -> true
+  77 5 -> true
+  77 6 -> true
+  else -> true
+}
+$current_timestamp -> {
+  *14 -> 358
+  *55 -> 358
+  else -> 358
+}
+$trans_call_transition -> {
+  *14 *55 -> true
+  else -> true
+}
+$unchecked -> {
+  *44 4294967296 -> 0
+  *11 18446744073709551616 -> 0
+  *44 -1 -> 4294967295
+  *11 -1 -> 18446744073709551615
+  *11 0 -> 0
+  *11 -6951 -> 0
+  *11 824 -> 824
+  *11 5875 -> 5875
+  *11 361 -> 361
+  else -> 0
+}
+$set_cardinality -> {
+  *12 -> 0
+  else -> 0
+}
+$good_state_ext -> {
+  *10 *14 -> true
+  *33 *55 -> true
+  else -> true
+}
+$type_branch -> {
+  *18 -> *29
+  *78 -> *29
+  *38 -> *29
+  *66 -> *29
+  *58 -> *29
+  *56 -> *29
+  *44 -> *29
+  *11 -> *29
+  *60 -> *29
+  *2 -> *29
+  *70 -> *29
+  *24 -> *29
+  *19 -> *29
+  *25 -> *29
+  *4 -> *29
+  *63 -> *29
+  *46 -> *29
+  *79 -> *29
+  *45 -> *29
+  *76 -> *29
+  *41 -> *29
+  *42 -> *29
+  *80 -> *29
+  *77 -> *29
+  *74 -> *29
+  *81 -> *29
+  else -> *29
+}
+$in_range_t -> {
+  *44 4294967296 -> false
+  *44 0 -> true
+  *11 18446744073709551616 -> false
+  *11 0 -> true
+  *44 -1 -> false
+  *44 4294967295 -> true
+  *11 -1 -> false
+  *11 18446744073709551615 -> true
+  *11 -6951 -> false
+  *11 824 -> true
+  *11 5875 -> true
+  *11 361 -> true
+  else -> true
+}
+$is_primitive -> {
+  *18 -> true
+  *78 -> true
+  *38 -> true
+  *66 -> true
+  *58 -> true
+  *56 -> true
+  *44 -> true
+  *11 -> true
+  *60 -> true
+  *2 -> true
+  *70 -> true
+  *24 -> true
+  *19 -> true
+  *25 -> true
+  *4 -> true
+  *63 -> false
+  *46 -> false
+  *79 -> true
+  *45 -> true
+  *76 -> true
+  *41 -> true
+  *42 -> true
+  *80 -> false
+  *77 -> false
+  *74 -> true
+  *81 -> true
+  *59 -> false
+  else -> true
+}
+$spec_ptr_cast -> {
+  *69 *80 -> *69
+  *75 *77 -> *75
+  *16 *80 -> *16
+  else -> *69
+}
+$as_primitive_field -> {
+  *90 -> *90
+  *91 -> *91
+  *92 -> *92
+  *93 -> *93
+  *94 -> *94
+  else -> *90
+}
+$invok_state -> {
+  *14 -> true
+  *55 -> true
+  else -> true
+}
+$sizeof -> {
+  *18 -> 1
+  *78 -> 2
+  *38 -> 4
+  *66 -> 8
+  *58 -> 1
+  *56 -> 2
+  *44 -> 4
+  *11 -> 8
+  *60 -> 4
+  *2 -> 8
+  *70 -> 1
+  *24 -> 1
+  *19 -> 1
+  *25 -> 1
+  *4 -> 1
+  *63 -> 1
+  *46 -> 1
+  *79 -> 1
+  *45 -> 1
+  *76 -> 1
+  *41 -> 1
+  *42 -> 1
+  *80 -> 1
+  *77 -> 1
+  *74 -> 1
+  *81 -> 1
+  else -> 1
+}
+$field_type -> {
+  *95 -> *63
+  *88 -> *80
+  *89 -> *77
+  *90 -> *24
+  *91 -> *76
+  *92 -> *76
+  *93 -> *76
+  *94 -> *76
+  else -> *76
+}
+$in_range_spec_ptr -> {
+  *69 -> true
+  *75 -> true
+  *16 -> true
+  else -> true
+}
+$full_stop -> {
+  *14 -> true
+  *55 -> true
+  else -> true
+}
+$f_root -> {
+  *24 -> *90
+  *80 -> *88
+  *77 -> *89
+  else -> *90
+}
+$is_math_type -> {
+  *19 -> true
+  *25 -> true
+  *4 -> true
+  *79 -> true
+  *45 -> true
+  *76 -> true
+  *41 -> true
+  *42 -> true
+  *74 -> true
+  *81 -> true
+  else -> true
+}
+$unchk_add -> {
+  *11 0 0 -> 0
+  *11 18446744073709558279 -18446744073709565230 -> 0
+  *11 824 0 -> 824
+  *11 5875 0 -> 5875
+  *11 361 0 -> 361
+  else -> 0
+}
+$good_state -> {
+  *87 -> true
+  *14 -> true
+  *55 -> true
+  else -> true
+}
+$writes_at -> {
+  358 -> *62
+  else -> *62
+}
+$call_transition -> {
+  *14 *55 -> true
+  else -> true
+}
+$field_parent_type -> {
+  *88 -> *80
+  *89 -> *77
+  *90 -> *59
+  *91 -> *63
+  *92 -> *46
+  *93 -> *80
+  *94 -> *77
+  else -> *80
+}
+$as_field_with_type -> {
+  *90 *24 -> *90
+  *88 *80 -> *88
+  *89 *77 -> *89
+  *91 *76 -> *91
+  *92 *76 -> *92
+  *93 *76 -> *93
+  *94 *76 -> *94
+  else -> *90
+}
+$is_ghost_field -> {
+  *91 -> true
+  *92 -> true
+  *93 -> true
+  *94 -> true
+  else -> true
+}
+$is_claimable -> {
+  *63 -> true
+  *46 -> false
+  *80 -> false
+  *77 -> false
+  *18 -> false
+  *78 -> false
+  *38 -> false
+  *66 -> false
+  *58 -> false
+  *56 -> false
+  *44 -> false
+  *11 -> false
+  *60 -> false
+  *2 -> false
+  *70 -> false
+  *24 -> false
+  *19 -> false
+  *25 -> false
+  *4 -> false
+  *79 -> false
+  *45 -> false
+  *76 -> false
+  *41 -> false
+  *42 -> false
+  *74 -> false
+  *81 -> false
+  else -> false
+}
+$modifies -> {
+  *14 *55 *12 -> true
+  else -> true
+}
+$is_sequential_field -> {
+  *91 -> true
+  *92 -> true
+  *90 -> true
+  else -> true
+}
+$base -> {
+  *37 -> 0
+  *69 -> 824
+  *75 -> 5875
+  *16 -> 361
+  *61 -> 18446744073709558279
+  else -> 0
+}
+$as_in_range_t -> {
+  *18 -> *18
+  *78 -> *78
+  *38 -> *38
+  *66 -> *66
+  *58 -> *58
+  *56 -> *56
+  *44 -> *44
+  *11 -> *11
+  *45 -> *45
+  else -> *18
+}
+$_pow2 -> {
+  0 -> 1
+  1 -> 2
+  2 -> 4
+  3 -> 8
+  4 -> 16
+  5 -> 32
+  6 -> 64
+  7 -> 128
+  8 -> 256
+  9 -> 512
+  10 -> 1024
+  11 -> 2048
+  12 -> 4096
+  13 -> 8192
+  14 -> 16384
+  15 -> 32768
+  16 -> 65536
+  17 -> 131072
+  18 -> 262144
+  19 -> 524288
+  20 -> 1048576
+  21 -> 2097152
+  22 -> 4194304
+  23 -> 8388608
+  24 -> 16777216
+  25 -> 33554432
+  26 -> 67108864
+  27 -> 134217728
+  28 -> 268435456
+  29 -> 536870912
+  30 -> 1073741824
+  31 -> 2147483648
+  32 -> 4294967296
+  33 -> 8589934592
+  34 -> 17179869184
+  35 -> 34359738368
+  36 -> 68719476736
+  37 -> 137438953472
+  38 -> 274877906944
+  39 -> 549755813888
+  40 -> 1099511627776
+  41 -> 2199023255552
+  42 -> 4398046511104
+  43 -> 8796093022208
+  44 -> 17592186044416
+  45 -> 35184372088832
+  46 -> 70368744177664
+  47 -> 140737488355328
+  48 -> 281474976710656
+  49 -> 562949953421312
+  50 -> 1125899906842624
+  51 -> 2251799813685248
+  52 -> 4503599627370496
+  53 -> 9007199254740992
+  54 -> 18014398509481984
+  55 -> 36028797018963968
+  56 -> 72057594037927936
+  57 -> 144115188075855872
+  58 -> 288230376151711744
+  59 -> 576460752303423488
+  60 -> 1152921504606846976
+  61 -> 2305843009213693952
+  62 -> 4611686018427387904
+  63 -> 9223372036854775808
+  64 -> 18446744073709551616
+  else -> 1
+}
+*** STATE <initial>
+  $s -> *14
+  $cev_pc -> **$cev_pc
+  $result -> **$result
+  L#x -> -2147483648
+  L#y -> -160
+  L#z -> -245
+  #wrTime$1^11.1 -> 358
+  #stackframe -> **#stackframe
+*** END_STATE
+*** STATE C:\vcc\vcc\Docs\Tutorial\c\3.1min2.c(11,1) : function entry
+*** END_STATE
+*** STATE <no file>(0,0)
+*** END_STATE
+*** STATE C:\vcc\vcc\Docs\Tutorial\c\3.1min2.c(13,3)
+*** END_STATE
+*** STATE C:\vcc\vcc\Docs\Tutorial\c\3.1min2.c(13,3)
+*** END_STATE
+*** STATE C:\vcc\vcc\Docs\Tutorial\c\3.1min2.c(13,3)
+*** END_STATE
+*** STATE C:\vcc\vcc\Docs\Tutorial\c\3.1min2.c(14,3)
+*** END_STATE
+*** STATE C:\vcc\vcc\Docs\Tutorial\c\3.1min2.c(15,12)
+  $s -> *55
+  $cev_pc -> **$cev_pc@0
+  L#z -> -2147483647
+*** END_STATE
+*** END_MODEL

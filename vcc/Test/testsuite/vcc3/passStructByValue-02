@@ -1,0 +1,25 @@
+#include <vcc.h>
+
+typedef struct proc_t {
+    unsigned int gpr[32];    
+    unsigned int spr[17];    
+    unsigned int dpc;        
+    unsigned int pcp;        
+} proc_t;
+
+
+_(ghost _(pure)   \bool post(proc_t proc, proc_t oldproc) 
+    _(ensures \result == (proc.dpc == oldproc.pcp && proc.pcp == _(unchecked)(oldproc.pcp + 4)));)
+    
+
+void f(proc_t *proc)
+  _(requires \mutable(proc))
+  _(ensures post(*proc, \old(*proc)))
+  _(writes \extent(proc))
+{
+  proc->dpc = proc->pcp;
+  proc->pcp = _(unchecked)(proc->pcp +4);
+}
+`
+Verification of f succeeded.
+`

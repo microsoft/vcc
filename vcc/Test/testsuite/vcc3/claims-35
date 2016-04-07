@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+_(claimable) struct S { int a; };
+
+void foo(struct S *s1, struct S *s2)
+  _(writes s1, s2)
+{
+  _(ghost \claim c = \make_claim({s1, s2}, 1);)
+}
+`
+Verification of foo failed.
+testcase(8,22) : error VC8528: Assertion 'object s1 is closed before claiming it' did not verify.
+testcase(8,22) : error VC8528: Assertion 'object s2 is closed before claiming it' did not verify.
+`

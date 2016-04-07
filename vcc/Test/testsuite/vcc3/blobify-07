@@ -1,0 +1,26 @@
+#include "vcc.h"
+
+typedef unsigned __int8 byte;
+
+void foo(byte *a)
+    _(requires \object_root(_(blob 101) a))
+    _(writes \extent(_(blob 101) a))
+    _(ensures \object_root(_(blob 10) a))
+    _(ensures \mutable(_(blob 10) a))
+    _(ensures \fresh(_(blob 10) a))
+{
+    _(split_blob _(blob 101) a, 10)
+}
+
+void bar(byte *a)
+    _(requires \object_root(_(blob 101) a))
+    _(writes \extent(_(blob 101) a))
+{
+    foo(a);
+    _(split_blob _(blob 10) a, 5)
+}
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

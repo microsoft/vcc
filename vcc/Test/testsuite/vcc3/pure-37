@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+int foo(int i) 
+  _(reads \everything())
+  _(ensures \result == i)
+{
+  return i;
+}
+
+`
+Verification of foo succeeded.
+`

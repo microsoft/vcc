@@ -1,0 +1,11 @@
+` /pointersize:32
+#include <vcc.h>
+#include <stdint.h>
+
+
+void foo() {
+	_(assert sizeof(uintptr_t) == sizeof(void *))
+}
+`
+Verification of foo succeeded.
+`

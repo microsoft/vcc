@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+void foo() {
+  _(ghost \natural i = (\natural)5)
+  _(ghost \natural j = i)
+  _(assert j > (\natural)0)
+  _(assert i + j == (\natural)10)
+}
+`
+Verification of foo succeeded.
+`

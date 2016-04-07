@@ -1,0 +1,19 @@
+#include <vcc.h>
+
+struct A {
+  volatile int x;
+};
+
+struct B {
+  struct A *a;
+  _(ghost \claim c)
+  _(invariant \mine(c) && c->\closed)
+  _(invariant \claims(c, \this->a->x > 0))
+  _(invariant a->x > 0)
+};
+
+
+`
+Verification of B#adm failed.
+testcase(12,15) : error VC8012: invariant(a->x > 0) of B is not admissible.
+`

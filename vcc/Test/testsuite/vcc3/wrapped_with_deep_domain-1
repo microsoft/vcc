@@ -1,0 +1,38 @@
+#include <vcc.h>
+
+struct A { int a; };
+struct B { struct A a; int b; _(invariant \mine(&a)) };
+struct C { struct B b; int c; _(invariant \mine(&b)) };
+struct D { struct C c; int d; _(invariant \mine(&c)) };
+
+void foo(struct A *a) _(updates a);
+
+void test1(struct A *a, struct D *d)
+  _(updates a)
+  _(updates d)
+  _(ensures \unchanged(d->c.b.a.a))
+  _(ensures \unchanged(d->c.b.b))
+  _(ensures \unchanged(d->c.c))
+{
+  _(assert &d->c \in \domain(d) && &d->c.b \in \domain(d))
+  foo(a);
+}
+
+void test2(struct A *a, struct D *d)
+  _(updates a)
+  _(updates d)
+  _(ensures \unchanged(d->c.b.a.a))
+  _(ensures \unchanged(d->c.b.b))
+  _(ensures \unchanged(d->c.c))
+{
+  _(assert \wrapped_with_deep_domain(d))
+  foo(a);
+}
+
+`
+Verification of B#adm succeeded.
+Verification of C#adm succeeded.
+Verification of D#adm succeeded.
+Verification of test1 succeeded.
+Verification of test2 succeeded.
+`

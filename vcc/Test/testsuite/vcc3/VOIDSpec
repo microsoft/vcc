@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+typedef void VOID;
+
+VOID foo(VOID _(ghost int a))
+  _(requires a > 10)
+{
+}
+
+`
+Verification of foo succeeded.
+`

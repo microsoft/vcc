@@ -1,0 +1,13 @@
+#include "vcc.h"
+typedef struct Foo {
+int x;
+_(ghost int y[int][5])
+} Foo;
+
+void bar(Foo *f) {
+_(assert f->y[0][0])
+}
+`
+testcase(4,9) : error VC0000: Illegal type 'int[5]' in map range.
+testcase(8,10) : error VC0000: Illegal index.
+`

@@ -1,0 +1,10 @@
+#include "vcc.h"
+
+void test() {
+  unsigned char x;
+  _(ghost \natural y)
+  _(assert x<y || \true)
+}
+`
+Verification of test succeeded.
+`

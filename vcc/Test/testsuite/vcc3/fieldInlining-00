@@ -1,0 +1,49 @@
+#include <vcc.h>
+
+struct S {
+  int a;
+  int b;
+};
+
+struct T {
+  _(inline) struct S S1;
+  struct S S2;
+  _(invariant \mine(&S2))
+};
+
+void foo(struct S *s) 
+  _(reads s)
+  _(requires s->\valid)
+{ 
+}
+void fooByVal(struct S s) 
+  _(requires s.a == s.b)
+{ 
+}
+
+void bar(struct T *t) 
+  _(requires \wrapped(t))
+  _(writes t)
+{
+  _(unwrapping t) {
+    foo(&t->S2);
+  }
+}
+
+void barByVal(struct T *t) 
+  _(requires \wrapped(t))
+  _(requires t->S2.a == t->S2.b)
+  _(writes t)
+{
+  _(unwrapping t) {
+    fooByVal(t->S2);
+  }
+}
+
+`
+Verification of T#adm succeeded.
+Verification of foo succeeded.
+Verification of fooByVal succeeded.
+Verification of bar succeeded.
+Verification of barByVal succeeded.
+`

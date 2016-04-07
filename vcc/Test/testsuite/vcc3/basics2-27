@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+void foo() { 
+  int *a = /*(int*)*/ 3;
+  int *b = 4;
+  _(assert !\addr_eq(a, b))
+  _(assert a != b)          
+}
+`
+Verification of foo succeeded.
+`

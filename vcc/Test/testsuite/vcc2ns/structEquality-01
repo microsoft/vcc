@@ -1,0 +1,55 @@
+#include <vcc.h>
+
+struct A {
+  int x[3];
+};
+
+struct B {
+  struct A a;
+  int z;
+  _(invariant \mine(&a))
+  _(invariant a.x[0] == 10)
+};
+
+struct C {
+  struct A a1;
+  struct A a2;
+  int z;
+  _(invariant \mine(&a1, &a2))
+  _(invariant \deep_eq(a1, a2))
+};
+
+struct D {
+  struct A a1;
+  struct A a2;
+  int z;
+  _(invariant \mine(&a1))
+  _(invariant \deep_eq(a1, a2))
+};
+
+void foo()
+{
+  struct A a, b;
+  a.x[0] = 1;
+  a.x[1] = 2;
+  a.x[2] = 3;
+  b.x[0] = 1;
+  b.x[1] = 2;
+  b.x[2] = 3;
+  _(assert \deep_eq(a, b))
+}
+
+void bar()
+{
+  struct A a, b;
+  a.x[0] = 1;
+  a.x[1] = 2;
+  a.x[2] = 3;
+  b.x[0] = 1;
+  b.x[1] = 2;
+  b.x[2] = 4;
+  _(assert \deep_eq(a, b))
+}
+`
+testcase(4,3) : error VC9730: equality or assignment of structs with fixed-size arrays is currently only supported with /3
+`

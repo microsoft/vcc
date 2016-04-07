@@ -1,0 +1,34 @@
+#include <vcc.h>
+
+typedef struct S {
+  unsigned __int8 a;  
+  unsigned __int16 b;
+  unsigned __int32 c;
+  unsigned __int8 d;
+} S;
+
+_Bool f(S s)
+  _(requires s.a == 1 && s.b == 2 && s.c == 3 && s.d == 4)
+  _(reads {})
+
+{
+  unsigned __int8 a = s.a;  
+  unsigned __int16 b = s.b;
+  unsigned __int32 c = s.c;
+  unsigned __int8 d = s.d;  
+}
+
+_Bool g(S s)
+  _(reads {})
+{
+  s.a = (unsigned __int8)1;
+  s.b = (unsigned __int16)2;
+  s.c = (unsigned __int32)3;
+  s.d = (unsigned __int8)4;
+  f(s);
+}
+
+`
+Verification of f succeeded.
+Verification of g succeeded.
+`

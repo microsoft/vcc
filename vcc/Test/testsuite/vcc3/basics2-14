@@ -1,0 +1,17 @@
+#include "vcc.h"
+#ifdef VERIFY
+
+_(record) struct S {
+    int a;
+};
+
+void foo()
+{
+    _(ghost struct S x)
+    _(ghost x = /* missing: (struct S) */ { .a = 3 })
+}
+
+#endif
+`
+testcase(11,18) : error VC0000: Cannot determine initializer's type from context.
+`

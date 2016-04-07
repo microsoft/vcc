@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+struct S {
+    int dummy;
+    _(ghost \claim volatile c;)
+    _(ghost int a;)
+    _(invariant c!=&a)
+};
+`
+testcase(7,17) : warning VC9124: pointers of different types (\claim and int32_t) are never equal in pure context
+Verification of S#adm succeeded.
+`

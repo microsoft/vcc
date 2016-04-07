@@ -1,0 +1,29 @@
+#include <vcc.h>
+
+void i8ShouldFail(__int8 x) {
+  _(assert 0 <= x)
+}
+
+void i16ShouldFail(__int16 x) {
+  _(assert 0 <= x)
+}
+
+void i32ShouldFail(__int32 x) {
+  _(assert 0 <= x)
+}
+
+
+void i64ShouldFail(__int64 x) {
+  _(assert 0 <= x)
+}
+
+`
+Verification of i8ShouldFail failed.
+testcase(4,12) : error VC9500: Assertion '0 <= x' did not verify.
+Verification of i16ShouldFail failed.
+testcase(8,12) : error VC9500: Assertion '0 <= x' did not verify.
+Verification of i32ShouldFail failed.
+testcase(12,12) : error VC9500: Assertion '0 <= x' did not verify.
+Verification of i64ShouldFail failed.
+testcase(17,12) : error VC9500: Assertion '0 <= x' did not verify.
+`

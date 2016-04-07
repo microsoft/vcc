@@ -1,0 +1,27 @@
+
+#include <vcc.h>
+
+void foo() {
+
+	int i = 5;
+	
+	_(requires i > 0)
+	_(ensures i > 0) 
+	_(ensures \normal_exit())
+	{
+		if (i == 0) { _(assert \false); goto Cleanup1; }
+		if (i < 0) { _(assert \false); goto Cleanup; }
+	}
+	
+Cleanup:
+;
+
+Cleanup1:
+;
+
+}	
+	
+`
+Verification of foo succeeded.
+Verification of foo#block#0 succeeded.
+`

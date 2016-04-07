@@ -1,0 +1,46 @@
+#include <stdlib.h>
+#include <vcc.h>
+
+typedef struct A {
+  int x,y,z;
+} A;
+
+A *foo( A*p)
+  _(writes \extent(p))
+  _(requires \malloc_root(p))
+  _(ensures \result == NULL || \fresh(\result))
+  _(ensures \result == NULL || (\result->\valid && \mutable(\result)))
+{
+  free(p);
+  return malloc(sizeof(A));
+}
+
+void donothing();
+
+void useA()
+{
+  A loc;
+  A *p1 = malloc(sizeof(A));
+  A *p2 = malloc(sizeof(A));
+  A *t1, *t2;
+
+  if (p1 != NULL && p2 != NULL) {
+    donothing();
+    t1 = foo(p1);
+    if (t1 != NULL) {
+      donothing();
+      _(assert p2 != t1)
+      t2 = foo(p2);
+      if (t2 != NULL) {
+        donothing();
+        _(assert t1 != t2)
+        _(assert t1 != &loc)
+        _(assert t2 != &loc)
+      }
+    }
+  }
+}
+`
+Verification of foo succeeded.
+Verification of useA succeeded.
+`

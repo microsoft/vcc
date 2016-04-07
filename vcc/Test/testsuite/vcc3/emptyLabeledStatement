@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+void foo()
+{
+  int i = 0;
+  goto label2;
+label1:
+label2:
+  goto label4;
+  i = 1;
+label3:
+label4:
+  _(assert i == 0)
+}
+`
+Verification of foo succeeded.
+`

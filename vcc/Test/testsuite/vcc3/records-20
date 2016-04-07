@@ -1,0 +1,15 @@
+#include "vcc.h"
+
+_(record) struct X {
+  int a:10;
+  int b:22;
+}; 
+
+_(ghost void foo() {
+  struct X x;
+  x.a = 5;
+  _(assert x.a == 5)
+})
+`
+Verification of foo succeeded.
+`

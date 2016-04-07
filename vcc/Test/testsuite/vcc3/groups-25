@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+typedef struct _U1 U1;
+
+struct _U1{
+    _(group G)
+    _(:G) unsigned int Id;
+
+        // ID == 0 needed for difusing smoke complaint
+     _(invariant :G Id == 0 || \forall U1* u; u::G->\closed && u->Id == Id ==> u == \this)
+};
+
+
+`
+testcase(10,80) : warning VC9124: pointers of different types (struct _U1 and struct _U1##G) are never equal in pure context
+Verification of _U1##G#adm succeeded.
+`

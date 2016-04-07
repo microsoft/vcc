@@ -1,0 +1,17 @@
+#include <vcc.h>
+#include <sal.h>
+
+struct point {
+    int x;
+};
+
+void foo(int *p, int dx) 
+  _(writes p)
+{
+  *p = *p + dx;
+}
+
+`
+Verification of foo failed.
+testcase(11,8) : error VC8004: *p + dx might overflow.
+`

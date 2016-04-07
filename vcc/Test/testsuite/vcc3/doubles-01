@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+struct S {
+  double a;
+  double b;
+  _(invariant a + b == 0.0)
+};
+
+void foo(struct S *s) 
+  _(requires \wrapped(s))
+{ 
+  _(assert s \in \domain(s))
+  _(assert s->a + s->b == 0.0)
+}
+`
+Verification of S#adm succeeded.
+Verification of foo succeeded.
+`

@@ -1,0 +1,31 @@
+#include <vcc.h>
+
+typedef struct _S {
+  int x;
+  unsigned __int64 y;
+} S;
+
+S foo() 
+  _(ensures \result.x == 1 && \result.y == 2)
+{
+  S result;
+  result.x = 1;
+  result.y = 2;
+  return result;
+}
+
+S fooShouldFail() 
+  _(ensures \result.x == 1 && \result.y == 2)
+{
+  S result;
+  result.x = 1;
+  result.y = 3;
+  return result;
+}
+
+`
+Verification of foo succeeded.
+Verification of fooShouldFail failed.
+testcase(23,3) : error VC9501: Post condition '\result.x == 1 && \result.y == 2' did not verify.
+testcase(18,13) : error VC9599: (related information) Location of post condition.
+`

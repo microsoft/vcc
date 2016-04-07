@@ -1,0 +1,26 @@
+#include <vcc2test.h>
+typedef unsigned __int8 byte;
+struct S1 { 
+  int A1;
+  struct { 
+    int A2;
+    struct S3 { 
+      int A3;
+    }; 
+  }; 
+}; 
+
+void foo1() {
+    byte x[] = (byte*)malloc(sizeof(struct S1));
+    _(ghost if (x!= NULL) _(from_bytes (struct S1*)x, \false))
+}
+
+
+void foo3() {
+    byte x[] = (byte*)malloc(sizeof(struct S3));
+    _(ghost if (x!= NULL) _(from_bytes (struct S3*)x, \false))
+}
+`
+Verification of foo1 succeeded.
+Verification of foo3 succeeded.
+`

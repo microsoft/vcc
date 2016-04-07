@@ -1,0 +1,9 @@
+#include <vcc.h>
+
+void foo(int a _(ghost int b))
+  _(requires a == b);
+  
+void foo(int a) {};
+`
+Verification of foo succeeded.
+`

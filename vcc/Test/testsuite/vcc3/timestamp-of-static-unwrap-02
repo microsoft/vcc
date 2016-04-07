@@ -1,0 +1,42 @@
+#include <vcc.h>
+
+struct S { int s; };
+
+// static ownership
+struct T {
+  int f;
+  struct S *s;
+  _(invariant f <==> \mine(s))
+};
+
+void foo(struct T *t)
+_(maintains \wrapped(t))
+_(writes t)
+_(requires t->f)
+_(ensures \same(t->s))
+_(ensures \wrapped((t->s)))
+_(ensures \fresh((t->s)))
+{
+  _(unwrap t)
+  t->f = 0;
+  _(wrap t)
+}
+
+void foo2(struct T *t)
+_(maintains \wrapped(t))
+_(writes t)
+_(requires t->f)
+_(ensures \same(t->s))
+_(ensures \wrapped((t->s)))
+_(ensures \fresh((t->s)))
+{
+  _(unwrap t, t) // set-unwrap
+  t->f = 0;
+  _(wrap t)
+}
+
+`
+Verification of T#adm succeeded.
+Verification of foo succeeded.
+Verification of foo2 succeeded.
+`

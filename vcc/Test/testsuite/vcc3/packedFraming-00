@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+struct B {
+  int x;
+};
+
+void donothing();
+
+void foo(struct B *b)
+  _(requires \wrapped(b))
+{
+  donothing();
+  _(assert \old(b->x) == b->x)
+}
+`
+Verification of foo succeeded.
+`

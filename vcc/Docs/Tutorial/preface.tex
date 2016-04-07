@@ -1,0 +1,74 @@
+\section{Introduction}
+This tutorial is an introduction to verifying C code with VCC. Our
+primary audience is programmers who want to write correct code.
+The only prerequisite is a working knowledge of C.
+
+To use VCC, you first \emph{annotate} your code to specify 
+what your code does (e.g., that your sorting function sorts its input),
+and why it works (e.g., suitable invariants for your loops and 
+data structures).
+VCC then tries to \emph{prove} (mathematically) that
+your program meets these specifications.  Unlike most program
+analyzers, VCC doesn't look for bugs, or analyze an abstraction of
+your program; if VCC certifies that your program is correct, then your
+program really is correct%
+\footnote{
+  In reality, this isn't necessarily true, for two reasons. 
+  First, VCC itself might have bugs; in practice, these are unlikely to cause you to accidentally verify an
+  incorrect program, unless you find and intentionally exploit such a
+  bug. Second, there are a few checks needed for soundness that haven't yet
+  been added to VCC, such as checking that ghost code terminates;
+  these issues are listed in section \secref{caveats}.
+  }. 
+
+To check your program, VCC uses the \emph{deductive verification} paradigm:
+it generates a number of mathematical
+statements (called \Def{verification conditions}), the validity of
+which suffice to guarantee the program's correctness, and tries to
+prove these statements using an automatic theorem prover. If any of
+these proofs fail, VCC reflects these failures back to you in terms of
+the program itself (as opposed to the formulas seen by the theorem
+prover). Thus, you normally interact with VCC entirely at the level of
+code and program states; you can usually ignore the mathematical
+reasoning going on ``under the hood''.
+For example, if your program uses division
+somewhere, and VCC is unable to prove that the divisor is nonzero, it
+will report this to you as a (potential) program error at that point in the
+program. This doesn't mean that your program is necessarily incorrect;
+most of the time, especially when verifying code that is already well-tested,
+it is because you haven't provided enough information to allow VCC
+to deduce that the suspected error doesn't occur.
+(For example, you might have failed to specify that some function
+parameter is required to be nonzero.)
+Typically, you fix this ``error'' by strengthening your
+annotations. This might lead to other error reports, forcing you to 
+add additional annotations, so verification is in
+practice an iterative process.  
+Sometimes, this process will reveal a genuine programming error.
+But even if it doesn't, you will have not only proved your code free from 
+such errors, but you will have produced the precise specifications for your
+code -- a very useful form of documentation.
+
+This tutorial covers basics of VCC annotation language. By the time
+you have finished working through it, you should be able to use VCC to
+verify some nontrivial programs. It doesn't cover the theoretical
+background of VCC \cite{lci}, implementation details \cite{vcc}
+or advanced topics;
+information on these can be found on the VCC
+homepage\footnote{\url{http://vcc.codeplex.com/}}.
+More information on all topics covered in the tutorial can be found in the
+VCC manual.
+
+The examples in this tutorial are currently distributed with the VCC sources.%
+\footnote{
+Available from \url{http://vcc.codeplex.com/SourceControl/list/changesets}: click Download on the right,
+get the zip file and navigate to \lstinline|vcc/Docs/Tutorial/c|.}
+
+You can use VCC either from the command line or from Visual Studio
+2008/2010 (VS); the VS interface offers easy access to different components of
+VCC tool chain and is thus generally recommended.
+VCC can be downloaded from the VCC homepage; 
+be sure to read the installation instructions\footnote{\url{http://vcc.codeplex.com/wikipage?title=Install}},
+which provide important information about installation prerequisites 
+and how to set up tool paths.
+

@@ -1,0 +1,20 @@
+#include <vcc.h>
+_(ghost 
+\integer plus(\integer x, \integer y)
+  _(requires x>=0 && y>=0)
+  _(ensures \result == x + y)
+{
+  _(ghost \integer z = x+y;)
+  while (x>0)
+    _(invariant y == z - x)
+    _(invariant x >= 0)
+    {
+      x-= 1;
+      y+= 1;
+    }
+  return y;
+}) 
+`
+testcase(8,3) : warning VC9323: [possible unsoundness]: ghost loop not checked for termination
+Verification of plus succeeded.
+`

@@ -1,0 +1,20 @@
+\section{Bitvector reasoning}
+\label{sect:bv}
+
+Remember our first \vcc{min()} example?  Surprisingly it can get more involved.
+For example the one below does not use a branch.
+
+\vccInput[linerange={begin-}]{c/01_min5.c}
+
+\noindent
+The syntax:
+\begin{VCC}
+_( assert {bv} \forall int x; (x & -1) == x )
+\end{VCC}
+
+\noindent
+VCC to prove the assertion using the fixed-length bit vector theory, a.k.a. machine integers.
+This is then used as a lemma to prove the postcondition.
+
+
+

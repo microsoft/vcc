@@ -1,0 +1,14 @@
+#include <vcc.h>
+#include <stdlib.h>
+
+typedef struct A { int x; } A;
+
+void testMalloc()
+  _(decreases 0)
+{
+  A *p = malloc(sizeof(A));
+  if (p) free(p);
+}
+`
+Verification of testMalloc succeeded.
+`

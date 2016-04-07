@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+void forwardf();
+
+extern int x;
+int x=0;
+
+int foo() 
+  _(reads &x)
+  _(requires \thread_local(&x))
+{
+  return x;
+}
+`
+Verification of foo succeeded.
+`

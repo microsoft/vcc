@@ -1,0 +1,19 @@
+#include "vcc2test.h"
+
+struct B { int x; };
+
+typedef _(dynamic_owns) struct _A {
+  int x; 
+  _(ghost struct B* m[unsigned])
+  _(invariant \forall unsigned i; {:level 1} i < 10 ==> \mine(m[i]))
+} A;
+
+void foo(A *x)
+  _(requires \wrapped(x))
+{
+  _(assert x->m[3] != NULL)
+}
+`
+Verification of _A#adm succeeded.
+Verification of foo succeeded.
+`

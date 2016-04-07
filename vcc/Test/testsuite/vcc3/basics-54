@@ -1,0 +1,15 @@
+#include <vcc.h>
+
+typedef unsigned __int32 uint32_t;
+
+_(pure) uint32_t foo(uint32_t pto, uint32_t a)
+    _(returns _(unchecked) ((pto << 12) + (a >> 12)));
+
+uint32_t bar(uint32_t pto, uint32_t a)
+  _(returns foo(pto, a))
+{
+  return  _(unchecked)((pto << 12) + (a >> 12));
+}
+`
+Verification of bar succeeded.
+`

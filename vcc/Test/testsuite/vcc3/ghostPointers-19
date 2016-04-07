@@ -1,0 +1,11 @@
+#include "vcc.h"
+
+struct S { unsigned b; };
+
+_(ghost _(pure) struct S foo() _(ensures \result.b==0))
+void bar() {
+    _(ghost struct S x = foo())
+}
+`
+Verification of bar succeeded.
+`

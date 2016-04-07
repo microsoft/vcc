@@ -1,0 +1,27 @@
+#include <vcc.h>
+
+_(record) struct S {
+  int a;
+  int b;
+};
+
+
+_(ghost _(pure)
+int foo(struct S s) 
+  _(ensures \result == _(unchecked)(s.a + s.b))
+{
+  return _(unchecked)(s.a + s.b);
+})
+
+_(ghost _(pure)
+int bar(int a, int b)
+  _(ensures \result == _(unchecked)(a+b))
+{
+  struct S s = {a,b};
+  return foo(s);
+})
+`
+testcase(13,23) : warning VC9326: [possible unsoundness]: signed overflow (of '+') has undefined behavior in C
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

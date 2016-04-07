@@ -1,0 +1,15 @@
+#include <vcc.h>
+
+typedef __w64 unsigned int   size_t;
+
+void foo()
+{
+  int i = 2;
+  int j = 2;
+  i *= j += 2;
+  _(assert i == 8)
+  _(assert j == 4)
+}
+`
+Verification of foo succeeded.
+`

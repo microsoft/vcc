@@ -1,0 +1,23 @@
+`/a /functions:bar 
+
+#include <vcc.h>
+
+_(ghost \bool _(pure) baz() _(ensures \result == \true))
+
+_(atomic_inline) int foo(_(out int x)) {
+  _(ghost x = 10)
+  _(assert baz())
+  return 1;
+};
+
+void bar(int p) {
+  _(ghost int i)
+  int j;
+  j = p || foo(_(out i));
+  _(assert j)
+  _(assert p || i == 10)
+  
+}
+`
+Verification of bar succeeded.
+`

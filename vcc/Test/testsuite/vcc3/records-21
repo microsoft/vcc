@@ -1,0 +1,16 @@
+#include "vcc.h"
+
+_(record) struct S {
+    int a;
+    int b;
+};
+
+void foo() {
+    _(ghost struct S wa = {.a = 5, .b = 10})
+    _(ghost wa /= { .a = 3 })
+    _(assert wa.a == 3 && wa.b == 10)
+}
+
+`
+Verification of foo succeeded.
+`

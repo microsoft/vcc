@@ -1,0 +1,28 @@
+#include <vcc.h>
+
+_(datatype D {
+	case A();
+	case B(D x);
+})
+
+_(def \bool f(D d)
+{
+	switch(d) {
+	case B(x): return \false;
+        default: return \true;
+	}
+}
+)
+
+_(def \bool f_fail1(D d)
+{
+	switch(d) {
+	case B(x): return \false;
+	}
+}
+)
+`
+Verification of f succeeded.
+Verification of f_fail1 failed.
+testcase(19,9) : error VC8030: case A is unhandled when matching d.
+`

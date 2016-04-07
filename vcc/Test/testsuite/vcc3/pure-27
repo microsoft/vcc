@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+_(pure)
+int *foo(int *q)
+  _(returns q + 10);
+
+void qux()
+{
+int x;
+_(assert foo(&x) != &x)
+}
+`
+Verification of qux succeeded.
+`

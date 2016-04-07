@@ -1,0 +1,36 @@
+#include <vcc.h>
+
+typedef unsigned __int8 uint8_t;
+
+typedef struct S {
+    uint8_t P;
+} S;
+
+void foo() {
+    uint8_t p;
+    S s;
+
+    p = (s.P >> 3);
+    p = ((&s)->P >> 3);
+}
+`
+Verification of foo succeeded.
+`
+
+#include <vcc.h>
+
+typedef unsigned __int8 uint8_t;
+
+typedef struct S {
+    uint8_t P;
+} S;
+
+void foo() {
+    uint8_t p;
+    uint8_t P;
+
+    p = (P >> 3);
+}
+`
+Verification of foo succeeded.
+`

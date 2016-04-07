@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+void f(unsigned k, unsigned l) {
+  k = 0;
+  l = 0;
+  while(k++ <= 10)
+    _(invariant 0 <= k && k <= 11)
+    _(invariant l==k)
+  {
+    l++;
+  }
+  _(assert l==11)
+}
+
+`
+Verification of f succeeded.
+`

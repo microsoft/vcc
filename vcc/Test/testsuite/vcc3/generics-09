@@ -1,0 +1,19 @@
+#include <vcc.h>
+
+struct S { int a; };
+struct T { 
+  int b;
+  _(ghost struct S *p)
+};
+
+_(ghost template<typename T> T *bar())
+
+void foo() 
+  _(writes {})
+{
+  struct T t;
+  _(ghost t.p = bar<struct S>())
+}
+`
+Verification of foo succeeded.
+`

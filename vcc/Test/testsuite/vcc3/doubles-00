@@ -1,0 +1,49 @@
+// TODO
+#include <vcc.h>
+
+double add(double a, double b)
+  _(ensures \result == a + b || \result == a + b + 0.0)
+ {
+  if (a == b) return a+b;
+  else return a+b+0.0;
+}
+
+double mul(double a, double b)
+  _(ensures \result == a * b || \result == a * b * 0.0)
+ {
+  if (a == b) return a*b;
+  else return a*b*0.0;
+}
+double sub(double a, double b)
+  _(ensures \result == a - b || \result == a - b - 0.0)
+ {
+  if (a == b) return a-b;
+  else return a-b-0.0;
+}
+double div(double a, double b)
+  _(ensures \result == a / b || \result == a / b / 0.0)
+ {
+  if (a == b) return a/b;
+  else return a/b/0.0;
+}
+
+float addf(float a, float b)
+  _(ensures \result == a + b || \result == a + b + 0.0f)
+ {
+  if (a == b) return a+b;
+  else return a+b+0.0f;
+}
+
+double lit() 
+  _(ensures \result == 42.0)
+{
+  return 42.0;
+}
+`
+Verification of add succeeded.
+Verification of mul succeeded.
+Verification of sub succeeded.
+Verification of div succeeded.
+Verification of addf succeeded.
+Verification of lit succeeded.
+`

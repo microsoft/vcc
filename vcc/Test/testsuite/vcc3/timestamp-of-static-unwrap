@@ -1,0 +1,21 @@
+#include <vcc.h>
+struct B { int x; };
+struct SafeString {
+  unsigned len;
+  struct B *ss;
+  _(invariant \mine(ss))
+};
+
+void foo(struct SafeString *s)
+  _(maintains \wrapped(s))
+  _(writes s)
+{
+  _(unwrapping s) {
+    s->len = s->len;
+  }
+}
+
+`
+Verification of SafeString#adm succeeded.
+Verification of foo succeeded.
+`

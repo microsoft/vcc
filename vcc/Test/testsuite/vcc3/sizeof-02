@@ -1,0 +1,8 @@
+#include <vcc.h>
+
+void foo() {
+	_(assert sizeof(__w64 int) == sizeof(__int64))
+}
+`
+Verification of foo succeeded.
+`

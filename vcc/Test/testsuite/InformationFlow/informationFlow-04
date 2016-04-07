@@ -1,0 +1,39 @@
+#include <vcc.h>
+
+void explicitDowngradeSuccess()
+{
+	int h;
+	int x = 0;
+	
+	if (h > 0) x = 1;
+	if (test_classifier(lambda(obj_t p; true),x == 0)) x = 1;
+
+	downgrade_to(x,1);
+	assert(is_low(x));
+}
+
+void explicitDowngradeFailure()
+{
+	int h;
+	int x = 0;
+
+	if (h > 0) x = 1;
+	if (test_classifier(lambda(obj_t p; true), x == 0)) x = 2;
+
+	downgrade_to(x,1);
+	assert(is_low(x));
+}
+
+void explicitDowngradeContextFail()
+{
+	int h;
+
+	if (h == 0) downgrade_to(h,0);
+}
+`
+Verification of explicitDowngradeSuccess succeeded.
+Verification of explicitDowngradeFailure failed.
+testcase(23,20) : error VC9717: Assertion 'x == 1' did not verify.
+Verification of explicitDowngradeContextFail failed.
+testcase(31,14) : error VC9718: Assertion 'context is low' did not verify.
+`

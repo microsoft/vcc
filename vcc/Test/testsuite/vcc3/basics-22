@@ -1,0 +1,12 @@
+#include "vcc.h"
+
+_(dynamic_owns) struct F { int x; };
+
+void f(struct F *f)
+  _(maintains \wrapped(f))
+{
+  _(assert ! ((struct F*)0 \in f->\owns))
+}
+`
+Verification of f succeeded.
+`

@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+_(def \integer f(\integer x) 
+  _(recursive_with g)
+  { return x <= 0 ? 12 : g(x-1) / 2; })
+
+_(logic \integer f1(\integer x) = f(x))
+
+_(def \integer g(\integer y)
+  { return y <= 1 ? 23 : f1(y-1) / 2; })
+`
+Verification of f succeeded.
+Verification of g succeeded.
+`

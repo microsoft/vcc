@@ -1,0 +1,29 @@
+#include <vcc.h>
+
+void testLabelOf()
+{
+	int h;
+	int *x;
+
+	x = &h;
+
+	assert(lblset_leq(current_context(), seclabel_bot));
+	assert(lblset_leq(label_of(label_of(h)), seclabel_bot));
+}
+
+void testLabelOfFail()
+{
+	int h;
+	int *x;
+
+	x = &h;
+
+	assert(lblset_leq(current_context(), seclabel_bot));
+	assert(lblset_leq(label_of(label_of(h)), seclabel_bot));
+	assert(lblset_leq(label_of(h), seclabel_bot));
+}
+`
+Verification of testLabelOf succeeded.
+Verification of testLabelOfFail failed.
+testcase(23,11) : error VC9500: Assertion '_vcc_lblset_leq(_vcc_label_of(h), _vcc_seclabel_bot())' did not verify.
+`

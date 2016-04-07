@@ -1,0 +1,51 @@
+#include <vcc.h>
+
+struct S { int a; };
+struct T { int a; struct S s; _(invariant \mine(&s)) };
+
+void foo() _(writes {});
+
+vcc_attr("no_infer","all")
+void one(struct T *t _(ghost \claim c))
+  _(always c, t->\closed)
+{
+
+  foo();
+  _(assert \unchanged(t->a)) // should fail
+}
+
+void two(struct T *t _(ghost \claim c))
+  _(always c, t->\closed)
+{
+  foo();
+  _(assert \unchanged(t->a)) // should work
+}
+
+void three(struct T *t _(ghost \claim c))
+  _(always c, t->\closed)
+{
+
+  foo();
+  _(assert \unchanged(t->s.a)) // should fail
+}
+
+void four(struct T *t _(ghost \claim c))
+  _(always c, t->\closed)
+{
+
+  _(assert &t->s \in \domain(c))
+  foo();
+  _(assert \unchanged(t->s.a)) // should work
+}
+
+`
+Verification of T#adm succeeded.
+Verification of one failed.
+testcase(14,12) : error VC9500: Assertion '\old(expr) == expr' did not verify.
+vccp.h(0,0) : error VC9599: (related information) from expansion of '\unchanged(t->a)'.
+Verification of two succeeded.
+Verification of three failed.
+testcase(29,12) : error VC9500: Assertion '\old(expr) == expr' did not verify.
+vccp.h(0,0) : error VC9599: (related information) from expansion of '\unchanged(t->s.a)'.
+Verification of four succeeded.
+`

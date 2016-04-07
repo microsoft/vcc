@@ -1,0 +1,33 @@
+#include <vcc.h>
+
+_(ghost typedef _(record) struct {
+  int x, y;
+} S)
+
+_(def int foo(S s1, S s2)
+{
+  return s1 == s2;
+})
+
+_(def int bar(S s1[int])
+{
+  return s1[7].x;
+})
+
+_(ghost typedef int II[int])
+
+_(def II foo2()
+{
+  return \lambda int x; x;
+})
+
+_(def \bool foo3(II m)
+{
+  return \forall int k; m[k] > 0;
+})
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+Verification of foo2 succeeded.
+Verification of foo3 succeeded.
+`

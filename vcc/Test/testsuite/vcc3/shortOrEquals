@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+void foo() {
+  unsigned short i = 10;
+  i |= (1 << 0);
+}
+
+`
+Verification of foo succeeded.
+`

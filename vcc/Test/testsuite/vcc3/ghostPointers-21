@@ -1,0 +1,15 @@
+#include <vcc.h>
+
+typedef struct T {
+  int b[10];
+} T;
+
+_(ghost void foo(int ^v))
+
+void test() {
+  _(ghost T t)
+  _(ghost foo(& t.b[0]))
+} 
+`
+Verification of test succeeded.
+`

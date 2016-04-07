@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+int a(int *p);
+int q;
+int b(int x)
+{
+  return a(x < 0 ? (void*) 0 : &q);
+}
+`
+Verification of b succeeded.
+`

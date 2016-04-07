@@ -1,0 +1,16 @@
+#include "vcc.h"
+
+struct S {
+  volatile int a[2];
+};
+
+void foo(struct S *p _(ghost \claim c))
+  _(always c, p->\closed)
+{
+  _(atomic p,c) {
+    p->a[1] = 5;
+  }
+}
+`
+Verification of foo succeeded.
+`

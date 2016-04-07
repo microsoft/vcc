@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+void test() 
+_(ensures \false)
+{
+	_(ghost while (1) {})
+}
+`
+testcase(6,10) : warning VC9323: [possible unsoundness]: ghost loop not checked for termination
+Verification of test succeeded.
+`

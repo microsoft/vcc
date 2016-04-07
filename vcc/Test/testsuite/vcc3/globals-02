@@ -1,0 +1,46 @@
+#include <vcc.h>
+
+int x;
+
+struct A {
+  int y;
+
+  _(ghost \claim c)
+
+  _(invariant \mine(c) && \claims(c, (\embedding(&x))->\closed))
+  _(invariant y < (_(by_claim c)(x)))
+};
+
+
+_(ghost _(claimable) struct _GlobalOwner {
+  int dummy;
+  _(invariant \mine(\embedding(&x)))
+} GlobalOwner;)
+
+
+struct A a;
+
+void init()
+  _(writes \universe())
+  _(requires \program_entry_point())
+{
+  _(ghost \claim c)
+
+  x = 42;
+  _(wrap \embedding(&x))
+
+  _(ghost (&GlobalOwner)->\owns =  {\embedding(&x)});
+  _(wrap &GlobalOwner)
+
+  a.y = 12;
+    
+    _(ghost c = \make_claim({&GlobalOwner}, \true);) 
+    _(ghost a.c = c;)
+    _(ghost _(ghost (&a)->\owns =  {c});)
+    _(ghost _(wrap &a))
+}
+`
+Verification of A#adm succeeded.
+Verification of _GlobalOwner#adm succeeded.
+Verification of init succeeded.
+`

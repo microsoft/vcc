@@ -1,0 +1,24 @@
+#include <vcc.h>
+
+_(def \integer f(\integer a)
+  _(decreases a)
+{
+  if (a < 0)
+    return 0;
+  else
+    return f(a - 1) + g(a + a, a);
+})
+
+_(def \integer g(\integer b, \integer a)
+  _(decreases a, b)
+  _(recursive_with f)
+{
+  if (a < 0)
+    return 0;
+  else
+    return f(a - 1) + (b < 0 ? 0 : g(b - 1, a));
+})
+`
+Verification of f succeeded.
+Verification of g succeeded.
+`

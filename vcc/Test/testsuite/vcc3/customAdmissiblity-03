@@ -1,0 +1,23 @@
+#include <vcc.h>
+
+struct B {
+  int y;
+};
+
+struct A {
+  int x;
+  struct B b;
+  
+  _(invariant \this->b.y > 0)
+};
+
+_(ghost _(admissibility)
+void adm_A(struct A* x)
+{
+  _(havoc_others x)
+})
+`
+Verification of A#adm succeeded.
+Verification of adm_A failed.
+testcase(11,15) : error VC8012: invariant(\this->b.y > 0) of A is not admissible.
+`

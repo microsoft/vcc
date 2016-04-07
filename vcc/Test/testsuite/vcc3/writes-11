@@ -1,0 +1,28 @@
+#include <vcc.h>
+
+struct S {
+  int x;
+};
+
+void bar(struct S *a, struct S *b)
+  _(requires \thread_local(b))
+  _(requires b->\valid)
+  _(requires a != b)
+  _(writes \extent(a))
+{
+  a->x = 1;
+  a->x = b->x;
+}
+
+void foo(int *a, int *b)
+    _(requires \thread_local(b))
+    _(requires a != b)
+    _(writes a)
+{
+    *a = 5;
+    *a = *b;
+}
+`
+Verification of bar succeeded.
+Verification of foo succeeded.
+`

@@ -1,0 +1,57 @@
+#include <vcc.h>
+
+struct A {
+  int x;
+  int y;
+};
+
+
+void fooFail(struct A *a)
+  _(writes &a->x)
+{
+  while (1)
+    _(writes &a->x,&a->y)
+  { a->x = 0; }
+}
+
+void fooOk(struct A *a)
+  _(writes &a->x,&a->y)
+{
+  while (1)
+    _(writes &a->x,&a->y)
+  { a->x = 0; }
+}
+
+void fooOkWrap(struct A *a)
+  _(writes a)
+  _(requires \wrapped(a))
+{
+  _(unwrap a)
+  while (1)
+    _(writes &a->x,&a->y)
+  { a->x = 0; }
+}
+
+
+void fooFailWrap(struct A *a)
+  _(writes a)
+  _(requires \wrapped(a))
+{
+  int z;
+  _(unwrap a)
+  _(wrap a)
+  while (1)
+    _(writes &a->x)
+  {
+    z = 0;
+  }
+}
+
+`
+Verification of fooFail failed.
+testcase(13,15) : error VC8011: writes clause of the loop might not be included writes clause of the function.
+Verification of fooOk succeeded.
+Verification of fooOkWrap succeeded.
+Verification of fooFailWrap failed.
+testcase(44,15) : error VC8011: writes clause of the loop might not be included writes clause of the function.
+`

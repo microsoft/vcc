@@ -1,0 +1,15 @@
+
+#include <vcc.h>
+
+
+_(logic int f(int x) = (x & 8))
+#define g(x) ((int) (x & 8))
+
+void test() {
+	_(assert \forall int y; f(y) == g(y)) // succeeds
+	_(assert f(3) == g(3)) // fails
+} 
+
+`
+Verification of test succeeded.
+`

@@ -1,0 +1,19 @@
+#include "vcc.h"
+
+_(ghost typedef _(record) struct R {
+    int x;
+} R)
+
+_(ghost typedef _(record) struct S {
+  int y;
+} S)
+
+_(ghost void foo(R abs, S conc)
+{
+    _(assert abs==abs.x)
+    _(assert abs == conc)
+})
+`
+testcase(13,14) : error VC0000: Operator '==' cannot be applied to operands of type 'R' and '__int32'.
+testcase(14,14) : error VC0000: Operator '==' cannot be applied to operands of type 'R' and 'S'.
+`

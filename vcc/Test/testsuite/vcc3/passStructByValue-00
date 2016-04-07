@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+typedef unsigned __int64 UINT64;
+
+typedef struct _S { UINT64 v; } S;
+
+void foo(S s)
+{
+  s.v = 0UI64;
+}
+
+`
+Verification of foo succeeded.
+`

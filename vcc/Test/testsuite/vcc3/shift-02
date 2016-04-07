@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+void foo() {
+	unsigned __int8 a = 4;
+	unsigned __int32 i = a << 12;
+}
+
+void bar(int j) 
+	_(requires 0 <= j && j < 32)
+{
+	unsigned __int8 a = 4;
+	__int32 i = _(unchecked)(a << j);
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

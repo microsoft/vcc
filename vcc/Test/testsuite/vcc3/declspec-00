@@ -1,0 +1,21 @@
+#include <vcc.h>
+
+typedef unsigned __int32 UINT32;
+
+typedef struct _S
+{
+    struct __declspec(align(4))
+    {
+        __int32 Eflags;
+    } Frame32;
+} S;
+
+typedef struct _T
+{
+    struct __declspec(align(4))
+    {
+        UINT32 Eflags;
+    } Frame32;
+} T;
+`
+`

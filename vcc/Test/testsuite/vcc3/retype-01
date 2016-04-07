@@ -1,0 +1,20 @@
+
+#include <vcc.h>
+
+typedef struct _S {
+	int a;
+} S;
+
+typedef struct _T {
+	volatile S *s;
+} T;
+
+void foo(void *p, T *t)
+	_(requires _(retype)(volatile S *)p == t->s)
+{
+	_(assert _(retype)(volatile S *)p == t->s)
+}
+
+`
+Verification of foo succeeded.
+`

@@ -1,0 +1,11 @@
+#include <vcc.h>
+void foo(unsigned __int8 u) 
+  _(requires u > 0)
+{
+  unsigned __int32 a = 5;
+  a += (u - 1);
+}
+
+`
+Verification of foo succeeded.
+`

@@ -1,0 +1,37 @@
+#include <vcc.h>
+
+struct X {
+  volatile int x ;
+  volatile int y ;
+  _(invariant !y ==> x == 0)
+  _(invariant y ==> x > \old(x))
+};
+
+void f()
+{
+struct X x;
+x.x = 0;
+x.y = 0;
+_(wrap &x)
+_(atomic &x){
+  x.y = 1;
+  x.x = 2;
+}
+_(assert \inv(&x))
+_(assert \false)
+}
+
+
+struct A2 {
+  volatile int p;
+  volatile int q;
+
+  _(invariant \old(p)!=0 ==> q<7 && \unchanged(p))
+};
+`
+Verification of X#adm failed.
+testcase(7,15) : error VC8013: invariant(y ==> x > \old(x)) is not admissible (stuttering).
+Verification of A2#adm failed.
+testcase(29,30) : error VC8013: invariant(\old(p)!=0 ==> q<7) is not admissible (stuttering).
+Verification of f succeeded.
+`

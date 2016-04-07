@@ -1,0 +1,27 @@
+#include "vcc.h"
+
+typedef struct _TEST{
+  int dummy;
+  _(ghost \claim a)
+} TEST, *PTEST;
+
+
+
+_(ghost _(pure) \bool Fun(PTEST a _(ghost \claim c))
+  _(reads a) 
+  _(requires a->\valid)
+  _(requires \thread_local(a))
+  _(ensures \result == (a->a == c))
+{
+  return a->a == c;
+})
+
+void foo(PTEST a)
+{
+  _(ghost \bool m[\claim] = (\lambda \claim cl; (Fun(a, cl))))
+} 
+`
+Verification of Fun succeeded.
+Verification of foo succeeded.
+Verification of Fun#reads succeeded.
+`

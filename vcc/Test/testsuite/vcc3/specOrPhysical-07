@@ -1,0 +1,47 @@
+#include <vcc.h>
+
+struct S {
+  int a;
+};
+
+_(ghost 
+void foo(_(out struct S ^p))
+  _(ensures \wrapped(p))
+{
+  struct S ^result = \alloc<struct S>();
+  _(wrap result)
+  p = result;
+})
+
+_(ghost 
+struct S ^foo1()
+  _(ensures \wrapped(\result))
+{
+  struct S ^result = \alloc<struct S>();
+  _(wrap result)
+  return result;
+})
+
+_(ghost 
+void bar() {
+  struct S ^x;
+  foo(_(out x));
+  _(assert \wrapped(x))
+  _(assert x->\valid)
+  _(assert (x->\valid && \ghost(x)))
+})
+
+_(ghost 
+void bar1() {
+  struct S ^x;
+  x = foo1();
+  _(assert \wrapped(x))
+  _(assert x->\valid)
+  _(assert (x->\valid && \ghost(x)))
+})
+`
+Verification of foo succeeded.
+Verification of foo1 succeeded.
+Verification of bar succeeded.
+Verification of bar1 succeeded.
+`

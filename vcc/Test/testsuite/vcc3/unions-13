@@ -1,0 +1,14 @@
+#include "vcc.h"
+
+union X { unsigned a : 8; _(backing_member) int b; } x;
+
+void foo() {
+  union X x;
+  x.a = 5;
+  _(assert x.a == 5)
+  x.b = 10;
+  _(assert x.b == 10)
+}
+`
+Verification of foo succeeded.
+`

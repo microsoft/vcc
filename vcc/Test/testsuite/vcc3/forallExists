@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+typedef __int32 INT32;
+typedef unsigned __int8 UINT8;
+typedef unsigned __int16 UINT16;
+typedef unsigned __int32 UINT32;
+typedef unsigned __int64 UINT64, *PUINT64;
+typedef void VOID, *PVOID;
+
+
+static void shortsort(UINT8 arr[], UINT64 count)
+  _(reads \array_range(arr, count))
+  _(writes \array_range(arr, count))
+  _(maintains \thread_local_array(arr, count))
+  _(requires count > 0)
+  _(ensures \forall UINT64 i; \match_ulong(i) && 0 <= i && i < count ==> \exists UINT64 j; \match_ulong(j) && \thread_local(&arr[j]) && \old(arr[i]) == arr[j])
+  {
+  }
+
+`
+Verification of shortsort succeeded.
+`

@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+_(pure) int bar(int q);
+
+void foo()
+{
+  _(assert \forall int x; { bar(x) } bar(x) > 3 ==> bar(x) > 2)
+}
+`
+Verification of foo succeeded.
+`

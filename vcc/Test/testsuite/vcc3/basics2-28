@@ -1,0 +1,12 @@
+#include "vcc.h"
+
+void foo(void, int a) { }
+
+void bar(int b, void c) { }
+
+void qux(void a) { }
+`
+testcase(3,10) : error VC0000: '' : illegal use of type 'void'.
+testcase(5,17) : error VC0000: 'c' : illegal use of type 'void'.
+testcase(7,10) : error VC0000: 'a' : illegal use of type 'void'.
+`

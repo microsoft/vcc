@@ -1,0 +1,115 @@
+#include "vcc2test.h"
+
+struct A {
+  int a;
+  int b;
+  int c;
+};
+
+struct IntWrap {
+  int i;
+};
+
+struct PtrWrap {
+  int* p;
+};
+
+_(dynamic_owns) union B {
+  struct A x;
+  struct IntWrap y;
+  struct PtrWrap z;
+};
+
+union C {
+  struct { int x; } _(Sx);
+  struct { int *y; } _(Sy);
+};
+
+void foo(union C *b)
+  _(requires (&b->x)->\valid)
+  _(writes &b->x)
+{
+  b->x = 7;
+}
+
+void bar(union B *b)
+  _(requires (&b->x)->\valid)
+  _(writes &b->x.b)
+{
+  b->x.b = 7;
+}
+
+int baz(union B *b)
+  _(requires \thread_local(&b->x))
+{
+  return _(unchecked)(b->x.a + b->x.b);
+}
+
+int foobar(union B *b)
+  _(requires \thread_local(&b->x))
+{
+  _(assert \addr_eq(&b->y.i, &b->x.a))
+  return *(_(retype)&b->y.i);
+}
+
+void reint(union B *b)
+  _(requires &b->z \in b->\owns)
+  _(requires \wrapped(b))
+  _(requires \malloc_root(b))
+  _(writes b)
+{
+  _(unwrap b)
+  _(unwrap &b->z)
+  _(union_reinterpret &b->y);
+  b->y.i = 7;
+  _(assert b->y.i == 7)
+  _(union_reinterpret &b->x);
+  // _(assert b->x.a == 7) TODO
+  b->x.b = 8;
+  _(assert b->x.b == 8)
+  free(b);
+}
+
+void reint2(union B *b)
+  _(requires b->\valid)
+  _(requires \malloc_root(b))
+  _(writes \extent(b))
+{
+  _(union_reinterpret &b->y);
+  b->y.i = 7;
+  _(assert b->y.i == 7)
+  _(union_reinterpret &b->x);
+  // _(assert b->x.a == 7) TODO
+  b->x.b = 8;
+  _(assert b->x.b == 8)
+  free(b);
+}
+
+void reint3(union B *b)
+  _(requires &b->z \in b->\owns)
+  _(requires \wrapped(b))
+  _(requires \malloc_root(b))
+  _(writes b)
+{
+  _(unwrap b)
+  _(unwrap &b->z)
+  reint2(b);
+}
+
+void reint4()
+{
+  union B *b;
+  b = malloc(sizeof(union B));
+  if (b != NULL) reint2(b);
+}
+`
+testcase(45,23) : warning VC9326: [possible unsoundness]: signed overflow (of '+') has undefined behavior in C
+Verification of foo succeeded.
+Verification of bar succeeded.
+Verification of baz succeeded.
+Verification of foobar succeeded.
+Verification of reint succeeded.
+Verification of reint2 succeeded.
+Verification of reint3 succeeded.
+Verification of reint4 succeeded.
+`

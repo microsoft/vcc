@@ -1,0 +1,24 @@
+#include <vcc.h>
+
+void AssignLocalTestOk(){ int x,y,z;
+  x=1;y=2;z=3;
+  _(assert x+y==z)
+}
+
+void AssumeLocalTestOk(){ int x,y,z;
+  _(assume x==1)
+  _(assume y==2)
+  _(assume z==3)
+  _(assert x+y==z)
+}
+
+void AssertTestFails()
+{
+  _(assert \false)
+}
+`
+Verification of AssignLocalTestOk succeeded.
+Verification of AssumeLocalTestOk succeeded.
+Verification of AssertTestFails failed.
+testcase(17,12) : error VC9500: Assertion '\false' did not verify.
+`

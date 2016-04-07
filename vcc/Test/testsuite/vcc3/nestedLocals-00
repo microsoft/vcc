@@ -1,0 +1,28 @@
+
+#include "vcc.h"
+
+void nestedLocals(__int64 j) 
+{
+  if (1) {
+    int i = 1;
+    if (1) {
+      int i = 2;
+      _(assert i == 2)
+    }
+    if (1) {
+      int i = 3;
+      _(assert i == 3)
+    }
+    _(assert i == 1)
+  }
+}
+
+void stackAllocatedArray() {
+  int arr[10];  
+  arr[1] = 1;
+  _(assert arr[1] == 1)
+}
+`
+Verification of nestedLocals succeeded.
+Verification of stackAllocatedArray succeeded.
+`

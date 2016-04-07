@@ -1,0 +1,30 @@
+#include <vcc.h>
+
+typedef int (*foo)(int i)
+  _(requires i > 0)
+  _(ensures \result > 0);
+
+int test(int i)
+  _(requires i > 0)
+  _(ensures \result > 0)
+{
+  return i;
+}
+
+int bar(foo fum)
+  _(reads fum)  _(requires fum->\valid)
+{
+  return fum(0);
+}
+
+int myn(){
+  return bar((foo)&test);
+}
+`
+Verification of test succeeded.
+Verification of bar failed.
+testcase(17,10) : error VC9502: Call 'fum(0)' did not verify.
+testcase(4,14) : error VC9599: (related information) Precondition: 'i > 0'.
+Verification of myn succeeded.
+Verification of myn#fnptr#test_to_foo#1 succeeded.
+`

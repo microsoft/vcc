@@ -1,0 +1,25 @@
+#include <vcc.h>
+
+struct S {
+  int a;
+  _(ghost int b)
+};
+
+struct T {
+  struct S s;
+  _(ghost struct S r)
+};
+
+void foo(struct T *p) {
+  _(ghost int *i1 = &(p->s.b))
+  _(ghost int *i1 = &(p->r.a))
+}
+
+void bar(struct T ^p) {
+  _(ghost int *i1 = &(p->s.a))
+}
+`
+testcase(14,21) : error VC0000: Cannot implicitly convert type 'int^' to 'int*'.
+testcase(15,21) : error VC0000: Cannot implicitly convert type 'int^' to 'int*'.
+testcase(19,21) : error VC0000: Cannot implicitly convert type 'int^' to 'int*'.
+`

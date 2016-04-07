@@ -1,0 +1,13 @@
+#include <vcc.h>
+
+void f(void) {}
+int main() {
+    void(*pf[2])(void);
+    pf[0] = f;
+    return 0;
+}
+`
+Verification of f succeeded.
+Verification of main succeeded.
+Verification of main#fnptr#f_to_pf#1 succeeded.
+`

@@ -1,0 +1,33 @@
+#include <vcc.h>
+
+struct S {
+  int a;
+  int b;
+};
+
+struct T {
+  int x;
+  struct S s;
+  int y;
+};
+
+#ifdef VERIFY
+template<typename T>
+T read_typed(T *t)
+    _(requires t->\valid)
+    ;
+#endif
+
+void foo(struct T *p)
+  _(requires \wrapped(p))
+{
+  int i,j;
+  _(assert (&p->s)->\valid)
+  i = read_typed(&(p->s.a));
+  _(assert (&p->s)->\valid)
+  j = read_typed(&(p->s.a));
+}
+`
+testcase(16,1) : error VC9693: Cannot return value of generic type 'T'
+testcase(17,16) : error VC9691: Expression 't' is of generic type 'T'; only pointers to generic types are supported.
+`

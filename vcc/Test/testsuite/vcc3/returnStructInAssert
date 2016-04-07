@@ -1,0 +1,34 @@
+#include <vcc.h>
+#include <sal.h>
+
+typedef unsigned __int64 UINT64, *PUINT64;
+
+struct _stm;
+typedef struct _stm stm, *pstm;
+ 
+typedef struct _sti{
+  UINT64 a[16];
+  UINT64 b;
+  pstm   pstc;
+};
+ 
+typedef struct _sti sti, *psti;
+
+struct StAbsT
+{
+	sti el;
+};
+
+_(ghost _(pure) StAbsT AFStm(UINT64 b) _(ensures \result.el.b == b))
+
+void func(__in UINT64 b, PUINT64 Value)
+  _(writes Value)
+  _(ensures *Value == AFStm(b).el.b)
+{
+  *Value = b;
+  _(assert *Value == AFStm(b).el.b)
+}
+
+`
+Verification of func succeeded.
+`

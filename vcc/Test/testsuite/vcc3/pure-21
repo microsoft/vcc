@@ -1,0 +1,47 @@
+#include "vcc.h"
+
+
+_(ghost _(pure) int foo(int x)
+  _(ensures \result == \result + 0);)
+
+
+
+_(ghost _(pure) int bar(int x)
+  _(ensures \result == x + 2)
+  _(ensures \result == x + 2);)
+
+
+
+_(ghost _(pure) int baz(int x)
+  _(ensures \result < 3);)
+
+
+
+_(ghost _(pure) int baz2(int x)
+  _(ensures x == \result + 3);)
+
+
+
+_(ghost _(pure) int ok1(int x)
+  _(ensures \result == x + 2);)
+
+
+
+
+_(ghost _(pure) int ok2(int x)
+  _(ensures x + 2 == \result);)
+
+
+void usecase()
+{
+_(assert foo(1)+bar(1)+baz(1)+ok1(1)+ok2(1)+baz2(3) == 3)
+}
+
+`
+testcase(4,11) : warning VC9306: [possible unsoundness]: '\result' cannot be used recursively in a pure function definition
+testcase(11,13) : warning VC9309: [possible unsoundness]: value of '\result' was already defined in this pure function contract (as '\result')
+testcase(15,11) : warning VC9310: [possible unsoundness]: a non-equality postcondition in a pure function (not _(ensures \result == ...))
+testcase(21,13) : warning VC9307: [possible unsoundness]: form of a pure function postcondition is neither '\result == ...' nor '\result.x.y.z == ...' (it is: +(result, 3))
+Verification of usecase failed.
+testcase(37,10) : error VC9500: Assertion 'foo(1)+bar(1)+baz(1)+ok1(1)+ok2(1)+baz2(3) == 3' did not verify.
+`

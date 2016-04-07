@@ -1,0 +1,13 @@
+`/smoke 
+#include "vcc.h"
+
+int foo(int *i, int *j) 
+	_(requires *i > 0 && *j > 0)
+	_(requires \thread_local(i) && \thread_local(j))
+{
+	int x = (*i > 0) && (*j > 0);
+	return x;
+}
+`
+Verification of foo succeeded.
+`

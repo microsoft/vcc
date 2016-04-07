@@ -1,0 +1,8 @@
+#!/bin/sh
+
+for seed in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 ; do
+ for d in 5* ; do
+   echo "DIR $d $seed"
+  ./$d/bin/vcc2.exe /st /v /z:/rs:$seed "$@"
+ done
+done | tee log

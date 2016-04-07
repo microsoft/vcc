@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+struct
+{
+  __int64 :12;
+  __int64 VirtualPageNumber:36;
+  __int64 :16;
+};
+`
+`

@@ -1,0 +1,19 @@
+#include <vcc.h>
+
+_(datatype D {
+	case A();
+	case B(D x);
+})
+
+_(def \bool f(D d)
+{
+	switch(d) {
+	case B(x): _(assert d == B(x)); return \false;
+        case A(): return \true;
+	}
+	return \true;
+}
+)
+`
+Verification of f succeeded.
+`

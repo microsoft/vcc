@@ -1,0 +1,21 @@
+#include <vcc.h>
+
+typedef struct { int x; } A;
+
+void writes_p(A* p)
+  _(writes p)
+{
+  p->x = 12;
+}
+
+void writes_singleton_p(A* p)
+  _(writes {p})
+{
+  p->x = 12;
+}
+`
+Verification of writes_p failed.
+testcase(8,3) : error VC8507: Assertion 'p->x is writable' did not verify.
+Verification of writes_singleton_p failed.
+testcase(14,3) : error VC8507: Assertion 'p->x is writable' did not verify.
+`

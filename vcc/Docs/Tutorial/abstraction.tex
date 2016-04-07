@@ -1,0 +1,321 @@
+\section{Ghosts}
+\label{sect:ghosts}
+
+VCC methodology makes heavy use of \Def{ghost} data and code - data
+and code that are not seen by the C compiler (and therefore are not
+part of the executable), but are included to aid reasoning about the
+program. Part of the VCC philosophy is that programmers would rather
+writing extra code than have to drive interactive theorem provers, so
+ghosts are the preferred way to explain to VCC why your program works.
+
+We have already seen some ghost fields of ordinary data structures
+(e.g. \vcc{\closed}, \vcc{\owner}, \vcc{\owns}m \vcc{\valid}, etc.) as
+well as built-in pieces of ghost code (e.g. \vcc{_(wrap ...)} and
+\vcc{_(unwrap ...)}). This section is about how to write your own
+ghost code. 
+
+Our first tyical use of ghost data is to express data abstaction. If
+you implement an abstract set as a list, it is good practice to expose
+to the client only the set abstraction, while keeping the list
+implementation private to the implementation of the data type. One way
+to do this is to store the abstract value in a ghost field and update
+it explicitly in ghost code when operating on the data
+structure\footnote{ An alternative approach is to write a pure ghost
+  function that takes a concrete data structure and returns its
+  abstract value.  The disadvantage of this approach is that for
+  recursive structures like lists, the abstraction function is
+  likewise recursive, and so reasoning with it requires substantial
+  guidance from the user.}. Functions operating on the data structure
+are specified in terms of their effect on the abstract value only; the
+connection between the abstract and concrete values is written as an
+invariant of the data structure.
+
+VCC's mathematical types are usually better suited to representing these
+abstract values than C's built-in types. Here, we will use VCC maps.
+Recal that a declaration \vcc{int m[T*]} defines a map \vcc{m} from
+\vcc{T*} to \vcc{int}; for any pointer \vcc{p} of type \vcc{T*}
+\vcc{m[p]} gives the \vcc{int} to which \vcc{m} maps \vcc{p}.
+A map \vcc{bool s[int]} can be thought of as a set of \vcc{int}s: the operation
+\vcc{s[k]} will return true if and only if the element \vcc{k} is in the set \vcc{s}.
+
+For example, here is a simple example of a set of \vcc{int}s implemented with an array:
+\vccInput[linerange={types-init}]{c/7.0.arraySet.c}
+
+\noindent 
+The map \vcc{mem} gives the abstract value of the set. The map
+\vcc{idx} says where to find each abstract member of the set. We could
+have eliminated \vcc{idx} and instead used existential quantification
+to say that every member of the abstract set occurs somewhere in the
+list. The disadvantage of using an explicit witness like \vcc{idx} is
+that we have to update it appropriately. The advantage is that the
+prover doesn't have to guess how to instantiate such existential
+quantifiers, which makes the verification more robust.
+
+Here is the initializer for these sets:
+\vccInput[linerange={init-mem}]{c/7.0.arraySet.c} 
+\noindent
+The standard form of a constructor is to take some raw
+memory\footnote{
+In C, it is normal for constructors to take a pointer to raw memory,
+to that they can be used to make objects that are embedded within data
+structures. 
+}, and
+wrap it, while establishing some condition on its abstract value.
+Values of maps are constructed using \Def{lambda expressions}.  The
+expression \vcc{\lambda T x; E} returns a map, which for any \vcc{x}
+returns the value of expression \vcc{E} (which can mention \vcc{x}).
+If \vcc{S} is the type of \vcc{E}, then this map is of type
+\vcc{S[T]}.
+
+Here is the membership test:
+\vccInput[linerange={mem-add}]{c/7.0.arraySet.c} 
+\noindent
+As usual, an accessor is marked as \vcc{_(pure)}, and reads only the
+abstract value of the set. Finally, here is a function that adds a new
+element to the set:
+\vccInput[linerange={add-del}]{c/7.0.arraySet.c} 
+\noindent
+Note that in addition to updating the concrete representation, we also
+update the abstract value and the witness. This example shows another
+way to update a map, using array syntax; if \vcc{m} is a variable of
+type \vcc{S[T]}, \vcc{e} is of type \vcc{T}, and \vcc{e2} is of
+type \vcc{S},  then the statement \vcc{m[e1] = e2} abbreviates the
+statement 
+\vcc{m = \lambda T v; v == e1 ? e2 : m[v]}.
+
+\subsection*{Exercises}
+\begin{enumerate}
+\item Extend \vcc{ArraySet} with a function that deletes a value from
+  the set. 
+\item Modify \vcc{ArraySet} to keep the set without duplication.
+\item Modify \vcc{ArraySet} to keep the elements ordered. Use binary
+  search to check for membership and for insertion of a new element.
+\item Extend \vcc{ArraySet} with a function that adds the contents of
+  one set into another. (Try to calculate the size of the combined list
+  before modifying the target, so that you can fail gracefully.)
+\end{enumerate}
+
+\subsection{Linked Data Structures}
+As an example of a more typical dynamic data structure, consider 
+the following alternative implementation of \vcc{int} sets as lists:
+
+\vccInput[linerange={types-init}]{c/7.1.list0.c}
+
+\noindent
+The invariant states that:
+\begin{itemize}
+\item the list owns the head node (if it's non-null)
+\item if the list owns a node, it also owns the next node (provided it's non-null)
+\item if the list owns a node \vcc{n} then \vcc{n->data} is in \vcc{val};
+\item if \vcc{v} is in \vcc{val}, then it is the \vcc{data} for some
+  node (\vcc{find[v]}) owned by the list.
+\end{itemize}
+
+Note that we have chosen to put all of the list
+invariants in the \vcc{List} data structure, rather than in the nodes
+themselves (which would also work). A disadvantage of putting all of
+the invariants in the \vcc{List} type is that when you modify one of
+the nodes, you have to check these invariants for all of the nodes
+(although the invariants are easy to discharge for nodes that are not
+immediate neighbors). Some advantages of this choice is that it is
+easier to modify all of the nodes as a group, and that the same
+\vcc{Node} type can be used for data structures with different
+invariants (e.g., cyclic lists).
+
+Here is the implementation of the \vcc{add} function:
+
+\vccInput[linerange={endspec-member}]{c/7.1.list0.c}
+
+\noindent
+We allocate the node, unwrap the list, initialize the new node and
+wrap it, and prepend the node at the beginning of the list.  Then we
+update the owns set to include the new node, update the abstract value
+\vcc{val} and the witness \vcc{find}, and finally wrap the list up
+again (when exiting the \vcc{_(unwrapping)} block). 
+
+The invariants of our list say that the abstract value contains
+exactly the \vcc{data} fields of nodes owned by the list. It also said
+that pointers from list nodes take you to list nodes. But it doesn't
+say that every node of the list can be reached from the first node;
+the invariants would hold if, in addition to those nodes, the list
+also owned some unrelated cycle of nodes. As a result, the natural
+algorithm for checking if a value is in the set (by walking down the
+list) won't verify; if it finds a value, its data is guaranteed to be
+in the set, but not vice-versa. Moreover, the invariants aren't strong
+enough to guarantee that the list itself is acyclic.
+
+Thus, we need to strengthen the invariant of the list to guarantee
+that every node of the list is reachable from the head. This cannot be
+expressed directly with first-order logic, but there are several ways
+to express this using VCC using ghost data:
+\begin{itemize}
+\item you can keep track of the ``depth'' of each list node (i.e.,
+  how far down the list it appears);
+\item you can maintain the abstract sequence of list nodes (i.e., a
+  map from \vcc{\natural} to nodes, along with a \vcc{\natural} giving
+  the length of the sequence);
+\item you can maintain the ``reachability'' relationship between
+  ordered pairs of nodes.
+\end{itemize}
+
+For this example, we'll use the first approach. We add the following 
+to the definition of the \vcc{List} type:
+
+\vccInput[linerange={moreList-noMoreList}]{c/7.2.list.c}
+
+The new invariants say that the head (if it exists) is at depth 0 (and
+is the only node at depth 0), that depth increases by 1 when following
+list pointers, and that you can never ``miss'' a node by following the
+list. (These are similar to the invariants you would use if each node
+had a key and you were maintaining an ordered list.)
+
+The only change to the code we've previously seen is that when adding
+a node to the list, we have to also update the node indices:
+\begin{VCC}
+l->idx = (\lambda Node *m; m == n ? 0 : l->idx[m] + 1);
+\end{VCC}
+
+We can now write and verify the membership test:
+\vccInput[linerange={member-out}]{c/7.2.list.c}
+
+\noindent Note that the second invariant of the loop is analogous to the
+invariant we would use for linear search in an array.
+
+The \vcc{_(assert)} is an example of a situation where VCC needs a
+little bit to see why what you think is true really is true. The loop
+invariant says that there are no nodes in the list with key \vcc{k},
+but VCC on its own will fail to make the appropriate connection to
+\vcc{l->val[k]} via \vcc{l->find[k]} without this hint (which is just
+giving an instantiation for the last list invariant).
+
+\subsection*{Exercises}
+\begin{enumerate}
+\item
+Modify the list implementation so that on a successful membership
+test, the node that is found is moved to the front of the list. (Note
+that the resulting function is no longer pure.)
+\item 
+Implement sets using sorted lists.
+\item
+Implement sets using binary search trees.
+\end{enumerate}
+
+
+\subsection{Sorting revisited}
+\label{sect:sorting-perm}
+
+In \secref{sorting} we verified that bubblesort returns a sorted array.
+But we didn't prove that it returned a permutation of the input
+array\footnote{For arrays in which no value occurs more than once,
+  this property can be expressed that every value in the output array
+  is in the input array. But with multiple occurrances, this would
+  require stating that the multiplicity of each value is the same, a
+  property that isn't first-order.
+}. To express this postcondition, we return a ghost map, which states the
+exact permutation that the sorting algorithm produced:
+
+\vccInput[linerange={begin-out}]{c/7.3.sort.c}
+
+This sample introduces two new features.
+The first is the output ghost parameter \vcc{_(out Perm p)}.
+An \vcc{out} parameter is used to return data from the function to the
+caller. (One could also do it with a pointer to ghost memory, but
+using an \vcc{out} parameter is simpler and more efficient.)
+
+To call \vcc{sort()} you need to supply a local variable to hold
+the permutation when the function exits, as in:
+\begin{VCC}
+void f(int *buf, unsigned len)
+  // ...
+{
+  _(ghost Perm myperm; )
+  // ...
+  sort(buf, len _(out myperm));
+}
+\end{VCC}
+The effect is to copy the value of the local variable \vcc{p} of the
+function to the variable \vcc{myperm} on exit from the function.
+
+The second feature is the use of \Def{record} types. A record type is
+introduced by putting \vcc{_(record)} before the definition of a 
+like a \vcc{struct} type. They are mathematically cleaner than
+\vcc{structs}, in several ways:
+\begin{itemize}
+\item A record is a single, indivisible value (like a map), so you
+  don't have to worry about aliasing individual fields of a record.
+\item Two records are equal iff their corresponding fields are
+  equal. Conversely, C doesn't allow \vcc{==} on struct values
+  (primarily because padding makes the meaning problematic).
+\item Because \vcc{==} makes sense on records, a record type can be
+  used as the domain of a map, whereas a \vcc{struct} type cannot.
+\end{itemize}
+However, records also have some limitations relative to \vcc{struct}s:
+\begin{itemize}
+\item Records are values, not objects, so records cannot have
+  invariants.
+\item Record fields can be of record type, but cannot be of compound
+  (\vcc{struct} or \vcc{union}) type.
+\item You can't take the address of a field of a record (and so cannot
+  pass it to a function that updates it). However, you can use record
+  fields as \vcc{_(out)} parameters.
+\end{itemize}
+
+\subsection{Inductive Proofs}
+Sometimes, you will want to verify programs that depend on
+mathematics that is too hard for VCC to do on its own, typically
+because they require guidance. In VCC, you do this by writing ghost
+code. In particular, you can do inductive proofs by writing loops or
+by writing recursive functions, with the loop invariant or function
+spec serving as the inductive hypothesis. Because C doesn't allow the
+definition of anonymous recursive functions, loops are usually more
+convenient. 
+
+Here is a small example of using ghost code to prove the formula for
+triangular numbers:
+
+\vccInput[linerange={begin-end}]{c/7.4.math.c}
+
+Sometimes, you might want to use inductively defined types other than
+\vcc{\natural} or \vcc{\integer}. VCC lets you define your own
+(ghost) inductive types, much like modern functional languages, but
+using the following C-like syntax:
+
+\vccInput[linerange={begin-app}]{c/7.5.lists.c}
+
+This defines an inductive datatype of lists, where a list is either of
+the empty list \vcc{nil()} or an \vcc{int} followed by a
+list. Values of abstract types are deconstructed using the following
+\vcc{switch} construct (corresponding to matching expressions in
+functional languages):
+
+\vccInput[linerange={app-appAssoc}]{c/7.5.lists.c}
+
+Note that unlike the usual C \vcc{switch} statement, fallthrough from
+one case to the next is not allowed (since the scope of variables like
+\vcc{v} and \vcc{l} introduced by the \vcc{case} construct only go to
+the end of the case). Note that VCC automatically chooses the
+termination measure \vcc{_(decreases size(x), size(y))}, which
+suffices for typical functions where termination follows by structural
+induction. 
+
+We can now prove something about the function we defined:
+
+\vccInput[linerange={appAssoc-rev}]{c/7.5.lists.c}
+
+Note that the recursive call provides the needed inductive case of the
+theorem we're trying to prove. We can similarly use the resulting
+function as a lemma in proving other theorems. 
+
+
+\subsection*{Exercises}
+\begin{enumerate}
+
+\item 
+Verify your favorite sorting functions (quicksort, heapsort,
+mergesort, etc.).
+\item
+Using \vcc{app}, define a recursive function that reverses a
+\vcc{List}. Prove that reversing a list twice gives you the same list
+back. (Hint: you will need some additional lemmas along the way; one
+solution can be found in \vcc{7.5.lists.c}.)
+\end{enumerate}

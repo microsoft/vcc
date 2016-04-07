@@ -1,0 +1,40 @@
+#include <vcc.h>
+
+_(abstract \bool foo(\integer i) { })
+_(abstract \bool qux(\integer i) { })
+_(abstract \bool bar(\integer i)
+  _(requires foo(i))
+  { })
+
+_(def \bool baz(\bool L[\integer])
+  
+{
+  return (\forall \integer n; L[n] ==>
+             foo(n) && bar(n) && foo(n));
+})
+
+_(def \bool baz_fail(\bool L[\integer])
+  
+{
+  return (\forall \integer n; L[n] ==>
+             bar(n) && foo(n));
+})
+
+_(def \bool baz_fail2(\bool L[\integer])
+  
+{
+  return (\forall \integer n; L[n] ==>
+             qux(n) && bar(n) && foo(n));
+})
+`
+Verification of foo succeeded.
+Verification of qux succeeded.
+Verification of bar succeeded.
+Verification of baz succeeded.
+Verification of baz_fail failed.
+testcase(20,14) : error VC9502: Call 'bar(n)' did not verify.
+testcase(6,14) : error VC9599: (related information) Precondition: 'foo(i)'.
+Verification of baz_fail2 failed.
+testcase(27,24) : error VC9502: Call 'bar(n)' did not verify.
+testcase(6,14) : error VC9599: (related information) Precondition: 'foo(i)'.
+`

@@ -1,0 +1,63 @@
+#include "vcc.h"
+
+
+_(dynamic_owns) struct A {
+  int a;
+  int b[10];
+
+  _(invariant a > 0)
+  _(invariant b[0] > 0)
+  _(invariant b[1] > 0)
+};
+
+
+_(dynamic_owns) struct A_wrong1 {
+  int a;
+  int b[10];
+
+  _(invariant b[10] > 0)
+};
+
+_(dynamic_owns) struct A_wrong2 {
+  int a;
+  int b[5];
+
+  _(invariant b[10] > 0)
+};
+
+
+void foo(struct A *x)
+  _(requires \wrapped(x))
+  _(writes x)
+{
+  
+  _(unwrap x)
+  x->a = 10;
+  x->b[0] = 10;
+  x->b[1] = 10;
+  _(wrap x)
+}
+
+void fooWrong1(struct A *x)
+  _(requires \wrapped(x))
+  _(writes x)
+{
+  
+  _(unwrap x)
+  x->b[10] = 10;
+  x->b[11] = 10;
+  x->b[-1] = 10;
+  _(wrap x)
+}
+`
+Verification of A#adm succeeded.
+Verification of A_wrong1#adm failed.
+testcase(18,15) : error VC8012: invariant(b[10] > 0) of A_wrong1 is not admissible.
+Verification of A_wrong2#adm failed.
+testcase(25,15) : error VC8012: invariant(b[10] > 0) of A_wrong2 is not admissible.
+Verification of foo succeeded.
+Verification of fooWrong1 failed.
+testcase(47,3) : error VC8507: Assertion 'x->b[10] is writable' did not verify.
+testcase(48,3) : error VC8507: Assertion 'x->b[11] is writable' did not verify.
+testcase(49,3) : error VC8507: Assertion 'x->b[-1] is writable' did not verify.
+`

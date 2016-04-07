@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+void InterlockedIncrement8(__int8 * Target)
+{
+    __int32 *address;
+    address = (__int32 *) (((__int64) Target) & (~0x3));
+}
+`
+Verification of InterlockedIncrement8 succeeded.
+`

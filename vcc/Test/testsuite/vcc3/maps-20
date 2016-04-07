@@ -1,0 +1,21 @@
+#include "vcc.h"
+
+struct T {
+    int dummy;
+    _(ghost \bool Y[int])
+};
+
+_(ghost _(pure) \bool takes_quantified_variable(int l)
+    _(reads \universe())
+    _(returns \true))
+
+void foo(struct T *t)
+    _(requires \wrapped(t))
+{
+    _(ghost \bool Z[int])
+    _(ghost \bool Y[int])
+    _(ghost Z = (\lambda int l; (t->Y[l] || takes_quantified_variable(l))))
+}
+`
+Verification of foo succeeded.
+`

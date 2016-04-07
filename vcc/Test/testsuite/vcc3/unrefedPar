@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+void foo(int ptrset)
+{
+    (ptrset);
+}
+
+`
+Verification of foo succeeded.
+`

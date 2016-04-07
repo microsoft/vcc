@@ -1,0 +1,45 @@
+` /dt:3
+#include "vcc.h"
+
+struct Node {
+  struct Node *next;
+  unsigned idx;
+};
+
+_(typedef unsigned perm_t[unsigned]; )
+
+
+void levels(struct Mgr *m)
+{
+  int *buf, *buf2;
+  unsigned len;
+  struct Node *q;
+  _(ghost perm_t perm)
+  _(ghost \state s0)
+
+  _(assume \false)
+  
+
+  _(assert \forall unsigned i; i < len ==> perm[i] < len && buf2[perm[i]] == buf[i])
+  _(assert \forall struct Node *n; n \in q->\owns ==> n->next \in q->\owns)
+  _(assert \forall struct Node *n; n \in q->\owns ==> perm[n->idx] == 0)
+
+  _(assert \forall struct Node *n; {:level 0} n \in q->\owns ==> perm[n->idx] == 0)
+  _(assert \forall struct Node *n; {:level 1} n \in q->\owns ==> perm[n->idx] == 0)
+  _(assert \forall struct Node *n; {:level 2} n \in q->\owns ==> perm[n->idx] == 0)
+}
+
+`
+testcase(22,12) : warning VC9122: inferred triggers at {:level 1}: {perm[i]} for '\forall unsigned i; i < len ==> perm[i] < len && buf2[perm[i]] == buf[i])'
+testcase(22,12) : warning VC9122: could have inferred at {:level 2}: {(&)buf2[perm[i]]} {(&)buf[i]}
+testcase(23,12) : warning VC9122: inferred triggers at {:level 0}: {n->next \in q->\owns} {:hint n->next \in q->\owns} for '\forall struct Node *n; n \in q->\owns ==> n->next \in q->\owns)'
+testcase(23,12) : warning VC9122: could have inferred at {:level 2}: {n->next}
+testcase(24,12) : warning VC9122: inferred triggers at {:level 0}: {n \in q->\owns} {:hint n \in q->\owns} for '\forall struct Node *n; n \in q->\owns ==> perm[n->idx] == 0)'
+testcase(24,12) : warning VC9122: could have inferred at {:level 1}: {perm[n->idx]},  at {:level 2}: {n->idx}
+testcase(26,12) : warning VC9122: inferred triggers at {:level 0}: {n \in q->\owns} {:hint n \in q->\owns} for '\forall struct Node *n; {:level 0} n \in q->\owns ==> perm[n->idx] == 0)'
+testcase(26,12) : warning VC9122: could have inferred at {:level 1}: {perm[n->idx]},  at {:level 2}: {n->idx}
+testcase(27,12) : warning VC9122: inferred triggers at {:level 1}: {n \in q->\owns} {:hint n \in q->\owns} {perm[n->idx]} for '\forall struct Node *n; {:level 1} n \in q->\owns ==> perm[n->idx] == 0)'
+testcase(27,12) : warning VC9122: could have inferred at {:level 2}: {n->idx}
+testcase(28,12) : warning VC9122: inferred triggers at {:level 2}: {n \in q->\owns} {:hint n \in q->\owns} {perm[n->idx]} {n->idx} for '\forall struct Node *n; {:level 2} n \in q->\owns ==> perm[n->idx] == 0)'
+Verification of levels succeeded.
+`

@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+int foo(int i, int j) {
+		return i;
+}
+
+void bar() {
+	int i = 5;
+	i = i++;
+}
+
+
+`
+testcase(9,2) : warning VC9325: [possible unsoundness]: Writing 'i' may have sequence conflict with other write
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

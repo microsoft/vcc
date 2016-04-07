@@ -1,0 +1,99 @@
+#include <vcc.h>
+
+ _(claimable) struct Struct
+ {
+   int value;
+  
+   _(group  _(claimable) g)
+
+   _(:g)
+   volatile int v;
+
+   
+   _(ghost _(:g) volatile \bool map[unsigned int])
+
+   _(invariant \mine((struct Struct::g*)\this))
+   
+};
+ 
+
+int test2a(struct Struct *s)
+     _(requires \wrapped(s))
+ {
+    _(ghost \claim c)
+
+    _(assert ((struct Struct::g*)s)->\closed)
+
+    _(atomic s) {
+      _(ghost c = \make_claim({(struct Struct::g*)s}, ((struct Struct::g*)s)->\closed))
+    }
+
+    _(atomic c, (struct Struct::g*)s){
+    _(begin_update)
+    _(ghost s->map[5] = \true)
+    };
+    
+ }
+
+int test(struct Struct *s)
+   _(requires \wrapped(s))
+{
+    int tmp;
+
+    _(atomic (struct Struct::g*)s){
+      tmp = s->v;
+    }
+    
+}
+
+ int test3(struct Struct *s)
+     _(requires \wrapped(s))
+ {
+    _(ghost \claim c)
+
+    _(atomic s) {
+      _(assert ((struct Struct::g*)s)->\closed)
+      _(ghost c = \make_claim({(struct Struct::g*)s}, ((struct Struct::g*)s)->\closed))
+    }
+
+
+    _(atomic c, (struct Struct::g*)s){
+    _(begin_update)
+    s->v = 1;
+    };
+ }
+
+  _(claimable) struct Struct1
+ {
+   int value;
+   _(ghost volatile \bool map[unsigned int])
+};
+ 
+  int test1(struct Struct1 *s _(ghost \claim c))
+     _(always c, s->\closed)
+ {
+    _(atomic c, s){
+    _(begin_update)
+    _(ghost s->map[5] = \true)
+    };
+ }
+
+  int test2(struct Struct1 *s _(ghost \claim c))
+     _(requires \wrapped(s))
+ {
+ //  spec(c = claim((struct Struct::g*)s, closed((struct Struct::g*)s));)*/
+
+    _(atomic s){
+    _(begin_update)
+    _(ghost s->map[5] = \true)
+    };
+    
+ }
+`
+Verification of Struct#adm succeeded.
+Verification of test2a succeeded.
+Verification of test succeeded.
+Verification of test3 succeeded.
+Verification of test1 succeeded.
+Verification of test2 succeeded.
+`

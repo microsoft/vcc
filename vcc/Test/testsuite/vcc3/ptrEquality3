@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+typedef struct _T { int a; } T;
+
+void test(T* p)
+_(requires \wrapped(p))
+{
+ T * pp = (T *)(void *) p;
+ _(assert pp == p) // succeeds
+
+ void * vp = (void *) p;
+ T * q = (T *) vp;
+ _(assert q == p) // fails
+}
+
+`
+Verification of test succeeded.
+`

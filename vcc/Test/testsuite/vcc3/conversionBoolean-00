@@ -1,0 +1,26 @@
+#include <vcc.h>
+// Casting various number to Boolean used to cause incorrect IL to be generated
+
+
+int main (){
+  
+  short v1 =1;
+  unsigned v2 =1;
+  char v3 = 1;
+  long v4 = 1;
+  long long v5 =1;
+  
+  int count =6;
+
+  if (v1) {count--; } else _(assert 0)
+  if (v2) {count--;} else _(assert 0)
+  if (v3) {count--;} else _(assert 0)
+  if (v4) {count--;} else _(assert 0)
+  if (v5) {count--;} else _(assert 0)
+
+  if (1) count--; else _(assert 0)
+  _(assert count == 0)
+}
+`
+Verification of main succeeded.
+`

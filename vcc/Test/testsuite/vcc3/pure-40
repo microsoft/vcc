@@ -1,0 +1,16 @@
+#include "vcc.h"
+
+_(
+_(pure)
+int \Test(int i)
+	_(ensures \result == i);
+)
+
+void foo(int i)
+	_(requires i == \Test(i))
+{
+}
+
+`
+Verification of foo succeeded.
+`

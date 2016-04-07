@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+ unsigned int test(unsigned int i) {
+   i &= (0xFFFFFFFF >> 1) << 1;
+   return i;
+ }
+ int foo() {
+   unsigned int i = test(3);
+   return (int)(i - 2);
+ }
+`
+Verification of test succeeded.
+Verification of foo failed.
+testcase(9,17) : error VC8518: Assertion 'i - 2 fits range of int32_t' did not verify.
+testcase(9,17) : error VC8004: i - 2 might overflow.
+`

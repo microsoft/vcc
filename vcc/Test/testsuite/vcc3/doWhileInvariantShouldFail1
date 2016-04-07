@@ -1,0 +1,42 @@
+#include <vcc.h>
+
+// the current behavior is actually correct, loop invariants in Boogie are not supposed
+// to hold when the loop exits, only upon entrance and when jumping back to the top of
+// the loop
+
+
+
+
+typedef __int32 INT32;
+typedef unsigned __int8 UINT8;
+typedef unsigned __int16 UINT16;
+typedef unsigned __int32 UINT32;
+typedef unsigned __int64 UINT64;
+typedef void VOID;
+
+void bar()
+{
+  int i = 0;
+  
+  do   
+    _(invariant i < 10)
+  {
+    i += 2;
+  } while (i < 10);
+}
+
+void foo()
+{
+  int i = 0;
+  while (i < 10)
+    _(invariant i < 10)
+  {
+    i += 20;
+  }
+}
+
+`
+Verification of bar succeeded.
+Verification of foo failed.
+testcase(32,17) : error VC9500: Loop body invariant 'i < 10' did not verify.
+`

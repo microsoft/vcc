@@ -1,0 +1,18 @@
+#include "vcc.h"
+
+struct S { int a; };
+
+struct Foo { struct S s; _(invariant \mine(&s)) };
+
+void bar(struct Foo *t) 
+  _(requires \wrapped(t))
+  _(writes t)
+  _(ensures \wrapped(&t->s))
+  _(ensures \fresh(&t->s))
+{
+  _(unwrap t)
+}
+`
+Verification of Foo#adm succeeded.
+Verification of bar succeeded.
+`

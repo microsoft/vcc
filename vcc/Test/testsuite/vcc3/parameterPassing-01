@@ -1,0 +1,19 @@
+#include "vcc.h"
+
+
+_(ghost _(no_reads_check)
+_(pure) \objset bar(int *p)
+  _(reads p))
+
+void baz();
+
+void foo(int *x)
+  _(requires x->\valid && x \in bar(x) && \mutable(x))
+  _(writes bar(x))
+{
+  baz();
+  *x = 10;
+}
+`
+Verification of foo succeeded.
+`

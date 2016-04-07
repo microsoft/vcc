@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+int _(pure) foo(int i);
+
+void test() {
+  _(ghost int i = foo(5))
+} 
+`
+Verification of test succeeded.
+`

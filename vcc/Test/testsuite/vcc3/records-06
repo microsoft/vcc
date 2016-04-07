@@ -1,0 +1,46 @@
+#include <vcc.h>
+
+_(record) struct S {
+  int a;
+  int b;
+};
+
+_(ghost struct S foo(struct S s0) 
+  _(ensures \result == s0 / { .a = 11 })
+{
+  return s0 / { .a = 10 };
+})
+
+void bar() {
+  _(ghost struct S s = { 1, 2 })
+  _(ghost s = foo(s))
+  _(assert s.a == 10)
+  _(assert s.b == 2)
+}
+
+_(ghost void baz(struct S s)
+{
+  _(assert s.a <= 0x7ffffff0)
+})
+
+
+_(ghost struct S foo2(int k, struct S s0) 
+  _(ensures \result == (k ? s0 / { .a = 10 } : s0 / { .b = 10 }))
+{
+  if (k)
+    return s0 / { .a = 10 };
+  else
+    return s0 / { .a = 10 };
+})
+`
+Verification of foo failed.
+testcase(11,3) : error VC9501: Post condition '\result == s0 / { .a = 11 }' did not verify.
+testcase(9,13) : error VC9599: (related information) Location of post condition.
+Verification of bar failed.
+testcase(17,12) : error VC9500: Assertion 's.a == 10' did not verify.
+Verification of baz failed.
+testcase(23,12) : error VC9500: Assertion 's.a <= 0x7ffffff0' did not verify.
+Verification of foo2 failed.
+testcase(33,5) : error VC9501: Post condition '\result == (k ? s0 / { .a = 10 } : s0 / { .b = 10 })' did not verify.
+testcase(28,13) : error VC9599: (related information) Location of post condition.
+`

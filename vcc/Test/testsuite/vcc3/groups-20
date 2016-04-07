@@ -1,0 +1,22 @@
+#include "vcc.h"
+
+typedef struct _TEST{
+  int a;
+  _(group gMisc)
+  _(:gMisc) int b;
+  _(invariant :gMisc \mine((struct _TEST*)\this))
+} TEST, *PTEST;
+
+void Init(PTEST inp)
+  _(writes \extent(inp))
+  _(ensures \wrapped(inp::gMisc))
+{
+  inp->a = 0;
+  inp->b = 1;
+  _(wrap inp)
+  _(wrap inp::gMisc)
+}; 
+`
+Verification of _TEST##gMisc#adm succeeded.
+Verification of Init succeeded.
+`

@@ -1,0 +1,30 @@
+#include <vcc.h>
+
+_(ghost
+typedef _(record) struct {
+	\integer x;
+
+} S;
+)
+
+_(def S f(int a[])
+	_(decreases 1)
+{
+	return (S) {.x = 0};
+}
+)
+
+_(def \bool g(int a[], S s)
+	_(recursive_with f)
+	_(decreases a, s)
+{
+//_(assert \false)
+	return s == f(a);
+}
+)
+`
+testcase(22,14) : warning VC9314: [possible unsoundness]: only integer arguments are currently accepted in _(decreases ...) clauses; consider using \size(...)
+testcase(22,14) : warning VC9321: [possible unsoundness]: no measure to decrease when calling 'f(a)'; consider using _(level ...)
+Verification of f succeeded.
+Verification of g succeeded.
+`

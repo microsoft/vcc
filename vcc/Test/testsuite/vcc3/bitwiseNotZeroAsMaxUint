@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+typedef unsigned __int32 UINT32;
+
+UINT32 foo(UINT32 a, UINT32 b)
+  _(requires a <= ((UINT32)~((UINT32)0)) - b)
+{
+  return a + b;
+}
+
+// this is a common pattern that we might want to make work without bitvectors
+
+UINT32 bar(UINT32 a, UINT32 b)
+  _(requires a <= ((UINT32)~((UINT32)0)) - b)
+{
+  return a + b;
+}
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

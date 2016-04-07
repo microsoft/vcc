@@ -1,0 +1,130 @@
+#include "vcc2test.h"
+
+struct A {
+  int x[100];
+};
+
+void donothing()
+{
+}
+
+_(ghost void donothingSpec() { })
+
+void set0(int *arr, size_t sz)
+  _(requires \mutable_array(arr, sz))
+  _(ensures \mutable_array(arr, sz))
+  _(writes \array_range(arr, sz))
+{
+  size_t i;
+  i = 0;
+  while (i < sz) 
+    _(invariant \mutable_array(arr, sz))
+  {
+    donothing();
+    arr[i] = 0;
+    donothing();
+    i = i + 1;
+    donothing();
+  }
+}
+
+_(ghost void set0Spec(int ^arr, size_t sz)
+  _(requires \mutable_array(arr, sz))
+  _(ensures \mutable_array(arr, sz))
+  _(writes \array_range(arr, sz))
+{
+  size_t i;
+  i = 0;
+  while (i < sz) 
+    _(invariant \mutable_array(arr, sz))
+  {
+    donothingSpec();
+    arr[i] = 0;
+    donothingSpec();
+    i = i + 1;
+    donothingSpec();
+  }
+})
+
+void usex()
+{
+  struct A *a;
+
+  a = malloc(sizeof(struct A));
+  if (a != NULL) free(a);
+}
+
+
+_(ghost void usexSafe()
+{
+  struct A ^a;
+
+  a = \alloc<struct A>();
+  \free(a);
+})
+
+void use1()
+{
+  struct A *a;
+
+  a = malloc(sizeof(struct A));
+  if (a != NULL) {
+    donothing();
+    set0(a->x, 100);
+    donothing();
+    set0(&a->x[10], 90);
+    donothing();
+    set0(a->x, 50);
+    donothing();
+
+    free(a);
+  }
+}
+
+
+_(ghost void use1Safe()
+{
+  struct A ^a;
+
+  a = \alloc<struct A>();
+  donothingSpec();
+  set0Spec(&a->x[0], 100);
+  donothingSpec();
+  set0Spec(&a->x[10], 90);
+  donothingSpec();
+  set0Spec(&a->x[0], 50);
+  donothingSpec();
+  \free(a);
+})
+
+/*
+This one randomly runs out of memory. I have no idea why.
+
+void use2()
+{
+  int *x;
+
+  x = malloc(sizeof(int) * 100);
+
+  donothing();
+  set0(x, 100);
+  donothing();
+  set0(x, 50);
+  donothing();
+  set0(&x[10], 90);
+  donothing();
+
+  free(as_array(x, 100));
+}
+*/
+`
+testcase(38,3) : warning VC9323: [possible unsoundness]: ghost loop not checked for termination
+Verification of donothing succeeded.
+Verification of donothingSpec succeeded.
+Verification of set0 succeeded.
+Verification of set0Spec succeeded.
+Verification of usex succeeded.
+Verification of usexSafe succeeded.
+Verification of use1 succeeded.
+Verification of use1Safe succeeded.
+`

@@ -1,0 +1,11 @@
+#include "vcc.h"
+
+_(ghost _(pure) \bool foo(int *arr, unsigned c)
+    _(reads \universe())
+    _(returns \mutable((void[c])arr) ==> \mutable_array(arr,c))
+{ 
+  return \mutable((void[c])arr) ==> \mutable_array(arr,c); 
+})
+`
+Verification of foo succeeded.
+`

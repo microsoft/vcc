@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+void foo(int arg)
+{
+}
+
+void bar(unsigned int arg)
+{
+}
+
+
+void main()
+{
+  foo(0x80000000 + 1);
+  bar(0x80000000 + 1);
+}
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+Verification of main succeeded.
+`

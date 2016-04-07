@@ -1,0 +1,33 @@
+#include <vcc.h>
+#include <sal.h>
+
+typedef unsigned __int32 UINT32;
+
+static const UINT32 A[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+
+void foo(__in_ecount(n) UINT32 *buffer, UINT32 n)
+  _(requires n > 1)
+  _(requires \program_entry_point())
+  _(writes \array_range(buffer, n * sizeof(UINT32)))
+{
+    
+    buffer[0] = 0;
+    buffer[1] = A[8];
+}
+
+static const UINT32 B[9] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+
+void bar(__in_ecount(n) UINT32 *buffer, UINT32 n)
+  _(requires n > 1)
+  _(requires \program_entry_point())
+  _(writes \array_range(buffer, n * sizeof(UINT32)))
+{
+    
+    buffer[0] = 0;
+    buffer[1] = B[8];
+}
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

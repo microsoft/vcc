@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+
+_(logic \bool foo(int i) = bar(i))
+_(logic \bool bar(int i) = foo(i))
+
+void f(int i)
+    _(requires foo(i))
+{
+}
+
+`
+testcase(5,3) : error VC9740: recursive spec macro 'bar'
+testcase(4,28) : error : (Location of symbol related to previous error.)
+testcase(4,3) : error VC9740: recursive spec macro 'foo'
+testcase(5,28) : error : (Location of symbol related to previous error.)
+testcase(8,16) : error : (Location of symbol related to previous error.)
+`

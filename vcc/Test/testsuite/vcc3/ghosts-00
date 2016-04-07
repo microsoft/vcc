@@ -1,0 +1,23 @@
+#include "vcc.h"
+
+struct A {
+  int a;
+   _(ghost int b;) 
+  _(invariant \this->a + \this->b > 0)
+};
+
+void f2(struct A *a)
+  _(requires \wrapped(a) && a->a < 1000)
+  _(writes a)
+{
+  _(assert sizeof(struct A) == sizeof(int))
+
+  _(unwrap a)
+     _(ghost a->b = a->b - 1)
+    a->a = a->a + 1;
+  _(wrap a)
+}
+`
+Verification of A#adm succeeded.
+Verification of f2 succeeded.
+`

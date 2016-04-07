@@ -1,0 +1,28 @@
+#include <vcc.h>
+
+struct S {
+  int a;
+};
+
+_(ghost void bar(struct S *p) 
+  _(requires p->\valid)
+  _(ensures (p->\valid && !\ghost(p)))
+{
+  _(assert (p->\valid && !\ghost(p)))
+})
+
+_(ghost void foo(\object o) 
+  _(requires \wrapped(o))
+  _(requires o \is struct S)
+  _(ensures (o->\valid && !\ghost(o)))
+{
+  struct S *p;
+  _(assert o->\valid)
+  p = (struct S *)o;
+  bar(p); 
+})
+`
+Verification of bar succeeded.
+Verification of foo failed.
+testcase(21,19) : error VC8535: Assertion 'o is in physical pointer range (in cast)' did not verify.
+`

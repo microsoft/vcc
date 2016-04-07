@@ -1,0 +1,18 @@
+#include <vcc.h>
+#include <sal.h>
+
+_Bool f(int *x)
+_(ensures \result == 0);
+
+_Bool f(int *x)
+_(ensures 1)
+{ 
+  return 1;
+}
+
+`
+testcase(7,1) : warning VC9002: The declaration of function 'f' already specifies contracts. Discarding the contracts of the definition.
+Verification of f failed.
+testcase(10,3) : error VC9501: Post condition '\result == 0' did not verify.
+testcase(5,11) : error VC9599: (related information) Location of post condition.
+`

@@ -1,0 +1,19 @@
+#include <vcc.h>
+
+typedef unsigned long long uint64;
+
+typedef struct pte_t{
+        uint64 pfn   :40; // 12: next page frame number
+} pte_t;
+
+int g(uint64 b);
+
+int f() {
+  uint64 a,b;
+  pte_t x;
+
+  g(x.pfn<<12);
+}
+`
+Verification of f succeeded.
+`

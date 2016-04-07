@@ -1,0 +1,40 @@
+#include <vcc.h>
+
+typedef unsigned int UINT;
+typedef unsigned __int8 bool;
+
+#define N ((unsigned) 2)
+
+typedef struct Bakery Bakery;
+
+typedef _(claimable) struct Client {
+	volatile bool choosing;
+	_(ghost volatile \bool waiting)
+	_(ghost \object bakery)
+	_(invariant \on_unwrap(\this, \inv(bakery)))
+	_(invariant \approves(\this->\owner,choosing))
+	_(invariant \approves(bakery,choosing))
+} Client;
+
+typedef struct Bakery {
+	Client *c;
+	_(invariant \forall UINT i; i<N ==> (&c[i])->\closed /*&& typed(&c[i])*/ && (c[i].bakery==\this))
+	_(invariant \forall UINT i; i<N  ==> c[i].choosing)
+} Bakery;
+
+void client(Bakery *server, Client *cl _(ghost UINT idx) _(ghost \claim sc))
+_(requires \wrapped0(sc) && idx<N && \wrapped(cl))
+_(requires \claims(sc,server->\closed && &server->c[idx]==cl))
+_(writes cl,sc)
+{
+	_(atomic sc,server,cl) {
+		// note: the verification goes through if waiting below is replaced with choosing
+		_(ghost cl->waiting = 0)
+		_(bump_volatile_version cl)
+	}
+}
+`
+Verification of Client#adm succeeded.
+Verification of Bakery#adm succeeded.
+Verification of client succeeded.
+`

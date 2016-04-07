@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+int foo(int i, int j) {
+		return i;
+}
+
+int f() { return 1; }
+
+void bar() {
+	int i;
+	int *p = &i;
+	foo((*p = 5),
+		*p);
+}
+
+`
+testcase(12,7) : warning VC9325: [possible unsoundness]: Writing memory '*p = 5' may have sequence conflict with read '*p'
+testcase(13,3) : warning : (Location of symbol related to previous warning.)
+Verification of foo succeeded.
+Verification of f succeeded.
+Verification of bar succeeded.
+`

@@ -1,0 +1,20 @@
+#include <vcc.h>
+
+_(claimable) struct A {
+  _(ghost \claim c)
+  int x;
+};
+
+void foo(struct A *a, struct A *b)
+  _(writes \extent(a), \extent(b))
+  _(requires a != b)
+{
+  
+    _(ghost a->\owns =  {};)
+    _(wrap a)
+    _(ghost b->c = \make_claim({a}, \true);)
+  
+}
+`
+Verification of foo succeeded.
+`

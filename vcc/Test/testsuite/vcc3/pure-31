@@ -1,0 +1,21 @@
+#include <vcc.h>
+
+_(pure) int foo(int *i)
+  _(reads i)
+  _(requires \thread_local(i))
+  _(ensures \result == *i);
+  
+void bar(int *i)
+  _(writes i)
+  _(requires \thread_local(i))
+{
+  _(ghost int p = 1;)
+  int j;
+  *i = 0;
+  _(ghost p = j && \old(foo(i));)
+  _(assert j && \old(*i) ==> p)
+}
+`
+Verification of bar succeeded.
+Verification of foo#reads succeeded.
+`

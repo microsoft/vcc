@@ -1,0 +1,26 @@
+#include <vcc.h>
+
+_(
+void foo(\bool a, \bool b) 
+  _(requires a && !b)
+{
+  _(assert b <== b)
+  _(assert a <== b)
+  _(assert a <== a)
+  _(assert !(b <== a))
+  _(assert b <== b <== a)
+  _(assert a <== b <== a)
+  _(assert b <== a <== b)
+  _(assert a <== a <== b)
+  _(assert !(b <== a <== a))
+  _(assert a <== a <== a)
+  _(assert a <== b <== b)
+  _(assert b <== b <== b)
+  _(assert !(a <== a ==> b))
+  _(assert !((a <== a) ==> b))
+  _(assert a <== (a ==> b))
+}
+)
+`
+Verification of foo succeeded.
+`

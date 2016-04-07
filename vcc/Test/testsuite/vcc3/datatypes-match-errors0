@@ -1,0 +1,88 @@
+#include <vcc.h>
+
+_(datatype Tree {
+  case Node(Tree l, Tree r);
+  case Leaf(int d);
+})
+
+_(ghost 
+int leftmost0(Tree t)
+{
+  switch (t) {
+  case Node(l, r):
+    return leftmost(l);
+  case Leaf_not_found(d):
+    return d;
+  }
+}
+)
+
+_(ghost 
+int leftmost1(Tree t)
+{
+  switch (t) {
+  case Node(l, r):
+    return leftmost(l);
+  case Leaf(d, t):
+    return d;
+  }
+}
+)
+
+_(ghost 
+int leftmost(Tree t)
+{
+  switch (t) {
+  case Node(l, r):
+    return leftmost(l);
+  case Leaf():
+    return d;
+  }
+}
+)
+
+_(ghost 
+int leftmost2(Tree t)
+{
+  switch (t) {
+  case Node(l, l):
+    return leftmost(l);
+  case Leaf(d):
+    return d;
+  }
+}
+)
+
+_(ghost 
+int leftmost3(Tree t)
+{
+  switch (t) {
+  case Node(l, t):
+    return leftmost(l);
+  case Leaf(d):
+    return d;
+  }
+}
+)
+
+_(ghost Tree t0())
+
+_(ghost 
+int leftmost4(Tree t)
+{
+  switch (t) {
+  case Node(l, t0()):
+    return leftmost(l);
+  case Leaf(d):
+    return d;
+  }
+}
+)
+`
+testcase(14,8) : error VC0000: The name 'Leaf_not_found' does not exist in the current context.
+testcase(26,8) : error VC0000: No overload for method 'Leaf' takes '2' arguments.
+testcase(38,8) : error VC0000: No overload for method 'Leaf' takes '0' arguments.
+testcase(48,16) : error VC0000: A local variable named 'l' is already defined in this scope.
+testcase(60,16) : error VC0000: redefinition of formal parameter 't'
+testcase(74,16) : error VC0000: Identifier expected.
+`

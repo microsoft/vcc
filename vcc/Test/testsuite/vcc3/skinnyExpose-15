@@ -1,0 +1,16 @@
+#include "vcc.h"
+
+void foo(int *a)
+	_(maintains \wrapped((void[10])a))
+	_(writes (void[10])a)
+	_(ensures \domain_updated_at((void[10])a, {&a[1]}))
+{
+	_(unwrapping (void[10])a)
+		_(writes &a[1])
+	{
+		a[1] = 0;
+	}
+}
+`
+Verification of foo succeeded.
+`

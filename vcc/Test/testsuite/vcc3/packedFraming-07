@@ -1,0 +1,44 @@
+#include <vcc.h>
+
+struct A { int x; };
+struct B {
+  struct A *a;
+  _(invariant \mine(a))
+};
+struct C {
+  struct B *b;
+  _(invariant \mine(b))
+};
+
+void SetX(struct B *b)
+  _(maintains \wrapped(b))
+  _(ensures b \in \domain(b))
+  _(writes b)
+  _(ensures \domain_updated_at(b, {&b->a->x}))
+{
+  _(unwrapping b, b->a)
+    _(writes &b->a->x)
+  {
+    b->a->x = 10;
+  }
+}
+
+void foo(struct C *c)
+  _(maintains \wrapped(c))
+  _(writes c)
+  _(ensures \domain_updated_at(c, {&c->b->a->x}))
+{
+	_(unwrapping c)
+		_(writes c->b, &c->b->a->x)
+	{
+		SetX(c->b);
+	}
+}
+
+
+`
+Verification of B#adm succeeded.
+Verification of C#adm succeeded.
+Verification of SetX succeeded.
+Verification of foo succeeded.
+`

@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+int main(void)
+{
+_(ghost \bool f[\thread]);
+_(ghost f[\me]=\true;)
+_(assert (\forall \thread t; (t!=\me)) ;)
+}
+`
+Verification of main failed.
+testcase(7,11) : error VC9500: Assertion '\forall \thread t; (t!=\me))' did not verify.
+`

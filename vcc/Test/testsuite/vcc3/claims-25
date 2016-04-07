@@ -1,0 +1,28 @@
+#include <vcc.h>
+
+_(volatile_owns) struct A {
+  int x;
+};
+
+void foo(struct A *a, struct A *aa)
+  _(requires \wrapped(aa) && \wrapped(a) && aa != a)
+  _(writes a)
+{
+  _(atomic aa) {
+    _(ghost  aa->\owns += a);
+  }
+}
+
+void foo2(struct A *a, struct A *aa)
+  _(requires \wrapped(aa) && \wrapped(a) && aa != a)
+  _(writes a)
+{
+  struct A *aa2 = aa;
+  _(atomic aa) {
+    _(ghost  aa2->\owns += a);
+  }
+}
+`
+Verification of foo succeeded.
+Verification of foo2 succeeded.
+`

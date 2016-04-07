@@ -1,0 +1,31 @@
+#include <vcc.h>
+
+struct VS1 {
+  volatile int y;
+  _(ghost volatile \object yappr;)
+
+  _(invariant \approves(yappr, y))
+};
+
+
+struct VS2 {
+  volatile int y;
+  _(ghost struct VS1 * yappr;)
+
+  _(invariant \approves(yappr, y))
+};
+
+
+struct VS3 {
+  volatile int y;
+  _(ghost \object yappr;)
+  \bool f;
+
+  _(invariant f ==> \approves(yappr, y))
+};
+
+`
+testcase(7,15) : error VC9672: volatile field 'yappr' is an approver, but not a self-approver
+testcase(15,15) : error VC9673: approver field 'yappr' should have \object type, it has 'struct VS1*'
+testcase(24,21) : error VC9671: approves(...) can only be used as a top-level invariant
+`

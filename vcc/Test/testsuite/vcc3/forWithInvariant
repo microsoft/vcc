@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+void foo()
+{
+  int i;
+  int j  = 0;
+  
+  for (i = 0; i < 10; i++)
+    _(invariant i * 10 == j)
+  {
+    j += 10;
+  }
+}
+`
+Verification of foo succeeded.
+`

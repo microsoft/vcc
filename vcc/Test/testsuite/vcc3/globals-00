@@ -1,0 +1,20 @@
+#include <vcc.h>
+
+int b;
+
+void admis_B(short *b)
+{
+_(assert \false)
+}
+
+
+void bar()
+  _(requires \program_entry_point())
+{
+  int tmp = b;
+}
+`
+Verification of admis_B failed.
+testcase(7,10) : error VC9500: Assertion '\false' did not verify.
+Verification of bar succeeded.
+`

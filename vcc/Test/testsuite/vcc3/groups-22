@@ -1,0 +1,21 @@
+
+#include <vcc.h>
+
+struct S {
+  _(group G)
+  _(:G) int a;
+  int b;
+  _(:G) int c;
+};
+
+void foo(volatile struct S *s)
+	_(maintains \wrapped(s::G))
+{
+	_(atomic s::G) {
+		s->a = s->c;
+	}
+}
+
+`
+Verification of foo succeeded.
+`

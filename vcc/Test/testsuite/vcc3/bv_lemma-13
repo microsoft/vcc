@@ -1,0 +1,27 @@
+#include <vcc.h>
+
+void foo()
+{
+	int step;
+	unsigned max;
+	unsigned int start;
+	unsigned i;
+	_(assume step == 1 || step == -1);
+	_(assume max <= 16)
+	_(assume start < 4096)
+	unsigned val = start;
+	
+	_(assert {:bv} \forall int i, j; 0 <= i && i < 4096 && (j == 1 || j == -1) ==> i + j >= 0 || (unsigned)(i + j) > 4096)
+	
+	for (i = 0; i < max; i++, val = _(unchecked)(unsigned)((int) val + step))
+		_(invariant val == (unsigned)((int)start + ((int)i * step)) || val >= 4096)
+	{
+		if (val >= 4096) break;
+		_(assert val == (unsigned)((int)start + ((int)i * step)))
+	}
+}
+`
+testcase(16,57) : warning VC9326: [possible unsoundness]: signed overflow (of '+') has undefined behavior in C
+Verification of foo succeeded.
+Verification of foo#bv_lemma#0 succeeded.
+`

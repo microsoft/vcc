@@ -1,0 +1,28 @@
+#include "vcc.h"
+
+struct A {
+	int x;
+};
+
+struct B {
+	int y;
+};
+
+union U {
+	struct A a;
+	struct B b;
+};
+
+void f() {
+	union U u;
+	union U* pu = &u;
+	g();
+}
+
+void g() {
+}
+
+`
+Verification of f succeeded.
+Verification of g succeeded.
+`

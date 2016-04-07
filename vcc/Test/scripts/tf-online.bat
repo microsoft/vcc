@@ -1,0 +1,1 @@
+tfpt online /exclude:Debug,files.txt,*.ncb,*.suo,obj,Build,Nightly*,bin,TestResults,cache-*,tmp,*.user,actual.txt,expected.txt,output.log,log,Release,Shared,*__vcc_split__*,*.i,results.html,Vcc2DXCore.Solution,sx,log-*,tags,Lexer.fs,Parser.fs,Parser.fsi

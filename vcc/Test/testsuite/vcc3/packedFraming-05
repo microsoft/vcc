@@ -1,0 +1,45 @@
+#include "vcc.h"
+
+void works(int *a, int *b)
+    _(maintains \wrapped((void[42])a))
+    _(maintains \wrapped((void[42])b))
+    _(writes (void[42])a)
+    _(requires a!=b) // apparently sufficient for framing here
+    _(ensures \forall unsigned i; i < 42 ==> (\unchanged(b[i])))
+    _(ensures \forall unsigned i; i < 42 ==> (i ? \unchanged(a[i]) : a[i]==5))
+{
+    _(unwrap (void[42])a)
+    a[0] = 5;
+    _(wrap (void[42])a)
+}
+
+void set_5_at_0(unsigned *a)
+    _(maintains \mutable_array(a,42))
+    _(writes a+0)
+    _(ensures *a==5)
+{
+    a[0] = 5;
+}
+
+_(dynamic_owns) struct X {
+  int y;
+};
+
+void problematic(unsigned *a, unsigned *b)
+    _(maintains \wrapped((void[42])a))
+    _(maintains \wrapped((void[42])b))
+    _(writes (void[42])a)
+    _(requires a!=b)
+    _(ensures \forall unsigned i; i < 42 ==> (\unchanged(b[i])))
+    _(ensures \forall unsigned i; i < 42 ==> (i ? \unchanged(a[i]) : a[i]==5))
+{
+    _(assert (void[42])b \in \domain((void[42])b))
+    _(unwrap (void[42])a)
+    set_5_at_0(a);
+    _(wrap (void[42])a)
+}
+`
+Verification of works succeeded.
+Verification of set_5_at_0 succeeded.
+Verification of problematic succeeded.
+`

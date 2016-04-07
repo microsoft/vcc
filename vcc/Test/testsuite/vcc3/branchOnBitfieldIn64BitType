@@ -1,0 +1,31 @@
+#include <vcc.h>
+
+typedef unsigned __int64 UINT64;
+typedef unsigned __int32 UINT32;
+
+typedef union _U {
+  _(backing_member) UINT64 AsUINT64;
+  struct 
+  {
+    UINT32 AccessSize:2;
+  };
+} U, *PU;
+
+void foo() {
+  U u;
+  u.AsUINT64 = 0;
+  switch (u.AccessSize) {
+    case 0:
+      break;
+    case 1:
+      _(assert \false)
+      break;
+    default:
+      _(assert \false)
+      break;
+  }
+}
+  
+`
+Verification of foo succeeded.
+`

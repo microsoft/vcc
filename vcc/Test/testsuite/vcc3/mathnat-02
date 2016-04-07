@@ -1,0 +1,9 @@
+#include <vcc.h>
+_(ghost _(pure) \natural mod(\natural a, \natural b) _(ensures \result == (\natural)12);)
+void foo()
+{
+_(assert \forall unsigned a, b; mod(a + b, b) == (\natural)12)
+}
+`
+Verification of foo succeeded.
+`

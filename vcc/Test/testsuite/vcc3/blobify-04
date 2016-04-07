@@ -1,0 +1,28 @@
+#include <vcc.h>
+
+typedef unsigned char UINT8;
+typedef unsigned short UINT16;
+
+void foo(UINT8* buffer, UINT8 size)
+  _(writes \array_range(buffer, size))
+{
+}
+
+void bar()
+{
+  _(as_array) UINT16 buf[2] = {0, 0};
+  UINT8 *ptr;
+  UINT16 *buf2;
+
+  _(blobify _(UINT16[2])buf)
+  ptr = _(unblobify) _(root_array 4)(UINT8*)buf;
+
+  foo(ptr, 4);
+
+  _(blobify \embedding(ptr))
+  _(unblobify) _(UINT16[2])buf;
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

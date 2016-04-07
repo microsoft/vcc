@@ -1,0 +1,27 @@
+#include <vcc.h>
+
+_(ghost typedef \integer imap[\integer])
+
+_(typedef _(record) struct {
+  int y;
+} R)
+
+_(ghost void foo()
+{
+  imap m,n;
+  R r,q;
+  _(assert m[7] == n[7])
+  _(assert r.y == q.y)
+})
+
+_(ghost void bar()
+{
+  R r = { 7 }, q = { 7 };
+  _(assert r == q)
+})
+`
+Verification of foo failed.
+testcase(13,12) : error VC9500: Assertion 'm[7] == n[7]' did not verify.
+testcase(14,12) : error VC9500: Assertion 'r.y == q.y' did not verify.
+Verification of bar succeeded.
+`

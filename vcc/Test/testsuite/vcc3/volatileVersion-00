@@ -1,0 +1,100 @@
+#include <vcc.h>
+
+struct VS {
+  volatile int x;
+  volatile int y;
+  _(ghost volatile \object yappr;)
+  volatile int z;
+  _(ghost \object zappr;)
+  volatile int w;
+  int nv;
+
+  _(invariant \approves(\this->\owner, x))
+  _(invariant \approves(yappr, y))
+  _(invariant \approves(yappr, yappr))
+  _(invariant \approves(zappr, z))
+};
+
+struct Q {
+  struct VS vs;
+
+  _(invariant \mine(&vs))
+  _(invariant vs.x == 12)
+  _(invariant vs.y == 12)
+  _(invariant vs.yappr == \this)
+  _(invariant vs.z == 12)
+  _(invariant vs.nv == 12)
+  _(invariant vs.zappr == \this)
+};
+
+struct Qfail1 {
+  struct VS vs;
+
+  _(invariant \mine(&vs))
+  _(invariant vs.w == 12)
+};
+
+struct Qfail2 {
+  struct VS vs;
+
+  _(invariant \mine(&vs))
+  _(invariant vs.y == 12)
+};
+
+struct Qfail3 {
+  struct VS vs;
+
+  _(invariant vs.x == 12)
+};
+
+void foo1(struct VS *vs)
+  _(requires \wrapped(vs))
+{
+  _(atomic vs) {
+    vs->w = 10;
+  }
+}
+
+void foo2(struct VS *vs)
+  _(requires \wrapped(vs))
+  _(writes vs)
+{
+  _(atomic vs) {
+    vs->x = 10;
+    _(bump_volatile_version vs)
+  }
+}
+
+void foo2fail1(struct VS *vs)
+  _(requires \wrapped(vs))
+  _(writes vs)
+{
+  _(atomic vs) {
+    vs->x = 10;
+  }
+}
+
+void foo2fail2(struct VS *vs)
+  _(requires \wrapped(vs))
+{
+  _(atomic vs) {
+    vs->x = 10;
+    _(bump_volatile_version vs)
+  }
+}
+`
+Verification of VS#adm succeeded.
+Verification of Q#adm succeeded.
+Verification of Qfail1#adm failed.
+testcase(34,15) : error VC8012: invariant(vs.w == 12) of Qfail1 is not admissible.
+Verification of Qfail2#adm failed.
+testcase(41,15) : error VC8012: invariant(vs.y == 12) of Qfail2 is not admissible.
+Verification of Qfail3#adm failed.
+testcase(47,15) : error VC8012: invariant(vs.x == 12) of Qfail3 is not admissible.
+Verification of foo1 succeeded.
+Verification of foo2 succeeded.
+Verification of foo2fail1 failed.
+testcase(72,12) : error VC8524: Assertion 'chunk \approves(\this->\owner, x) of invariant of vs holds after atomic' did not verify.
+Verification of foo2fail2 failed.
+testcase(82,7) : error VC8510: Assertion 'vs is writable in call to bump_volatile_version vs' did not verify.
+`

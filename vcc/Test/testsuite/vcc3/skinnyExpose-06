@@ -1,0 +1,50 @@
+#include <vcc.h>
+
+struct B {
+  int x;
+  int y;
+  _(invariant x < 100)
+};
+struct A {
+  int z;
+  struct B *b;
+  _(invariant \mine(b))
+  _(invariant b->x > 0)
+};
+
+void fooFail1(struct A *a)
+  _(maintains \wrapped(a))
+  _(writes a)
+  _(ensures \domain_updated_at(a, {&a->b->x}))
+{
+  _(unwrapping a, a->b)
+    _(writes &a->b->x)
+  {
+    a->b->x = 12;
+    _(wrap a->b)
+  }
+}
+
+void fooFail2(struct A *a)
+  _(maintains \wrapped(a))
+  _(writes a)
+  _(ensures \domain_updated_at(a, {&a->b->x}))
+{
+  _(unwrapping a, a->b)
+    _(writes &a->b->x)
+  {
+    _(wrap a->b)
+    a->b->x = 12;
+  }
+}
+
+`
+Verification of B#adm succeeded.
+Verification of A#adm succeeded.
+Verification of fooFail1 failed.
+testcase(20,16) : error VC8530: Assertion 'skinny_expose(a, ...) body has written at an unlisted location' did not verify.
+testcase(20,19) : error VC9502: Call 'wrap(a->b)' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the object being wrapped is mutable'.
+Verification of fooFail2 failed.
+testcase(37,5) : error VC8507: Assertion 'a->b->x is writable' did not verify.
+`

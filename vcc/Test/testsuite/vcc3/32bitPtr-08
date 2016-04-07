@@ -1,0 +1,35 @@
+`/ps:32 
+
+#include "vcc.h"
+
+union x {
+  unsigned a;
+  int *b;
+  _(backing_member) unsigned __int64 x; 
+};
+
+void foo(int *c)
+{
+  union x bla;
+  bla.b = c;
+  _(assert bla.a == (unsigned)c)
+}
+
+struct y {
+  int *b;
+  unsigned a;
+};
+
+
+void bar(unsigned int *arr,unsigned int c)
+  _(requires \mutable_array(arr,2))
+  _(writes \array_range(arr,2))
+  _(ensures *(_(retype)&((struct y *)arr)->a) == c)
+{
+  arr[1] = c;
+  _(assert \addr_eq(&((struct y *)arr)->a, &arr[1]))
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

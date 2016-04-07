@@ -1,0 +1,5 @@
+#include <vcc.h>
+
+void * KepProcessorRegions[64] = {0};
+`
+`

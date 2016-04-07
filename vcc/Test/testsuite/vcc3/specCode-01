@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+void foo() {}
+
+void test() {
+  _(ghost foo())
+} 
+`
+testcase(6,11) : warning VC9313: [possible unsoundness]: call to impure implementation function 'foo' from specification code
+Verification of foo succeeded.
+Verification of test succeeded.
+`

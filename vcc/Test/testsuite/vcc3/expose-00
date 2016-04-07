@@ -1,0 +1,65 @@
+#include <vcc.h>
+
+struct S {
+  int a;
+  int b;
+};
+
+void foo(struct S *s)
+  _(maintains \wrapped(s))
+  _(writes s)
+{
+  _(unwrapping s) {
+    s->a = 4;
+    s->b = 5;
+  }
+}
+
+void fooShouldFail1(struct S *s)
+  _(maintains \wrapped(s))
+  _(writes s)
+{
+  _(unwrapping s) {
+    _(unwrap s)
+    s->a = 4;
+    s->b = 5;
+  }
+}
+
+void fooShouldFail2(struct S *s)
+  _(maintains \wrapped(s))
+  _(writes s)
+{
+  _(unwrapping s) {
+    s->a = 4;
+    s->b = 5;
+    _(wrap s)
+  }
+}
+
+void bar(struct S *s, struct S *t)
+  _(maintains \wrapped(s))
+  _(writes s)
+  _(maintains \wrapped(t))
+  _(writes t)
+  _(requires s != t)
+{
+  _(unwrapping s) {
+  _(unwrapping t) {
+    s->a = 4;
+    s->b = 5;
+    t->a = 4;
+    t->b = 5;
+  }
+  }
+}
+
+`
+Verification of foo succeeded.
+Verification of fooShouldFail1 failed.
+testcase(23,14) : error VC8016: 's' is not wrapped before unwrap.
+Verification of fooShouldFail2 failed.
+testcase(33,16) : error VC9502: Call '_(wrap s)' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the object being wrapped is mutable'.
+Verification of bar succeeded.
+`

@@ -1,0 +1,31 @@
+#include "vcc.h"
+
+_(atomic_inline)
+long _InterlockedIncrement(long volatile *target)
+#ifdef VERIFY
+{
+    _(unchecked)(*target++);
+    // Also crashes: *target++ and with --
+    return *target;
+}
+#endif
+;
+
+struct S {
+    volatile long a;
+};
+
+void foo() {
+    struct S s;
+    _(ghost \claim c)
+    _(wrap &s)
+    _(assert \not_shared(&s))
+    _(atomic &s) {
+        _InterlockedIncrement(&s.a);
+    }
+    _(unwrap &s)
+}
+`
+Verification of foo failed.
+testcase(24,31) : error VC8512: Assertion '&s.a is thread local or atomically updated' did not verify.
+`

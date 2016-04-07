@@ -1,0 +1,9 @@
+#include <vcc.h>
+
+int main() {
+  int anIntArr[5] = {-100, -200, -300};
+  int (*var3)[5]  = (int (*)[5]) anIntArr;
+}
+`
+Verification of main succeeded.
+`

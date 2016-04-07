@@ -1,0 +1,56 @@
+#include <vcc.h>
+
+typedef unsigned __int64 UINT64;
+typedef unsigned __int8 PAGE[4096];
+typedef void *PVOID;
+
+
+static PAGE PhysicalPages[512];
+
+typedef union _PTE {
+  _(backing_member)
+  UINT64 AsUINT64;
+  struct {
+    UINT64 Present:1;
+    UINT64 ReadWrite:1;
+    UINT64 Pfn:9;
+    UINT64 Reserved:52;
+  };
+} PTE, *PPTE;
+
+typedef union _VA {
+  _(backing_member)
+  UINT64 AsUINT64;
+  struct {
+    UINT64 PageOffset:12;
+    UINT64 PtOffset:9;
+    UINT64 Reserved:41;
+  };
+} VA, *PVA;
+
+void InitializeVirtualMemoryAndSelfMap()
+{
+  PPTE pte;
+  VA dummyPageVa;
+  pte = (PPTE)PhysicalPages[23] + 1;
+  dummyPageVa.AsUINT64 = 0UI64;
+  dummyPageVa.PtOffset = 1;
+  dummyPageVa.PageOffset = 0; 
+  _(assert pte == ((PPTE)PhysicalPages[23]) + dummyPageVa.PtOffset)
+}
+
+void InitializeVirtualMemoryAndSelfMapNoBV()
+{
+  PPTE pte;
+  VA dummyPageVa;
+  pte = (PPTE)PhysicalPages[23] + 1;
+  dummyPageVa.AsUINT64 = 0UI64;
+  dummyPageVa.PtOffset = 1;
+  dummyPageVa.PageOffset = 0; 
+  _(assert pte == ((PPTE)PhysicalPages[23]) + dummyPageVa.PtOffset)
+}
+
+`
+Verification of InitializeVirtualMemoryAndSelfMap succeeded.
+Verification of InitializeVirtualMemoryAndSelfMapNoBV succeeded.
+`

@@ -1,0 +1,9 @@
+#include <vcc.h>
+
+void foo() {
+  const char* F = __FUNCTION__;
+}
+
+`
+Verification of foo succeeded.
+`

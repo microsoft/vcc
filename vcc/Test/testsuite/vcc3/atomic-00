@@ -1,0 +1,15 @@
+#include <vcc.h>
+
+typedef struct S { volatile int x; } S;
+
+int test(S *s _(ghost \claim c)) 
+_(always c, s->\closed)
+{
+	_(atomic c,s) {
+		s->x = 3;
+		return 4;
+	}
+}
+`
+testcase(10,3) : error VC9742: returning from within _(atomic ...) is not allowed
+`

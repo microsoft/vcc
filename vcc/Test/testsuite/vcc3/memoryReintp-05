@@ -1,0 +1,34 @@
+#include "vcc.h"
+
+typedef unsigned __int8 byte;
+
+typedef struct C {
+   int dummy;
+} C;
+
+typedef struct B {
+    C c;
+} B;
+
+typedef struct A1 {
+    B b;
+} A1;
+
+typedef _(dynamic_owns) struct gA {
+    A1 g[10]; 
+} gA;
+
+void foo ()
+ _(requires \object_root(_(blob sizeof(gA)) (void *) 1024))
+ _(writes \extent(_(blob sizeof(gA)) (void *) 1024))
+{
+    gA* a;
+    a = _(unblobify) (gA*) 1024;
+   
+    _(assert \mutable(&a->g[0]))
+    _(assert \mutable(&a->g[0].b))
+    _(assert \mutable(&a->g[0].b.c))
+}
+`
+Verification of foo succeeded.
+`

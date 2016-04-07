@@ -1,0 +1,12 @@
+#include <vcc.h>
+#include <sal.h>
+
+void foo(unsigned __int8 *n) 
+  _(writes n)
+{
+  *n &= -1;
+}
+
+`
+Verification of foo succeeded.
+`

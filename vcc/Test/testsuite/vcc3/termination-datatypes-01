@@ -1,0 +1,88 @@
+#include <vcc.h>
+
+_(type \pSeed)
+_(typedef \integer pID)
+
+_(datatype pSeedSet {
+    case pSeedEmpty();
+    case pGENedCons(\pSeed,pID,pSeedSet); })
+
+_(def \bool pGENed(\pSeed s, pID i, pSeedSet L)
+  _(decreases \size(L))
+  { switch (L) {
+      case pSeedEmpty():
+        return \false;
+      case pGENedCons(s0,i0,L0):
+        if (s == s0 && i == i0)
+          return \true;
+        else
+          return pGENed(s,i+1,L0); }
+  })
+
+_(def \bool pGENed1(\pSeed s, pID i, pSeedSet L)
+  { switch (L) {
+      case pSeedEmpty():
+        return \false;
+      case pGENedCons(s0,i0,L0):
+        if (s == s0 && i == i0)
+          return \true;
+        else
+          return pGENed1(s,i,L0); }
+  })
+
+_(def \bool pGENed2(\pSeed s, pID i, pSeedSet L)
+  _(decreases \size(L))
+  { switch (L) {
+      case pSeedEmpty():
+        return \false;
+      case pGENedCons(s0,i0,L0):
+        if (s == s0 && i == i0)
+          return \true;
+        else
+          return pGENed2(s,i,L); }
+  })
+
+_(def \bool pGENed3(\pSeed s, pID i, pSeedSet L)
+  { switch (L) {
+      case pSeedEmpty():
+        return \false;
+      case pGENedCons(s0,i0,L0):
+        if (s == s0 && i == i0)
+          return \true;
+        else
+          return pGENed3(s,i+1,L0); }
+  })
+
+_(def \bool pGENed4(\pSeed s, pID i, pSeedSet L)
+  { switch (L) {
+      case pSeedEmpty():
+        return \false;
+      case pGENedCons(s0,i0,L0):
+        if (s == s0 && i == i0)
+          return \true;
+        else
+          return pGENed4(s,i-1,L0); }
+  })
+
+_(def \bool pGENed5(\pSeed s, pID i, pSeedSet L)
+  _(requires i >= 0)
+  { switch (L) {
+      case pSeedEmpty():
+        return \false;
+      case pGENedCons(s0,i0,L0):
+        if (s == s0 && i == i0)
+          return \true;
+        else
+          return pGENed4(s,i-1,L); }
+  })
+`
+Verification of pGENed succeeded.
+Verification of pGENed1 succeeded.
+Verification of pGENed2 failed.
+testcase(42,18) : error VC8029: the call 'pGENed2(s,i,L)' might not terminate.
+Verification of pGENed3 failed.
+testcase(53,18) : error VC8029: the call 'pGENed3(s,i+1,L0)' might not terminate.
+Verification of pGENed4 failed.
+testcase(64,18) : error VC8029: the call 'pGENed4(s,i-1,L0)' might not terminate.
+Verification of pGENed5 succeeded.
+`

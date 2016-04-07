@@ -1,0 +1,19 @@
+#include "vcc.h"
+
+_(ghost int a = 5;) 
+     _(ghost int b = 10;) 
+     _(ghost int foo() { };) 
+     _(ghost void bar() { };) 
+     _(ghost struct S { int a; int b; };) 
+
+
+struct T {
+  _(ghost int a;) _(ghost int b)
+  int c;
+  _(invariant a+b == c)
+};
+`
+Verification of T#adm succeeded.
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

@@ -1,0 +1,20 @@
+#include <vcc.h> 
+
+typedef struct T { 
+int x; 
+volatile int y; 
+_(invariant x > 0)
+} T; 
+
+_(ghost _(admissibility) void 
+T_adm(struct T *t) 
+{ 
+_(assume t->y == 0) 
+_(havoc_others t) 
+_(assert t->y == 0) 
+})
+
+`
+Verification of T#adm succeeded.
+Verification of T_adm succeeded.
+`

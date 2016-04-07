@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+struct S {
+  __int64 a;
+  __int64 b;
+  __int8  c[2];
+};
+
+void bar(struct S s);
+
+void foo(struct S s) {
+  bar(s);
+}
+
+`
+Verification of foo succeeded.
+`

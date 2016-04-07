@@ -1,0 +1,20 @@
+#include <vcc.h>
+
+struct S {
+  int a;
+  int b;
+};
+
+void foo(struct S *p)
+  _(writes p)
+{
+  struct S s;
+  s.a = 1;
+  s.b = 1;
+  *p = s;
+};
+
+`
+Verification of foo failed.
+testcase(14,4) : error VC8507: Assertion 'extent(p) is writable' did not verify.
+`

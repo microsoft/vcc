@@ -1,0 +1,10 @@
+
+#include <vcc.h>
+
+_(logic unsigned  foo() = -17)
+ _(typedef \integer Seq[unsigned];)
+_(logic Seq seq_empty() = \lambda unsigned i; 0)
+`
+testcase(4,27) : error VC0000: Constant value '-17' cannot be converted to a 'unsigned __int32'.
+testcase(6,27) : error VC0000: Cannot implicitly convert type 'System.Diagnostics.Contracts.CodeContract.Map<uint, int>' to 'System.Diagnostics.Contracts.CodeContract.Map<uint, System.Diagnostics.Contracts.CodeContract.BigInt>'.
+`

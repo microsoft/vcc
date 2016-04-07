@@ -1,0 +1,11 @@
+#!/bin/sh
+
+src=c:/dev/boogie/binaries/
+
+for f in * ; do
+  test -f $src/$f || continue
+  cmp -s $src/$f $f && continue
+  chmod +rwX $f
+  echo "SYNC $f"
+  cp $src/$f $f
+done

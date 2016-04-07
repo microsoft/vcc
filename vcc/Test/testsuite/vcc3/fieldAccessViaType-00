@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+struct x {
+    _(ghost int Map2[int])
+    int a;
+} z;
+
+void foo() {
+    struct x z;
+    //x.a = 10;
+    x.Map2[0] = 3;
+}
+
+`
+testcase(11,5) : error VC0000: Illegal index.
+testcase(11,5) : error VC0000: left of '.Map2' must have struct/union type
+`

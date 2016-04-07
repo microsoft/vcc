@@ -1,0 +1,14 @@
+
+#include <vcc.h>
+
+void foo() 
+{
+    
+    _(assert ∀ \objset o1; \objset o2; \object o; o ∈ o1 && o ∈ o2 ==> o ∈ o1 ∩ o2)
+    _(assert ∀ \objset o1; \objset o2; \object o; o ∈ o1 || o ∈ o2 ==> o ∈ o1 ∪ o2)
+    _(assert ∀ \objset o1; (∃ \object o; o ∈ o1) ==> o1 != {})
+    _(assert ∀ unsigned i; (λ unsigned j; \true)[i])
+}
+`
+Verification of foo succeeded.
+`

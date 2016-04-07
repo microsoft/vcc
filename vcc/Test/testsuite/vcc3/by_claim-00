@@ -1,0 +1,122 @@
+#include <vcc.h>
+
+
+_(claimable) struct A {
+  int x;
+  volatile int vol_x;
+};
+
+struct B {
+  int y;
+  struct A *a;
+  _(ghost \claim ca)
+
+  _(invariant \mine(ca) && \claims(ca, (\when_claimed(a))->\closed))
+  _(invariant y == _(by_claim ca)(a->x))
+};
+
+void write_int(int *x)
+  _(writes x);
+
+void ok1(struct A*a _(ghost \claim c))
+  _(always c, a->\closed)
+{ 
+  int q;
+  int z = _(by_claim c)(a->x);
+  int zz;
+
+  write_int(&q);
+  zz = _(by_claim c)(a->x);
+  _(assert  z == zz)
+}
+
+
+void fail1(struct A*a, struct A*b _(ghost \claim c))
+  _(always c, b->\closed)
+{ 
+  int z = _(by_claim c)(a->x);
+}
+
+void fail2(struct A*a _(ghost \claim c))
+  _(always c, a->\closed)
+  _(writes c)
+  _(requires c->\claim_count == 0)
+{ 
+  int z;
+  
+  _(ghost \destroy_claim(c, {}));
+  z = _(by_claim c)(a->x);
+  _(assume \false)
+}
+
+struct B_fail1 {
+  int y;
+  struct A *a;
+  _(ghost \claim ca)
+
+  _(invariant \claims(ca, (\when_claimed(a))->\closed))
+  _(invariant y == _(by_claim ca)(a->x))
+};
+
+struct B_fail2 {
+  int y;
+  struct A *a;
+  _(ghost \claim ca)
+
+  _(invariant \mine(ca))
+  _(invariant y == _(by_claim ca)(a->x))
+};
+
+
+struct B_fail3 {
+  int y;
+  struct A *a;
+  _(ghost \claim ca)
+
+  _(invariant \mine(ca))
+  _(invariant y == a->vol_x)
+};
+
+struct vcc_attr("no_infer", "always_by_claim") B_may_fail1 {
+  int y;
+  struct A *a;
+  _(ghost \claim ca)
+
+  _(invariant \mine(ca) && \claims(ca, (\when_claimed(a))->\closed))
+  _(invariant y == a->x)
+};
+
+vcc_attr("no_infer", "always_by_claim")
+void may_fail1(struct A*a _(ghost \claim c))
+  _(always c, a->\closed)
+{ 
+  int z = a->x;
+}
+
+
+void fail3(struct A*a, struct A*b _(ghost \claim c))
+  _(always c, b->\closed)
+{ 
+  int z = a->x;
+}
+
+`
+Verification of B#adm succeeded.
+Verification of B_fail1#adm failed.
+testcase(58,15) : error VC8012: invariant(y == _(by_claim ca)(a->x)) of B_fail1 is not admissible.
+Verification of B_fail2#adm failed.
+testcase(67,15) : error VC8012: invariant(y == _(by_claim ca)(a->x)) of B_fail2 is not admissible.
+Verification of B_fail3#adm failed.
+testcase(77,15) : error VC8012: invariant(y == a->vol_x) of B_fail3 is not admissible.
+Verification of B_may_fail1#adm failed.
+testcase(86,15) : error VC8012: invariant(y == a->x) of B_may_fail1 is not admissible.
+Verification of ok1 succeeded.
+Verification of fail1 failed.
+testcase(37,25) : error VC8509: Assertion 'object a is claimed by c (in by_claim(c, a))' did not verify.
+Verification of fail2 failed.
+testcase(48,21) : error VC8508: Assertion 'c is a valid claim (in by_claim(c, a))' did not verify.
+Verification of may_fail1 failed.
+testcase(93,11) : error VC8512: Assertion 'a is thread local (accessing field x)' did not verify.
+Verification of fail3 failed.
+testcase(100,11) : error VC8512: Assertion 'a is thread local (accessing field x)' did not verify.
+`

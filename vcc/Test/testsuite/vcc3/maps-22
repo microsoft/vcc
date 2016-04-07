@@ -1,0 +1,18 @@
+#include "vcc.h"
+
+_(record) struct S {
+    int a;
+    int b;
+};
+
+void foo()
+{
+    _(ghost struct S t, map[int])
+    _(ghost t.b = 20)
+    _(ghost map = (\lambda int x; (t / { .a = x })))
+    _(assert map[4].a == 4)
+    _(assert map[4].b == 20)
+}
+`
+Verification of foo succeeded.
+`

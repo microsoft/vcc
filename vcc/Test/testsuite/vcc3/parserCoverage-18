@@ -1,0 +1,11 @@
+#include <vcc.h>
+void foo()
+{
+  int i;
+  for (i = 0, int j = 5; i < j; i++)
+  {
+  }
+}
+`
+testcase(5,15) : error VC0000: expression expected
+`

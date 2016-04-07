@@ -1,0 +1,30 @@
+#include "vcc.h"
+_(dynamic_owns) struct S { int a; _(ghost \object b;) };
+// both are OK now, we assume that stuff in owns set is non-primitive
+void foo(struct S *s) _(requires \wrapped(s)) {
+    _(assume s->b \in s->\owns)
+    _(assert (s->b)->\owner == s)
+}
+void foo2(struct S *s) _(requires \wrapped(s)) {
+    _(assume s->b \in s->\owns)
+    _(assume \non_primitive_ptr(s->b))
+    _(assert (s->b)->\owner == s)
+}
+
+void t()
+{
+  struct S s;
+  _(assert \non_primitive_ptr(&s))
+}
+void t2()
+{
+  int x;
+  _(assert \non_primitive_ptr(&x))
+}
+`
+Verification of foo succeeded.
+Verification of foo2 succeeded.
+Verification of t succeeded.
+Verification of t2 failed.
+testcase(22,12) : error VC9500: Assertion '\non_primitive_ptr(&x)' did not verify.
+`

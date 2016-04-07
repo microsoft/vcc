@@ -1,0 +1,41 @@
+#include "vcc.h"
+
+void foo()
+{
+  _(ghost char *xyz[char*])
+  _(ghost int foo[int*])
+  char arr[10];
+  int x = 20;
+
+  _(ghost xyz = (\lambda char *c; c != 0 ? (c + 1) : 0))
+  _(ghost foo = (\lambda int *p; p->\valid && *p < 100 ? (*p + 1) : 7))
+  
+  _(assert xyz[&arr[1]] == &arr[2])
+  _(assert foo[&x] == 21)
+}
+
+void fail1()
+{
+  _(ghost int foo[int*])
+  int x = 120;
+
+  _(ghost foo = (\lambda int *p; p->\valid && *p < 100 ? (*p + 1) : 1))
+  _(assert foo[&x] == 121)
+}
+
+void fail2()
+{
+  _(ghost int foo[int*])
+  int x = 20;
+
+  _(ghost foo = (\lambda int *p; p->\valid && *p < 100 ? (*p + 1) : 1))
+  _(assert foo[&x] == 22)
+}
+
+`
+Verification of foo succeeded.
+Verification of fail1 failed.
+testcase(23,12) : error VC9500: Assertion 'foo[&x] == 121' did not verify.
+Verification of fail2 failed.
+testcase(32,12) : error VC9500: Assertion 'foo[&x] == 22' did not verify.
+`

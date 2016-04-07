@@ -1,0 +1,26 @@
+#include <vcc.h>
+_(claimable) struct A {
+  volatile int x;
+  _(invariant  \this->x > 0 && (\old(\this->x) == \this->x || \old(\this->x) + 1 == \this->x ))
+};
+void incr(struct A *a, int *res _(ghost \claim c) _(ghost \claim ^cres))
+  _(writes c, res, cres)
+  _(always c, a->\closed)
+  _(ensures \claims(*cres, a->x > \when_claimed(*res)))
+  _(ensures \claims_object(*cres, c))
+{
+  int val;
+  _(ghost  \claim c1;)
+  _(atomic c,a) {
+    val = a->x;
+  }
+  *res = val;
+  _(ghost  c1 = \make_claim({c}, \when_claimed(*res) <= a->x);)
+
+  *res -= 1;
+  _(ghost  *cres = c1;)
+}
+`
+Verification of A#adm succeeded.
+Verification of incr succeeded.
+`

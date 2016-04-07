@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+extern int foo(int i)
+  _(requires i <= 1)
+  _(ensures \result == i+1);
+
+int bar()
+  _(ensures \result == 2)
+{
+  return foo(1);
+}
+`
+Verification of bar succeeded.
+`

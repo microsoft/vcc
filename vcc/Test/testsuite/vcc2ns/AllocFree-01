@@ -1,0 +1,38 @@
+#include <vcc.h>
+
+extern void* malloc(unsigned int);
+extern void free(void*);
+
+typedef struct { int x; } A;
+
+void do_free(A* p)
+  _(requires p->\valid)
+  _(requires \object_root(p))
+  _(writes \extent(p))
+{
+  free(p);
+}
+
+void test_it()
+  _(writes \universe())
+{
+  A* p = malloc(sizeof(*p));
+  if (p != 0) {
+    do_free(p);
+    p->x = 7;
+  }
+}
+
+void test_free_base()
+{
+  char* p = malloc(7);
+  if (p != 0) free(p + 1);
+}
+`
+Verification of do_free succeeded.
+Verification of test_it failed.
+testcase(22,5) : error VC8507: Assertion 'p->x is writable' did not verify.
+Verification of test_free_base failed.
+testcase(29,15) : error VC9502: Call 'free(p + 1)' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the pointer being reclaimed was returned by malloc()'.
+`

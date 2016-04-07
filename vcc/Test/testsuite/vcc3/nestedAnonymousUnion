@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+typedef unsigned __int64 UINT64;
+
+union S {
+  struct {
+    UINT64 a:32;
+    UINT64 b:32;
+    UINT64 c:32;
+    UINT64 d:32;
+  };
+  _(backing_member) UINT64 raw[2];
+};
+
+UINT64 foo(struct S s)
+  _(ensures \result == s.b) {
+  return s.b;
+}
+  
+`
+Verification of foo succeeded.
+`

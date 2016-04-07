@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+struct Foobar {
+  int x;
+};
+
+
+_(def \integer len(struct Foobar x)
+  _(decreases \size(x))
+{
+return 0;
+}
+)
+`
+testcase(9,15) : error VC9737: \size() can only be called on data types, records and integers
+`

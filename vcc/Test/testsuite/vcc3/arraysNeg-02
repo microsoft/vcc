@@ -1,0 +1,20 @@
+#include "vcc.h"
+
+void setk(int *p, size_t sz)
+  _(requires \mutable_array(p, sz))
+  _(writes \array_range(p, sz - 1)) // ERR
+{
+  size_t i;
+
+  i = 0;
+  while (i < sz) 
+    _(invariant i >= 0)
+  {
+    p[i] = _(unchecked)((int)i);
+    i = i + 1;
+  }
+}
+`
+Verification of setk failed.
+testcase(13,5) : error VC8507: Assertion 'p[i] is writable' did not verify.
+`

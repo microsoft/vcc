@@ -1,0 +1,10 @@
+#include "vcc.h"
+
+struct A {
+  _(group B)
+  _(:B) int x;
+  _(invariant :B \approves(\this->\owner, x))
+};
+
+`
+`

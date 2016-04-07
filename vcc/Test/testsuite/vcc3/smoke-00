@@ -1,0 +1,12 @@
+`/smoke 
+#include "vcc.h"
+
+void nosmoke() { }
+void smoke(int x ) _(requires x > 0 && x < 0) { }
+void smoke_defused() _(requires \false) { }
+`
+Verification of nosmoke succeeded.
+Verification of smoke succeeded.
+testcase(4,49) : warning : found unreachable code, possible soundness violation, please check the axioms or add an explicit assert(false)
+Verification of smoke_defused succeeded.
+`

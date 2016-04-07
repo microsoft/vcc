@@ -1,0 +1,50 @@
+#include <vcc.h>
+
+volatile int global;
+
+typedef _(claimable) struct GlobalsOwner{
+  _(invariant \this == &Globals)
+  _(invariant \mine(\gemb(&global)))
+
+  int dummy;
+  _(ghost volatile int shadow)
+  _(invariant shadow == global)
+} GlobalsOwner;
+
+GlobalsOwner Globals;
+
+void
+f(_(ghost \claim c))
+  _(always c, (&Globals)->\closed)
+  {
+  _(atomic c, \gemb(&global), &Globals){
+        global = 5;
+        _(ghost Globals.shadow = 5)
+     }    
+  }
+
+void foo()
+  _(maintains \wrapped(\gemb(&global)))
+  _(writes \gemb(&global))
+{
+  _(atomic \gemb(&global)) {
+    global = 5;
+    _(bump_volatile_version \gemb(&global))
+  }
+}
+
+void fooShouldFail()
+  _(maintains \wrapped(\gemb(&global)))
+  _(writes \gemb(&global))
+{
+  _(atomic \gemb(&global)) {
+    global = 5;
+  }
+}
+`
+Verification of GlobalsOwner#adm succeeded.
+Verification of f succeeded.
+Verification of foo succeeded.
+Verification of fooShouldFail failed.
+testcase(40,12) : error VC8525: Assertion 'invariant of \gemb(&global) holds after atomic' did not verify.
+`

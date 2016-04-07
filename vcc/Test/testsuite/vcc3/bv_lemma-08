@@ -1,0 +1,20 @@
+#include <vcc.h>
+
+typedef unsigned __int64 UINT64;
+
+typedef union _X {
+	_(backing_member) UINT64 AsUINT64;
+	struct {
+		UINT64 l:1;
+		UINT64 mid:62;
+		UINT64 h:1;
+	};
+} X;
+
+void foo() {
+	_(assert {:bv} \forall X i; i.AsUINT64 & 0x8000000000000000UI64 <==> i.h)
+} 
+`
+Verification of foo succeeded.
+Verification of foo#bv_lemma#0 succeeded.
+`

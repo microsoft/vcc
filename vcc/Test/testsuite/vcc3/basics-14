@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+struct bla {
+  int dummy;
+};
+
+void bla(struct bla o) 
+{
+}
+`
+Verification of bla succeeded.
+`

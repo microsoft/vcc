@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+_(primitive)
+struct S {
+	int i;
+};
+
+void foo(struct S *s) 
+	_(requires \thread_local(s))
+{
+	struct S s1 = *s;
+	_(assert s->i == s1.i)
+}
+`
+Verification of foo succeeded.
+`

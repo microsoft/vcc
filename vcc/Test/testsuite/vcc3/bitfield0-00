@@ -1,0 +1,31 @@
+#include <vcc.h>
+
+
+typedef union bla {
+  _(backing_member)
+  unsigned int val;
+  struct blubb {
+    unsigned int a:1; // x[0]
+    unsigned int b:31; // x[31:1]
+  } fld;
+} BF_t;
+
+
+void foo() {
+  BF_t x;
+  x.val=0;
+  x.fld.a=1;
+
+  _(assert x.fld.a == 1)
+  _(assert x.fld.b == 0) 
+  _(assert x.val == 1)   
+  x.val=0x00000001;
+  _(assert x.fld.a == 1) 
+  _(assert x.fld.b == 0)
+  x.val=0x10000001;
+  _(assert x.fld.a == 1)
+  _(assert x.fld.b == 0x8000000)
+}
+`
+Verification of foo succeeded.
+`

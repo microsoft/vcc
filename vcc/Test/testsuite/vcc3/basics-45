@@ -1,0 +1,8 @@
+#include <vcc.h>
+void foo() { \
+  _(assert \false)
+}
+`
+Verification of foo failed.
+testcase(3,12) : error VC9500: Assertion '\false' did not verify.
+`

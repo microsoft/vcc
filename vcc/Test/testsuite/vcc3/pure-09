@@ -1,0 +1,25 @@
+#include <vcc.h>
+
+_(pure) int f1(void *x)
+  _(reads x);
+
+
+_(ghost _(pure) int f2(\object x)
+  _(reads x);)
+
+
+_(pure) int f3(int *x)
+  _(reads x->\owns);
+
+void fux()
+{
+  int y;
+  f1(&y);
+   _(ghost f2(&y);) 
+  f3(&y);
+}
+`
+testcase(12,11) : error VC9648: unsupported pointer set in reads clauses
+testcase(8,11) : error VC9647: void* and \object are not supported in reads clauses
+testcase(4,11) : error VC9647: void* and \object are not supported in reads clauses
+`

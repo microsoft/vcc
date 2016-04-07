@@ -1,0 +1,46 @@
+#include <vcc.h>
+
+struct S {
+  int a;
+  _(invariant a < 42)
+};
+
+_(dynamic_owns)
+struct T {
+  struct S s;
+
+  _(invariant \mine(&s))
+};
+
+struct U {
+  struct T t;
+  _(invariant \mine(&t))
+};
+
+struct V {
+  struct U u;
+  _(invariant \mine(&u))
+};
+
+void bar(struct U *u)
+  _(requires \wrapped(\domain_root(u)))
+  _(requires u \in \domain(\domain_root(u)))
+{
+  _(assert \wrapped_with_deep_domain(\domain_root(u)))
+  _(assert u->t.s.a < 42);
+}
+
+void foo(struct V *v)
+  _(requires \wrapped(v))
+{
+  bar(&v->u);
+}
+
+`
+Verification of S#adm succeeded.
+Verification of T#adm succeeded.
+Verification of U#adm succeeded.
+Verification of V#adm succeeded.
+Verification of bar succeeded.
+Verification of foo succeeded.
+`

@@ -1,0 +1,30 @@
+#include "vcc.h"
+
+
+_(volatile_owns) struct Actor {
+  int dummy;
+  
+  _(ghost volatile \claim c;)
+  _(ghost volatile \claim arr[3];)
+  _(ghost \claim map[\integer];)
+  _(ghost volatile \claim vmap[\integer];)
+
+  _(ghost \bool OutP[\claim];)
+  
+  _(invariant \forall \claim inc; OutP[inc])
+};
+
+
+void ss(struct Actor *a)
+  _(maintains \wrapped(a))
+{
+    _(assert a->OutP[a->c])
+    _(assert a->OutP[a->arr[1]])
+    _(assert a->OutP[a->map[1]])
+    _(assert a->OutP[a->vmap[1]])
+   
+}
+`
+Verification of Actor#adm succeeded.
+Verification of ss succeeded.
+`

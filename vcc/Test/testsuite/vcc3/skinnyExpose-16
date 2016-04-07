@@ -1,0 +1,39 @@
+#include <vcc.h>
+
+typedef struct _A {
+    int i;
+} A, *PA;
+
+typedef struct _B {
+    A a1;
+    A a2;
+    _(invariant \mine(&a1, &a2))
+    int j;
+} B, *PB;
+
+void foo(PB b)
+_(maintains \wrapped(b))
+_(writes b)
+_(ensures \domain_updated_at(b, {&b->a1.i, &b->a2.i, &b->j}))
+{
+    _(unwrapping b)
+        _(writes &b->a1.i, &b->a2.i, &b->j, &b->a1, &b->a2)
+    {
+        _(unwrapping &b->a1)
+            _(writes &b->a1.i)
+        {
+            b->a1.i = 8;
+        }
+        _(unwrapping &b->a2)
+            _(writes &b->a2.i)
+        {
+            b->a2.i = 9;
+        }
+
+        b->j = 8;
+    }
+}
+`
+Verification of _B#adm succeeded.
+Verification of foo succeeded.
+`

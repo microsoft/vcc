@@ -1,0 +1,50 @@
+#include <vcc.h>
+
+struct S {
+  unsigned __int64 a:4;  
+  unsigned __int64 b:12;
+  unsigned __int64 c:48;
+};
+
+struct T {
+  __int64 a:4;  
+  __int64 b:12;
+  __int64 c:48;
+};
+
+
+void fooS_shouldFail(unsigned __int64 x) {
+  struct S s;
+  s.a = x;
+  _(assert s.a == x)
+}
+
+void fooS_ok(unsigned __int64 x) 
+  _(requires x <= 15)
+{
+  struct S s;
+  s.a = x;
+  _(assert s.a == x)
+}
+
+void fooT_shouldFail(__int64 x) {
+  struct T t;
+  t.a = x;
+}
+
+void fooT_ok(__int64 x) 
+  _(requires -8 <= x && x <= 7)
+{
+  struct T t;
+  t.a = x;
+  _(assert t.a == x)
+}
+
+`
+Verification of fooS_shouldFail failed.
+testcase(18,9) : error VC8503: Assertion '0 <= x && x <= 15 in bitfield assignment' did not verify.
+Verification of fooS_ok succeeded.
+Verification of fooT_shouldFail failed.
+testcase(32,9) : error VC8503: Assertion '-8 <= x && x <= 7 in bitfield assignment' did not verify.
+Verification of fooT_ok succeeded.
+`

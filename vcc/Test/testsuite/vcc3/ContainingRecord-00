@@ -1,0 +1,36 @@
+#include "vcc.h"
+
+typedef unsigned char UINT8, *PUINT8;
+
+#define CONTAINING_RECORD(_Address_, _Type_, _Field_) \
+    ((_Type_ *)( (PUINT8)(_Address_) - (PUINT8)(&((_Type_ *)0)->_Field_)))
+
+typedef struct _CONTAINED_ENTRY {
+    int dummy;
+} CONTAINED_ENTRY, *PCONTAINED_ENTRY;
+
+typedef struct _A {
+    unsigned char a;
+    CONTAINED_ENTRY Entry;
+} A, *PA;
+
+void initalizeA() {
+    A a;
+    A *temp_a;
+
+    temp_a = CONTAINING_RECORD(&a.Entry, A, Entry);
+    _(assert  temp_a == &a)
+}
+
+void foo(A *a) 
+  _(requires \wrapped(a))
+{
+    A *temp_a;
+
+    temp_a = CONTAINING_RECORD(&a->Entry, A, Entry);
+    _(assert  temp_a == a)
+}
+`
+Verification of initalizeA succeeded.
+Verification of foo succeeded.
+`

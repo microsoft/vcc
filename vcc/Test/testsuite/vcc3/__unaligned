@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+typedef __int64 UINT64;
+void foo() { __int64 __unaligned *p; }
+void bar() { UINT64 __unaligned *p; }
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

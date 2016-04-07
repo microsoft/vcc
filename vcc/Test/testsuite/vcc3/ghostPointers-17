@@ -1,0 +1,13 @@
+#include "vcc.h"
+
+
+_(ghost typedef struct s {
+    int dummy;
+    _(invariant \this == &g)
+} s;)
+
+
+ _(ghost s g;) 
+`
+Verification of s#adm succeeded.
+`

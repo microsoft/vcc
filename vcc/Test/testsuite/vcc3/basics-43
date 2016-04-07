@@ -1,0 +1,24 @@
+#include "vcc.h"
+
+_(ghost _(pure) \bool foo(int *a)
+    _(reads \universe())
+    _(returns *a))
+
+_(ghost _(pure) \bool bar(int ^a)
+    _(reads \universe())
+    _(returns *a))
+
+void wrong_type() {
+    _(assert foo(\false))
+    _(assert foo((int *)\false))
+    _(assert bar(\false))
+    _(assert bar((int ^)\false))
+}
+`
+testcase(12,14) : error VC0000: The best overloaded method match for '__Globals__.foo(int*)' has some invalid arguments.
+testcase(12,18) : error VC0000: Argument '1': cannot convert from '\bool' to 'int*'.
+testcase(13,18) : error VC0000: Cannot convert type '\bool' to 'int*'.
+testcase(14,14) : error VC0000: The best overloaded method match for '__Globals__.bar(int*)' has some invalid arguments.
+testcase(14,18) : error VC0000: Argument '1': cannot convert from '\bool' to 'int^'.
+testcase(15,18) : error VC0000: Cannot convert type '\bool' to 'int^'.
+`

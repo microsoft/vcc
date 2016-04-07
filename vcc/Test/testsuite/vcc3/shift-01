@@ -1,0 +1,62 @@
+#include "vcc.h"
+
+void fooSF(int i) {
+  int j = (0UI32 << i);
+}
+
+void foo1SF(int i) 
+  _(requires i >= 0)
+{
+  int j = (0UI32 << i);
+}
+
+void foo2SF(int i) 
+  _(requires i <= 31)
+{
+  int j = (0UI32 << i);
+}
+
+void foo3(int i) 
+  _(requires 0 <= i && i <= 31)
+{
+  int j = (0UI32 << i);
+}
+
+void foo4SF(int i) {
+  unsigned __int64 j = (0UI64 << i);
+}
+
+void foo5SF(int i) 
+  _(requires i >= 0)
+{
+  unsigned __int64 j = (0UI64 << i);
+}
+
+void foo6SF(int i) 
+  _(requires i <= 63)
+{
+  unsigned __int64 j = (0UI64 << i);
+}
+
+void foo7(int i) 
+  _(requires 0 <= i && i <= 63)
+{
+  unsigned __int64 j = (0UI64 << i);
+}
+
+`
+Verification of fooSF failed.
+testcase(4,21) : error VC8519: Assertion 'i in admissible range (in shift)' did not verify.
+Verification of foo1SF failed.
+testcase(10,21) : error VC8519: Assertion 'i in admissible range (in shift)' did not verify.
+Verification of foo2SF failed.
+testcase(16,21) : error VC8519: Assertion 'i in admissible range (in shift)' did not verify.
+Verification of foo3 succeeded.
+Verification of foo4SF failed.
+testcase(26,34) : error VC8519: Assertion 'i in admissible range (in shift)' did not verify.
+Verification of foo5SF failed.
+testcase(32,34) : error VC8519: Assertion 'i in admissible range (in shift)' did not verify.
+Verification of foo6SF failed.
+testcase(38,34) : error VC8519: Assertion 'i in admissible range (in shift)' did not verify.
+Verification of foo7 succeeded.
+`

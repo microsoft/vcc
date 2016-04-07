@@ -1,0 +1,59 @@
+#include <vcc.h>
+
+typedef __w64 unsigned int   size_t;
+
+int FooTestOk(int y)
+  _(requires y ==1)
+  _(ensures \result>100)
+{
+  return 100+y;
+}
+
+void CallFooPreconditionTestOk() {
+  FooTestOk(1);
+}
+
+void CallFooconditionTestFails() {
+  FooTestOk(0);
+}
+
+void PostConditionTestOk() { 
+  int x;
+  x = FooTestOk(1);
+  _(assert x>100)
+}
+
+void PostConditionTestFails() { 
+  int x;
+  x = FooTestOk(1);
+  _(assert x<=100)
+}
+
+int SumTestOk(int x, int y) 
+  _(requires 0 <= x && x <= 1000)
+  _(requires -1000 <= y && y <= 0)
+  _(ensures \result == x+y)
+{ 
+  return x+y;
+}
+
+int CallSumTestFails(int x, int y)
+  _(requires 0 <= x && x <= 1000)
+  _(requires y != 0 && y != -1)
+{
+  return SumTestOk(x, x/y); 
+}
+`
+Verification of FooTestOk succeeded.
+Verification of CallFooPreconditionTestOk succeeded.
+Verification of CallFooconditionTestFails failed.
+testcase(17,3) : error VC9502: Call 'FooTestOk(0)' did not verify.
+testcase(6,14) : error VC9599: (related information) Precondition: 'y ==1'.
+Verification of PostConditionTestOk succeeded.
+Verification of PostConditionTestFails failed.
+testcase(29,12) : error VC9500: Assertion 'x<=100' did not verify.
+Verification of SumTestOk succeeded.
+Verification of CallSumTestFails failed.
+testcase(44,10) : error VC9502: Call 'SumTestOk(x, x/y)' did not verify.
+testcase(34,28) : error VC9599: (related information) Precondition: 'y <= 0'.
+`

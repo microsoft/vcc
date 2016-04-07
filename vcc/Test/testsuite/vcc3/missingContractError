@@ -1,0 +1,19 @@
+#include <vcc.h>
+#include <sal.h>
+
+typedef unsigned __int64 UINT64;
+typedef struct sti{
+        unsigned int a[10];
+        unsigned int b;
+} sti;
+_(ghost _(pure) \bool test(struct sti p) 
+  _(ensures \result == (p->b == 1))) // should be p.b, we expect a real error here
+
+void foo(__inout sti* p, sti p1)
+_(requires test(*p))
+{
+p->b = 1;
+}
+`
+testcase(10,25) : error VC0000: The left of '->b' must point to a struct or union.
+`

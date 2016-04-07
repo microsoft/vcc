@@ -1,0 +1,5 @@
+#!/bin/sh
+
+VCC_SCRIPTS=${VCC_SCRIPTS:-$(/bin/pwd | sed -e 's@\(.*/Test/\).*@\1/scripts@i')}
+perl $VCC_SCRIPTS/split-testsuite-output.pl "$@"
+bc2 actual.txt expected.txt &

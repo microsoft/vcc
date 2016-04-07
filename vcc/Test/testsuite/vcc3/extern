@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+extern int perfect;
+
+int perfect;                          
+                 
+
+
+int main()
+{
+ perfect =1;
+ return perfect-1;
+}
+
+`
+Verification of main failed.
+testcase(11,2) : error VC8507: Assertion 'perfect is writable' did not verify.
+`

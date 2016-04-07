@@ -1,0 +1,25 @@
+#include <vcc.h>
+
+extern int perfect;
+
+static void f()
+  _(writes &perfect)
+  _(requires \mutable(&perfect))
+{
+  perfect = 12;
+}
+
+
+int perfect = 4;
+
+int foo()
+  _(writes &perfect)
+  _(requires \mutable(&perfect))
+{
+  perfect =0;
+  return 0;
+}
+`
+Verification of f succeeded.
+Verification of foo succeeded.
+`

@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+void main()
+{
+  unsigned il;
+  unsigned gil;
+
+  switch (il) {
+    case 0:
+      unsigned j;
+      gil = j;
+      break;
+  }
+}
+`
+Verification of main succeeded.
+`

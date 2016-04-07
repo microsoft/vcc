@@ -1,0 +1,20 @@
+#include<vcc.h>
+
+_(ghost
+typedef _(record) struct  {
+  \integer x; 
+} X;
+)
+
+_(ghost
+void foo(X x)
+{
+  int k[X];
+  k[x] = 12;
+  //x.x = x.x + 1;
+  //x.x = x.x - 1;
+  _(assert k[x] == 12)
+})
+`
+Verification of foo succeeded.
+`

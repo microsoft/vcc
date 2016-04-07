@@ -1,0 +1,32 @@
+#include <vcc.h>
+
+_(ghost int x = 0)
+_(ghost int y = 0)
+
+_(ghost void foo() 
+  _(writes &x)
+{
+  x = 1;
+  _(assert x == 1)
+})
+
+_(ghost void bar() 
+  _(writes &x, &y)
+{
+  y = 1;
+  foo();
+  _(assert y == 1)
+})
+
+void baz()
+  _(requires \program_entry_point())
+  _(requires x > 0)
+{
+  int q = x - 1;
+}
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+Verification of baz succeeded.
+`

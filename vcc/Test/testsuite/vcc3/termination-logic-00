@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+_(def \integer f(\integer x) { return x / 2; })
+
+_(logic \integer f1(\integer x) = f(x))
+
+_(def \integer g(\integer x) { return f1(x) / 2; })
+`
+Verification of f succeeded.
+Verification of g succeeded.
+`

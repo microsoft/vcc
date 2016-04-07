@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+void f()
+  _(decreases 0)
+{
+  int x, y;
+  _(assume y > 0)
+  while (x < y - 1) {
+    x++;
+  }
+}
+`
+Verification of f succeeded.
+`

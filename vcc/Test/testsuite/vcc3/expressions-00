@@ -1,0 +1,230 @@
+#include <vcc.h>
+
+void AllIntegralOperationsTestOk() {
+  signed char i1;
+  unsigned char u1;
+  signed short i2;
+  unsigned short u2;
+  signed int i4;
+  unsigned int u4;
+  signed __int64 i8;
+  unsigned __int64 u8;
+  _(ghost \bool b;)
+  u8 = _(unchecked)((unsigned __int64)i8);
+  u4 = _(unchecked)((unsigned int)i4);
+  u2 = _(unchecked)((unsigned short)i2);
+  u1 = _(unchecked)((unsigned char)i1);
+  _(ghost b = 1;)
+}
+
+void IntOperationsTestOk(int a, int b)
+  _(requires 0 < a && a < 100)
+  _(requires 0 < b  && b < 100)
+{
+  int z; 
+  _(ghost \bool y;)
+
+  z = -a;
+  z = +z;
+  z = a + b;
+  z = a - b;
+
+  z = _(unchecked)(a * b);
+  z = a / b;
+  z = a % b;
+  z = a % 4;
+
+  _(ghost {y = !y;
+  y = a < b;
+  y = a > b;
+  y = a <= b;
+  y = a >= b;
+
+  y = a == b;
+  y = a != b;})
+
+  z = ~a;
+  z = a & b;
+  z = a | b;
+  z = a ^ b;
+  z = 1;
+  z = 0xFFFF;
+  z = 077;
+}
+
+void IntShiftOperationsTestOk(int a, int b)
+  _(requires 0 < a && a < 100)
+  _(requires 0 <= b  && b < 32)
+{
+  int z;
+
+  z = a >> b;
+  z = a << b;
+
+}
+
+void ShortOperationsTestOk(short a, short b)
+  _(requires 0 < a && a < 100)
+  _(requires 0 < b  && b < 100)
+{
+  short z = 1;
+  _(ghost \bool y;)
+
+  z = (short)-z;
+  z = (short)+z;
+  z = (short)(a + b);
+  z = (short)(a - b);
+
+  z = _(unchecked)((short)(a * b));
+  z = _(unchecked)((short)(a / b));
+  z = (short)(a % b);
+
+  _(ghost {y = !y;
+  y = a < b;
+  y = a > b;
+  y = a <= b;
+  y = a >= b;
+
+  y = a == b;
+  y = a != b;})
+
+  z = _(unchecked)((short)(~a));
+  z = _(unchecked)((short)(a & b));
+  z = _(unchecked)((short)(a | b));
+  z = _(unchecked)((short)(a ^ b));
+}
+
+void ShortShiftOperationsTestOk(short a, short b)
+  _(requires 0 < a && a < 100)
+  _(requires 0 <= b  && b < 16)
+{
+  short z = 1;
+
+  z = _(unchecked)((short)(a >> b));
+  z = _(unchecked)((short)(a << b));
+}
+
+void CharOperationsTestOk(char a, char b)
+  _(requires 0 < a && a < 50)
+  _(requires 0 < b  && b < 50)
+{
+  char z; _(ghost \bool y;)
+
+  z = (char)(a + b);
+  z = (char)(a - b);
+
+  z = _(unchecked)((char)(a * b));
+  z = _(unchecked)((char)(a / b));
+  z = (char)(a % b);
+
+  _(ghost {
+  y = !y;
+  y = a < b;
+  y = a > b;
+  y = a <= b;
+  y = a >= b;
+
+  y = a == b;
+  y = a != b;
+  })
+  z = _(unchecked)((char)~a);
+  z = _(unchecked)((char)(a & b));
+  z = _(unchecked)((char)(a | b));
+  z = _(unchecked)((char)(a ^ b));
+  z = 'a';
+  z = _(unchecked)((char)0xFF);
+}
+
+void CharShiftOperationsTestOk(char a, char b)
+  _(requires 0 < a && a < 50)
+  _(requires 0 <= b  && b < 8)
+{
+  char z;
+
+  z = _(unchecked)((char)(a >> b));
+  z = _(unchecked)((char)(a << b));
+}
+
+void LongOperationsTestOk(__int64 a, __int64 b)
+  _(requires 0 < a && a < 100)
+  _(requires 0 < b  && b < 100)
+{
+  __int64 z; _(ghost \bool y;)
+
+  z = a + b;
+  z = a - b;
+
+  z = _(unchecked)(a * b);
+  z = a / b;
+  z = a % b;
+
+  _(ghost {
+  y = !y;
+  y = a < b;
+  y = a > b;
+  y = a <= b;
+  y = a >= b;
+
+  y = a == b;
+  y = a != b;
+  })
+
+  z = ~a;
+  z = a & b;
+  z = a | b;
+  z = a ^ b;
+  z = 0x7FFFFFFF;
+}
+
+void LongShiftOperationsTestOk(__int64 a, __int64 b)
+  _(requires 0 < a && a < 100)
+  _(requires 0 <= b  && b < 64)
+{
+  __int64 z;
+
+  z = a >> (int)b;
+  z = a << (int)b;
+}
+
+_(void BoolOperationsTestOk(\bool a, \bool b) {
+  _(ghost \bool y;)
+  _(ghost {
+  y = a && b;
+  y = a || b;
+  y = !a || b;
+  y = !y; })
+})
+
+int DivisionByZeroTestFails1() {
+  int zero, x, result;
+  zero = 0;
+  x = 1/zero;
+  return x;
+}
+
+int DivisionByZeroTestFails2() {
+  int zero, x, result;
+  zero = 0;
+  x = 1/(zero+zero);
+  return x;
+}
+`
+testcase(32,20) : warning VC9326: [possible unsoundness]: signed overflow (of '*') has undefined behavior in C
+testcase(78,28) : warning VC9326: [possible unsoundness]: signed overflow (of '*') has undefined behavior in C
+testcase(116,27) : warning VC9326: [possible unsoundness]: signed overflow (of '*') has undefined behavior in C
+testcase(157,20) : warning VC9326: [possible unsoundness]: signed overflow (of '*') has undefined behavior in C
+Verification of AllIntegralOperationsTestOk succeeded.
+Verification of IntOperationsTestOk succeeded.
+Verification of IntShiftOperationsTestOk succeeded.
+Verification of ShortOperationsTestOk succeeded.
+Verification of ShortShiftOperationsTestOk succeeded.
+Verification of CharOperationsTestOk succeeded.
+Verification of CharShiftOperationsTestOk succeeded.
+Verification of LongOperationsTestOk succeeded.
+Verification of LongShiftOperationsTestOk succeeded.
+Verification of BoolOperationsTestOk succeeded.
+Verification of DivisionByZeroTestFails1 failed.
+testcase(201,9) : error VC8519: Assertion 'zero != 0 (in division by zero)' did not verify.
+Verification of DivisionByZeroTestFails2 failed.
+testcase(208,10) : error VC8519: Assertion 'zero+zero != 0 (in division by zero)' did not verify.
+`

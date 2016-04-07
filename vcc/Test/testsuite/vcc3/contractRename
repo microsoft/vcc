@@ -1,0 +1,39 @@
+#include <vcc.h>
+
+void foo(int a) _(requires a > 10);
+
+void foo(int b) {
+  _(assert b > 0)
+}
+  
+struct S {
+  unsigned int x;
+};
+
+
+struct T {
+  struct S s;
+  __int64 y;
+};
+  
+  
+void bar(struct S s) _(requires s.x > 10);
+
+void bar(struct S s1)  {
+  _(assert s1.x > 10)
+}
+
+void baz(struct T t) 
+  _(requires t.s.x > 10)
+  _(requires t.y > 10);
+  
+void baz(struct T t1) {
+  _(assert t1.s.x > 10)
+  _(assert t1.y > 10)
+}
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+Verification of baz succeeded.
+`

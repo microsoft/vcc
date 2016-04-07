@@ -1,0 +1,20 @@
+#include <vcc.h>
+
+_(type foo)
+
+_(abstract \integer bz(foo f)
+  {
+  })
+
+_(record foo {
+  \integer x;
+  int y;
+})
+
+_(def \integer sum(foo f) {
+  return bz(f) + f.x + f.y;
+})
+`
+Verification of bz succeeded.
+Verification of sum succeeded.
+`

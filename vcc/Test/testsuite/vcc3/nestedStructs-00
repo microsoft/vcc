@@ -1,0 +1,23 @@
+#include <vcc.h>
+
+#define UINT32 unsigned int
+
+typedef struct t_vp *pvp;
+
+typedef struct t_th{
+  struct G{
+    pvp vp; 
+  } st;
+
+  _(invariant \mine(&st))
+} *pth;
+
+
+typedef struct t_vp{
+  UINT32 index;
+  pth th;
+} ;
+
+`
+Verification of t_th#adm succeeded.
+`

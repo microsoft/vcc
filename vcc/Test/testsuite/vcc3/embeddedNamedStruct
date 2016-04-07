@@ -1,0 +1,21 @@
+#include <vcc.h>
+
+struct S {
+  __int64 a;
+  struct {
+    __int64 b;
+    __int64 c;
+  } T;
+  __int64 d;
+};
+
+void foo() {
+  struct S s;
+  s.T.c = 3;
+  s.d = 4;
+  _(assert s.T.c == 3)
+}
+
+`
+Verification of foo succeeded.
+`

@@ -1,0 +1,19 @@
+#include <vcc.h>
+
+typedef struct B {
+  int x;
+} B;
+
+void f2(_(ghost B* b))
+  _(writes b)
+  _(requires \wrapped(b))
+  _(requires \object_root(b))
+{
+  _(unwrap b)
+  _(blobify b)
+  _(ghost _(unblobify) b)
+  _(wrap b)
+}
+`
+Verification of f2 succeeded.
+`

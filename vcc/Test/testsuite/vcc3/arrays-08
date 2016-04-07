@@ -1,0 +1,46 @@
+#include "vcc.h"
+ 
+typedef unsigned __int64 uint64;
+
+typedef struct SubDESC {
+	uint64 a;
+	uint64 b;
+} SubDESC;
+ 
+_(dynamic_owns) struct DESC {
+ SubDESC   AbsArray[6];
+ _(invariant \forall uint64 i; i < 6 ==> &AbsArray[i] \in \this->\owns)
+};
+
+void SetDescAbsArrayFail(struct DESC *desc, uint64 index, uint64 Value)
+    _(maintains \wrapped(desc))
+	_(writes desc)
+    _(requires index < 6)
+	_(ensures desc->AbsArray[index].a == Value)
+{ 
+	_(unwrap desc)
+	_(unwrap &desc->AbsArray[index]) // this unwrap produces inconsistency
+	_(assert \false)
+	desc->AbsArray[index].a = Value;
+	_(wrap &desc->AbsArray[index])
+	_(wrap desc)
+}
+
+void SetDescAbsArray(struct DESC *desc, uint64 index, uint64 Value)
+    _(maintains \wrapped(desc))
+	_(writes desc)
+    _(requires index < 6)
+	_(ensures desc->AbsArray[index].a == Value)
+{ 
+	_(unwrap desc)
+	_(unwrap &desc->AbsArray[index]) // this unwrap produces inconsistency
+	desc->AbsArray[index].a = Value;
+	_(wrap &desc->AbsArray[index])
+	_(wrap desc)
+}
+`
+Verification of DESC#adm succeeded.
+Verification of SetDescAbsArrayFail failed.
+testcase(23,11) : error VC9500: Assertion '\false' did not verify.
+Verification of SetDescAbsArray succeeded.
+`

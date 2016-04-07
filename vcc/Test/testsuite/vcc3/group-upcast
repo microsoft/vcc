@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+typedef struct A A;
+typedef struct A {
+  int e;
+  _(group B)
+  _(ghost _(:B) volatile int ge)
+  _(invariant :B (\old(\this->\closed) && !\this->\closed) ==> !((A *)\this)->\closed)
+  _(invariant :B ((A *)\this)->\closed ==> \unchanged(ge) || \inv2((A *)\this))
+  _(invariant (\this::B)->\closed)
+  _(invariant e == ge)
+} A;
+
+`
+Verification of A#adm succeeded.
+Verification of A##B#adm succeeded.
+`

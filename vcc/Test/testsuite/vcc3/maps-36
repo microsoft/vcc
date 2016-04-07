@@ -1,0 +1,7 @@
+#include "vcc.h"
+
+void bar() { _(ghost void f[int]) }
+`
+testcase(3,22) : error VC0000: Illegal type 'void' in map range.
+testcase(3,22) : error VC0000: 'f' : illegal use of type 'void'.
+`

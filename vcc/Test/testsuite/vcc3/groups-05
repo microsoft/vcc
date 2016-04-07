@@ -1,0 +1,23 @@
+#include "vcc.h"
+
+#define UINT32 unsigned int
+
+
+struct lock{
+ volatile int locked;  
+ _(ghost \object obj)   
+};
+
+typedef struct t_st{
+ 
+  struct lock state_lock;  
+  _(group g)
+  _(:g) UINT32 state;
+
+  _(invariant \mine(&state_lock))
+  _(invariant state_lock.obj == (struct t_st::g *)\this)  
+
+} *pst;
+`
+Verification of t_st#adm succeeded.
+`

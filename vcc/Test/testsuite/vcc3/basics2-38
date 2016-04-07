@@ -1,0 +1,14 @@
+
+#include "vcc.h"
+
+void bar() {
+  unsigned *y;
+  y = 0x47110000;
+  
+  unsigned *x = 0x47110000;
+  _(assert x == y)
+}
+
+`
+Verification of bar succeeded.
+`

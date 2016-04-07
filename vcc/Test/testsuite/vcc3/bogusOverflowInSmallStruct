@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+typedef unsigned int UINT32;
+
+struct str{ UINT32 i; } I;
+
+void ptea_struct_param(struct str s)
+{
+  _(assert 0 <= s.i)
+}
+
+`
+Verification of ptea_struct_param succeeded.
+`

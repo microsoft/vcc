@@ -1,0 +1,27 @@
+#include "vcc.h"
+
+_(ghost typedef _(record) struct X { int x[unsigned]; } X)
+
+typedef struct Y { unsigned rd:5; } Y;
+
+typedef union Z { Y rtype; } Z;
+
+_(ghost _(pure) X bar(Z I, X p)
+    _(returns p / { .x = \lambda unsigned r; (r==I.rtype.rd ? p.x[I.rtype.rd] : p.x[r]) }))
+
+_(ghost _(pure) \bool bax(Z I)
+    _(returns I.rtype.rd))
+
+void baz2(_(ghost Z I)) _(requires bax(I)) {}; // <-- that one's okay
+
+void baz3(_(ghost X p) _(ghost Z I)) _(requires p.x[0]) {}; // <-- that one also
+
+// this one not:
+void foo(_(ghost X p) _(ghost Z I))
+	_(requires bar(I, p).x[0])
+{}
+`
+Verification of baz2 succeeded.
+Verification of baz3 succeeded.
+Verification of foo succeeded.
+`

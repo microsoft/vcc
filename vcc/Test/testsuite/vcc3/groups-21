@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+struct A { int x; };
+
+void foo(struct A *a)
+{
+ _(ghost \object o = ((struct B::C *)a)->\owner;) 
+}
+`
+testcase(7,31) : error VC0000: The name 'B' does not exist in the current context.
+`

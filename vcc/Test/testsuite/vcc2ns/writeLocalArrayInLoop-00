@@ -1,0 +1,25 @@
+#include <vcc.h>
+
+typedef __int32 INT32;
+typedef unsigned __int8 UINT8;
+typedef unsigned __int16 UINT16;
+typedef unsigned __int32 UINT32;
+typedef unsigned __int64 UINT64, *PUINT64;
+typedef void VOID, *PVOID;
+
+void foo()
+  _(reads {})
+{
+    UINT64 bij[10];
+    UINT64 i;
+
+    for (i = 0; i < 10; i++)
+      _(invariant 1)
+    {
+      bij[i] = i;
+    }
+}
+
+`
+Verification of foo succeeded.
+`

@@ -1,0 +1,20 @@
+#include <vcc.h>
+
+typedef __int64 INT64, *PINT64;
+
+void foo(PINT64 ptrs[]) 
+  _(requires ptrs->\valid)
+  _(requires (ptrs[0])->\valid)
+  _(requires \thread_local(ptrs))
+  _(requires \thread_local(ptrs[0]))
+  _(reads ptrs[0])
+{
+  PINT64 p = ptrs[0];
+  __int64 i = *ptrs[0];
+  __int64 j = **((PINT64 *)ptrs); 
+  _(assert i == j)
+  _(assert *p == i) 
+}
+`
+Verification of foo succeeded.
+`

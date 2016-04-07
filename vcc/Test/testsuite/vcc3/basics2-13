@@ -1,0 +1,7 @@
+#include "vcc.h"
+
+void foo(_(ghost \object x)) { _(assert (int)x) } 
+`
+Verification of foo failed.
+testcase(3,41) : error VC9500: Assertion '(int)x' did not verify.
+`

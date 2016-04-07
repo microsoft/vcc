@@ -1,0 +1,13 @@
+#include <vcc.h>
+
+struct S {
+	int a;
+	_(invariant :lemma a > 0)
+	_(invariant a >= 0)
+};
+
+
+`
+Verification of S#adm failed.
+testcase(5,21) : error VC8033: invariant(a > 0) of S is not a lemma.
+`

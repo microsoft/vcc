@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+_(record S {
+  int x;
+})
+
+_(datatype D {
+case d1();
+case d2(S s, D d);
+})
+
+_(def \bool foo(D d) {
+switch (d) {
+case d1(): return \true;
+case d2(s,x):
+  return foo(x);
+}
+})
+
+`
+Verification of foo succeeded.
+`

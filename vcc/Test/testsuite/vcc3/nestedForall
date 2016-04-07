@@ -1,0 +1,13 @@
+#include <vcc.h>
+
+_(pure) _Bool foo() 
+  _(ensures \result == \forall __int64 x; x == 10 ==> (\forall __int64 y,z ; 1 || x <= y || y <= x));
+
+void bar() {
+  _(assert foo())
+}
+
+`
+testcase(4,24) : warning VC9121: failed to infer triggers for '\forall __int64 x; x == 10 ==> (\forall __int64 y,z ; 1 || x <= y || y <= x))'
+Verification of bar succeeded.
+`

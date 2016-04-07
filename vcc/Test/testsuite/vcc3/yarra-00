@@ -1,0 +1,51 @@
+` /yarra
+#include <vcc.h>
+
+_(yarra) struct Token {
+  int authenticated;
+};
+
+struct Foobar {
+  int baz;
+};
+
+struct Foobar2 {
+  int baz;
+};
+
+
+void unknown_function()
+  ;
+
+
+void auth(struct Token *t)
+  _(updates t)
+  _(ensures t->authenticated == 1)
+{
+  _(unwrapping t) {
+    t->authenticated = 1;
+  }
+}
+
+void foo1(struct Token *t, struct Foobar *fb, struct Foobar *fb2)
+  _(updates t)
+{
+  int x;
+  x = 42;
+  auth(t);
+  _(assert x == 42) // should succeed (not implemented in yara yet though)
+  _(assert t->authenticated == 1) // should succeed
+  x = 42;
+  _(assert x == 42) // should succeed
+  fb->baz = 12;
+  _(assert x == 42) // should succeed (not implemented in yara yet though)
+  fb2->baz = 13;
+  _(assert fb->baz == 12) // should fail
+  unknown_function();
+  _(assert t->authenticated == 1) // should succeed
+}
+`
+Verification of auth succeeded.
+Verification of foo1 failed.
+testcase(42,12) : error VC9500: Assertion 'fb->baz == 12' did not verify.
+`

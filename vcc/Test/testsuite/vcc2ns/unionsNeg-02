@@ -1,0 +1,82 @@
+#include <vcc2test.h>
+
+
+union A {
+  int tag;
+  struct {
+    int tag;
+    int b;
+  } a;
+  struct {
+    int tag;
+    short b;
+  } b;
+};
+
+struct Common {
+  int tag;
+  int size;
+};
+
+union A2 {
+  int tag;
+  struct {
+    struct Common c;
+    int b;
+  } a;
+  struct {
+    struct Common c;
+    short b;
+  } b;
+};
+
+union A3 {
+  struct {
+    int a;
+    int b;
+  } s;
+  int arr[10];
+};
+
+void fooShouldFail(union A *a, union A2 *a2)
+  _(requires \thread_local(a) && \thread_local(&a->a))
+  _(requires \thread_local(a2) && \thread_local(&a2->a.c))
+  _(writes &a->tag, &a2->tag)
+{
+  a->tag = 10;
+  a2->tag = 42; // the embedding of the two tag fields is unknown so we cannot frame the writes
+  _(assert a2->tag == 42)
+  _(assert a->tag == 10)
+}
+
+void foo1(union A *a, union A2 *a2)
+  _(requires \thread_local(a) && \thread_local(&a->a))
+  _(requires \thread_local(a2) && \thread_local(&a2->a.c))
+  _(writes &a->tag, &a2->tag)
+{
+  a->tag = 10;
+  _(assert a->tag == 10)
+}
+
+void foo2(union A *a, union A2 *a2)
+  _(requires \thread_local(a) && \thread_local(&a->a))
+  _(requires \thread_local(a2) && \thread_local(&a2->a.c))
+  _(writes &a->tag, &a2->tag)
+{
+  a2->tag = 42;
+  _(assert a2->tag == 42)
+}
+
+void bar(union A3 *a)
+  _(requires a->\valid && (&a->arr[3])->\valid)
+{
+  int x = a->arr[3];
+}
+`
+Verification of fooShouldFail failed.
+testcase(49,12) : error VC9500: Assertion 'a->tag == 10' did not verify.
+Verification of foo1 succeeded.
+Verification of foo2 succeeded.
+Verification of bar failed.
+testcase(73,11) : error VC8512: Assertion 'a->arr[3] is thread local' did not verify.
+`

@@ -1,0 +1,14 @@
+#include "vcc.h"
+
+struct X { int a; };
+
+void foo() {
+    _(ghost void *f[int])
+    _(ghost f[0] = (void*)0)
+    _(assert f[0]==(void*)0)
+    _(ghost f = (\lambda int x; ((void*)0)))
+    _(assert \forall int x; f[x] == (void*)0)
+}
+`
+Verification of foo succeeded.
+`

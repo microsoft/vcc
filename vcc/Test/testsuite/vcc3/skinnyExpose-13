@@ -1,0 +1,32 @@
+#include "vcc.h"
+
+struct B {
+  _(group G)
+  int x;
+  _(:G) volatile int z;
+  _(ghost \claim c)
+  
+  _(invariant \mine(c) && \claims(c, (\this::G)->\closed))
+  _(invariant \mine(\this::G))
+};
+ 
+void foo(struct B *b)
+  _(maintains \wrapped(b))
+  _(writes b)
+  _(ensures \domain_updated_at(b, {&b->x}))
+{
+ 
+  _(unwrapping b)
+	   _(writes &b->x)
+  {
+		b->x = 12;
+		_(atomic b->c, b::G)
+		{
+			b->z = 12;
+		}
+  }
+}
+`
+Verification of B#adm succeeded.
+Verification of foo succeeded.
+`

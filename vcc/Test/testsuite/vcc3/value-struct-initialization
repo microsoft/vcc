@@ -1,0 +1,19 @@
+#include <vcc.h>
+
+struct X { int a, b; };
+
+void bar(struct X *x) 
+  _(requires x->a == 1)
+{ }
+
+void foo() { 
+  struct X x = { 1, 2 };
+
+  _(assert x.a == 1)
+  _(assert x.b == 2)
+  bar(&x);
+}
+`
+Verification of bar succeeded.
+Verification of foo succeeded.
+`

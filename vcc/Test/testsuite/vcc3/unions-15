@@ -1,0 +1,26 @@
+#include <vcc.h>
+
+typedef union /*Fix1*/
+{ 
+  _(backing_member) 
+  unsigned Asunsigned; 
+
+  struct X
+  { 
+    unsigned E : 1; 
+    unsigned P : 1; 
+    unsigned Z : 30; 
+  }; 
+
+} abc;
+
+void foo()
+{
+  abc Foo;
+  Foo.Asunsigned = 0;
+  Foo.E = 0; // does not work
+ }
+
+`
+Verification of foo succeeded.
+`

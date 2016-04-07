@@ -1,0 +1,51 @@
+#include <vcc.h>
+#include <limits.h>
+
+_(abstract int bar(int k)
+  _(decreases 0)
+{
+})
+
+_(void foo()
+  _(decreases 1)
+{
+  \integer i;
+  _(assume i > 0)
+
+  while (i -= 1) 
+    _(decreases i)
+    _(invariant i > 0)
+  {
+    int k = \forall int z; bar(z);
+  }
+})
+
+
+_(abstract int bar2(int k)
+  _(recursive_with foo2)
+  _(decreases 1)
+{
+})
+
+_(void foo2()
+  _(decreases 1)
+{
+  \integer i;
+  _(assume i > 0)
+
+  while (i -= 1) 
+    _(decreases i)
+    _(invariant i > 0)
+  {
+    int k = \forall int z; bar2(z);
+  }
+})
+
+
+`
+Verification of bar succeeded.
+Verification of foo succeeded.
+Verification of bar2 succeeded.
+Verification of foo2 failed.
+testcase(40,28) : error VC8029: the call 'bar2(z)' might not terminate.
+`

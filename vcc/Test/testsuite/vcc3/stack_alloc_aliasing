@@ -1,0 +1,19 @@
+#include <vcc.h>
+
+void foo(int *p)
+_(writes p)
+;
+
+int test(int *a) 
+_(requires \mutable(a))
+_(writes a)
+{
+  int b;
+  foo(a);
+  *a=0;
+  foo(&b);
+  _(assert *a==0) // fails
+}
+`
+Verification of test succeeded.
+`

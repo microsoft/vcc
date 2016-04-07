@@ -1,0 +1,25 @@
+#include "vcc.h"
+
+struct S {
+  int a;
+  _(ghost int b;)
+};
+
+void foo(struct S *p) 
+  _(requires \wrapped(p))
+{
+  _(assert p->\valid)
+  _(assert (p->\valid && !\ghost(p)))
+}
+
+_(ghost 
+void bar(struct S ^p) 
+  _(requires \wrapped(p))
+{
+  _(assert p->\valid)
+  _(assert (p->\valid && \ghost(p)))
+})
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+struct S {
+  volatile int x;
+  _(invariant :lemma \old(x) > x)
+};
+
+`
+Verification of S#adm failed.
+testcase(5,22) : error VC8033: invariant(\old(x) > x) of S is not a lemma.
+testcase(5,22) : error VC8013: invariant(\old(x) > x) is not admissible (stuttering).
+`

@@ -1,0 +1,60 @@
+#include <vcc2test.h>
+
+_(claimable) struct A {
+  volatile int x;
+  _(invariant  \old(\this->x) == \this->x || \old(\this->x) + 1 == \this->x)
+};
+
+void incr(struct A *a, int *res _(ghost \claim c) _(ghost \claim ^cres))
+  _(writes c, res, cres)
+  _(always c, a->\closed)
+  // there will be a single new child to c
+  _(ensures c->\claim_count == \old(c->\claim_count) + 1)
+  // the claim we return will be child of c
+  _(ensures \claims_object(*cres, c))
+  // it will be wrapped
+  _(ensures \wrapped(*cres))
+  // it will be childless (so we'll be free to kill it)
+  _(ensures (*cres)->\claim_count == 0)
+  // and it will guarantee a condition about a->x
+  _(ensures \claims(*cres, a->x >= \when_claimed(*res)))
+  // and it was not allocated before
+  _(ensures \fresh(*cres))
+  // we don't free any of our out parameters
+  _(ensures \mutable(res) && \mutable(cres))
+{
+  _(ghost  \claim c1;)
+  int val;
+  _(atomic c,a) {
+    val = a->x;
+  }
+  *res = val;
+  _(ghost  c1 = \make_claim({c}, \when_claimed(*res) <= a->x);)
+  _(ghost  *cres = c1;)
+}
+
+void use_case()
+{
+  struct A *a;
+  int tmp;
+  _(ghost  \claim c;)
+  _(ghost  \claim c2;)
+  a = malloc(sizeof(*a));
+  if (a != 0) {
+    a->x = 0;
+    _(wrap a)
+    _(ghost  c = \make_claim({a}, \true);)
+    incr(a, &tmp _(ghost c) _(ghost  &c2) );
+    _(assert \active_claim(c2))
+    _(assert tmp <= a->x)
+    _(ghost \destroy_claim(c2, {c}));
+    _(ghost \destroy_claim(c, {a}));
+    _(unwrap a)
+    free(a);
+  }
+}
+`
+Verification of A#adm succeeded.
+Verification of incr succeeded.
+Verification of use_case succeeded.
+`

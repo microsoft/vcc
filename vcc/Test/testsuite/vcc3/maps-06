@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+struct S {
+  int i;
+  _(ghost int m[int])
+};
+
+void foo(struct S *s)
+  _(writes s)
+  _(maintains \wrapped(s)) {
+  _(unwrapping s) {
+    _(ghost (s->m[1]) = 2)
+  }
+}
+`
+Verification of foo succeeded.
+`

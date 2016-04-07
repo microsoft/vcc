@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+_(ghost _(pure) \bool foo()
+  _(ensures \result == \forall int i; i == i))
+
+void bar()
+  _(requires foo())
+{
+}
+`
+Verification of bar succeeded.
+`

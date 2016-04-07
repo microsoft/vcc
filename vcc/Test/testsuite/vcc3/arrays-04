@@ -1,0 +1,37 @@
+#include <vcc.h>
+
+void donothing();
+
+void swap(int *a, int *b, unsigned long width)
+_(writes \array_range(a,width),\array_range(b,width))
+_(maintains \mutable_array(a,width))
+_(maintains \mutable_array(b,width))
+_(requires a == b || \disjoint(\array_range(a,width),\array_range(b,width)))
+_(ensures \forall unsigned long i; i < width ==> (a[i] == \old(b[i]) && b[i] == \old(a[i])))
+{
+    int tmp;
+    _(ghost unsigned long idx =0, width0 = width)
+    _(ghost int *a0 = a, *b0 = b)
+
+
+    if ( a!=b )
+        while ( _(unchecked)(width--) )
+	    _(invariant \mutable_array(a0,width0))
+            _(invariant \mutable_array(b0,width0))
+
+            _(invariant width+idx == width0)
+            _(invariant a == a0 + idx && b == b0 + idx)
+
+            _(invariant \forall unsigned long i; 0 <= i && i < idx ==> (a0[i] == \old(b0[i]) && b0[i] == \old(a0[i])))
+            _(invariant \forall unsigned long i; idx <= i && i < width0 ==> (a0[i] == \old(a0[i]) && b0[i] == \old(b0[i])))
+        {
+	    donothing();
+            tmp = *a;
+            *a++ = *b;
+            *b++ = tmp;
+            _(ghost idx++)
+        }
+}
+`
+Verification of swap succeeded.
+`

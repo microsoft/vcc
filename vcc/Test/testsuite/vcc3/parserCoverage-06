@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+int foo(_(ghost _(ghost int i)))
+{
+}
+`
+testcase(3,17) : error VC0000: ) expected.
+testcase(3,32) : error VC0000: Invalid expression term ')'.
+testcase(3,17) : error VC0000: Did not expect '_'.
+`

@@ -1,0 +1,11 @@
+#include <vcc.h>
+int  sf( int i);
+
+void test3( int *xx)
+{
+  sf(xx);
+}
+`
+testcase(6,3) : error VC0000: The best overloaded method match for '__Globals__.sf(int)' has some invalid arguments.
+testcase(6,6) : error VC0000: Argument '1': cannot convert from 'int*' to '__int32'.
+`

@@ -1,0 +1,11 @@
+#include "vcc.h"
+
+void foo() {
+_(assert {:bv} \forall unsigned __int64 a; unsigned __int32 b; b <= 63 ==> (((a & ~((1UI64<<b)-1)) == 0 <==> a < 1UI64<<b)))
+_(assert {:bv} \forall unsigned __int64 x; ((x >> 13) & 0xFF) == (x & 0x1FE000) >> 13)
+}
+`
+Verification of foo succeeded.
+Verification of foo#bv_lemma#0 succeeded.
+Verification of foo#bv_lemma#1 succeeded.
+`

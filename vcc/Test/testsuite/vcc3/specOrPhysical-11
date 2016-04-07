@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+void foo() {
+  _(ghost int a[5];)
+  _(ghost int ^p = &a[0];)
+  _(assert (p->\valid && \ghost(p)))
+} 
+`
+Verification of foo succeeded.
+`

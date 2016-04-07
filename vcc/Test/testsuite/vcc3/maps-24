@@ -1,0 +1,11 @@
+#include "vcc.h"
+
+struct S { int d; };
+
+void foo() {
+_(ghost struct S X[unsigned])
+_(ghost X[0].d = 42)
+}
+`
+testcase(7,9) : error VC0000: Illegal update of map 'X'.
+`

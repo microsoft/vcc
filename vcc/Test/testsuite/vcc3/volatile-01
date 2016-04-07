@@ -1,0 +1,27 @@
+typedef __int32 INT32;
+typedef INT32 volatile VINT32;
+
+#include "vcc.h"
+
+typedef struct _A {
+
+VINT32 a;
+INT32 volatile b;
+
+} A, *PA;
+
+
+void foo(PA inp)
+_(requires \wrapped(inp))
+{
+	_(atomic inp){
+		inp->a = 0;
+  }
+  _(atomic inp) {
+		inp->b = 0;
+	}
+}
+
+`
+Verification of foo succeeded.
+`

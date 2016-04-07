@@ -1,0 +1,16 @@
+#include "vcc.h"
+
+typedef unsigned int     uint;
+
+typedef struct Core {
+    int dummy;
+} Core;
+
+ uint fun_1(Core core)
+    _(returns core.dummy ? 8u : 4u)
+{
+    return core.dummy ? 8u : 4u;
+}
+`
+Verification of fun_1 succeeded.
+`

@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+typedef unsigned __int8 UINT8;
+
+typedef struct _S { UINT8 a; UINT8 b; } S;
+
+UINT8 foo(S s) { return _(unchecked)((UINT8)(s.b + s.a)); }
+
+`
+Verification of foo succeeded.
+`

@@ -1,0 +1,15 @@
+#include <vcc.h>
+
+union U {
+  _(backing_member) unsigned __int32 a[4];
+  unsigned __int64 b[2];
+};
+
+void foo() { 
+  union U u;
+  u.b[0] = 1;
+}
+
+`
+testcase(10,3) : error VC9654: Expression is invalid due to union flattening. Flattening of arrays requires the backing member to be of array type with same element size and alignment.
+`

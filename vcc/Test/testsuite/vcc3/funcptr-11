@@ -1,0 +1,13 @@
+#include <vcc.h>
+
+typedef void (*ft)(int); 
+struct b {
+  ft f;
+};
+void test() {
+  struct b bs;
+  bs.f = 0;
+}
+`
+Verification of test succeeded.
+`

@@ -1,0 +1,38 @@
+#include <vcc.h>
+
+typedef struct _T {
+  int a; int b;
+} T;
+
+T S;
+
+void no_chg(int* x)
+        _(writes x)
+        _(maintains \wrapped(&S))
+        _(maintains \thread_local(x))
+        _(ensures \deep_eq(S,\old(S)))
+        _(ensures *x == S.a)
+        _(maintains \mutable(x) && \object_root(x));
+
+int foo()
+_(writes \extent(&S))
+{
+        int c;
+
+        S.a=7;
+        S.b=42;
+
+        _(ghost (&S)->\owns =  {});
+        _(wrap &S)
+
+        no_chg(&c);
+
+        _(assert c == S.a) // VERIFIES
+        _(assert S.a == 7) // FAILS
+
+        return 0;
+}
+
+`
+Verification of foo succeeded.
+`

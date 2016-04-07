@@ -1,0 +1,6 @@
+#include <vcc.h>
+
+__forceinline int f() { return 0; }
+`
+Verification of f succeeded.
+`

@@ -1,0 +1,21 @@
+#include <vcc.h>
+
+struct S
+{
+  int dummy;
+  _(ghost \integer a[42])
+  _(ghost \bool b[10])
+};
+
+void foo() {
+  struct S s;
+  _(ghost s.a[0]= 5)
+  _(ghost s.a[1] = s.a[0] * 5)
+  _(assert s.a[1] == 25)
+  _(ghost s.b[0] = \false)
+  _(ghost s.b[1] = !s.b[0])
+  _(assert s.b[1])
+}
+`
+Verification of foo succeeded.
+`

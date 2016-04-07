@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+int foo(int i)
+  _(ensures \result == 5)
+{
+  switch(i) 
+  {
+    default:
+      return 5;
+  }
+  
+  return 6;
+}
+`
+Verification of foo succeeded.
+`

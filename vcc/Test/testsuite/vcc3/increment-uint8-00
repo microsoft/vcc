@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+struct S {
+	unsigned __int8 a;
+};
+
+void foo(struct S *s) 
+	_(requires s->a < 100)
+	_(updates s)
+{
+	_(unwrapping s) {
+		s->a++;
+	}
+}
+
+`
+Verification of foo succeeded.
+`

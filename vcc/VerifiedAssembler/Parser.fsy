@@ -1,0 +1,290 @@
+﻿%{
+
+//-----------------------------------------------------------------------------
+//
+// Copyright (C) Microsoft Corporation.  All Rights Reserved.
+//
+//-----------------------------------------------------------------------------
+
+open Ast
+
+//counter for the labeling
+let label_count = ref 0
+//used for a @@ label
+let inc_count _ =
+    label_count := ((!label_count) + 1)
+    (!label_count).ToString()
+//used for a @f label
+let get_nextcount _ = (!label_count + 1).ToString()
+//used for a @b label
+let get_lastcount _ = (!label_count).ToString()
+
+let parse_error_rich = Some (fun (ctxt:Microsoft.FSharp.Text.Parsing.ParseErrorContext<_>) -> printf "Token not accepted roundabout in file %s, line %d, column %d\n" ((snd ctxt.ParseState.ResultRange).FileName) ((snd ctxt.ParseState.ResultRange).Line) ((snd ctxt.ParseState.ResultRange).Column))
+%}
+
+// The start token becomes a parser function in the compiled code:
+%start start
+
+// These are the terminal tokens of the grammar along with the types of
+// the data carried by each token:
+%token <System.Int64> INT64
+%token <System.String> STRING
+%token <System.String> ENDS
+//%token <System.String> QWORDS
+//%token <System.String> DWORDS
+%token <System.String> WORDS
+%token <System.String> BYTES
+%token <System.String> PREFIX
+%token <System.String> MAINTAINS
+%token <System.String> REQUIRES
+%token <System.String> ENSURES
+%token <System.String> WRITES
+%token <System.String> SPEC
+%token <System.String> ASSUME
+%token <System.String> ASSERT
+%token <System.String> INVARIANT
+%token SPECENDS
+%token PLUS MINUS ASTER	SLASH
+%token LPAREN RPAREN
+%token LBRACKET RBRACKET
+%token EOF
+%token DWORD QWORD
+%token EQUAL UNEQUAL LESS GREATER GEQUAL LEQUAL EXTERN STRUCT SIZEOF
+%token FULLSTOP COMMA SEMICOLON COLON QMARK NL AT CONSTDEF PROC EPROC ALTENTRY NEAR
+%token FORWARD BACK NOT QWORDP DWORDP WORDP BYTEP
+%token REG_RAX REG_RBX REG_RCX REG_RDX REG_RDI REG_RSI REG_RBP REG_RSP REG_R8 REG_R9 REG_R10 REG_R11 REG_R12 REG_R13 REG_R14 REG_R15 REG_CR0 REG_CR1 REG_CR2 REG_CR3 REG_CR4 REG_CR5 REG_CR6 REG_CR7 REG_CR8
+%token REG_EAX REG_EBX REG_ECX REG_EDX REG_EDI REG_ESI REG_EBP REG_ESP REG_R8D REG_R9D REG_R10D REG_R11D REG_R12D REG_R13D REG_R14D REG_R15D
+%token REG_AL REG_AX REG_BX REG_CX REG_DX REG_DI REG_SI REG_BP REG_SP REG_R8B REG_R9B REG_R10B REG_R11B REG_R12B REG_R13B REG_R14B REG_R15B
+%token REG_XMM0 REG_XMM1 REG_XMM2 REG_XMM3 REG_XMM4 REG_XMM5 REG_XMM6 REG_XMM7 REG_XMM8 REG_XMM9 REG_XMM10 REG_XMM11 REG_XMM12 REG_XMM13 REG_XMM14 REG_XMM15
+%token REG_CS REG_DS REG_ES REG_FS REG_GS REG_SS
+%token REG_DR0 REG_DR1 REG_DR2 REG_DR3 REG_DR4 REG_DR5 REG_DR6 REG_DR7
+%token JMP JE JNE JNZ JNC JZ
+%left PLUS MINUS
+%left SLASH ASTER
+
+// This is the type of the data produced by a successful reduction of the 'start'
+// symbol:
+%type < Ast.Prog > start
+
+%%
+
+start: Prog { Entry($1) }
+
+Prog:
+    | STRING CONSTDEF Parameter NL Prog { ConstDef($1,$3)::$5 }
+    | STRING CONSTDEF Parameter SEMICOLON NL Prog { ConstDef($1,$3)::$6 }
+    | SEMICOLON NL Prog					{ $3 }
+    | ALTENTRY STRING NL Prog			{ FwdDecl($2)::$4 }
+    | MAINTAINS NL FunSpec STRING PROC NL StatementList EPROC NL Prog { Function($4,Maintains($1)::$3,$7)::$10 }
+    | REQUIRES NL FunSpec STRING PROC NL StatementList EPROC NL Prog { Function($4,Requires($1)::$3,$7)::$10 }
+    | ENSURES NL FunSpec STRING PROC NL StatementList EPROC NL Prog { Function($4,Ensures($1)::$3,$7)::$10 }
+    | WRITES NL FunSpec STRING PROC NL StatementList EPROC NL Prog { Function($4,Writes($1)::$3,$7)::$10 }
+    | MAINTAINS NL FunSpec STRING PROC SEMICOLON NL StatementList EPROC NL Prog { Function($4,Maintains($1)::$3,$8)::$11 }
+    | REQUIRES NL FunSpec STRING PROC SEMICOLON NL StatementList EPROC NL Prog { Function($4,Requires($1)::$3,$8)::$11 }
+    | ENSURES NL FunSpec STRING PROC SEMICOLON NL StatementList EPROC NL Prog { Function($4,Ensures($1)::$3,$8)::$11 }
+    | WRITES NL FunSpec STRING PROC SEMICOLON NL StatementList EPROC NL Prog { Function($4,Writes($1)::$3,$8)::$11 }
+    | SPEC NL Prog						{ SpecFunc($1)::$3 }
+    | STRING PROC NL StatementList EPROC NL Prog	{ Function($1,[],$4)::$7 }
+    | EXTERN STRING COLON STRING NL Prog { VarDecl($2,$4)::$6 }
+    | EXTERN STRING COLON PROC NL Prog { FwdDecl($2)::$6 }
+    | STRING QWORD Parameter NL Prog		{ ConstDef($1,$3)::$5 }
+    | STRING STRUCT DataDef ENDS NL Prog { StructDecl($1,$3)::$6 }
+    | NL Prog							{ $2 }
+    | ENDS NL Prog						{ $3 }
+	| EOF								{ [] }
+	
+DataDef:
+	|						{ [] }
+	| NL DataDef			{ $2 }
+	| SEMICOLON NL DataDef		{ $3 }
+	| STRING QWORD QMARK NL DataDef { ($1,64)::$5 }
+	| STRING QWORD QMARK SEMICOLON NL DataDef { ($1,64)::$6 }
+	| STRING DWORD QMARK NL DataDef { ($1,32)::$5 }
+	| STRING DWORD QMARK SEMICOLON NL DataDef { ($1,32)::$6 }
+	
+FunSpec:
+	|						{ [] }
+	| NL FunSpec			{ $2 }
+	| SEMICOLON NL FunSpec	{ $3 }
+	| MAINTAINS NL FunSpec	{ Maintains($1)::$3 }
+	| REQUIRES NL FunSpec	{ Requires($1)::$3 }
+	| ENSURES NL FunSpec	{ Ensures($1)::$3 }
+	| WRITES NL FunSpec		{ Writes($1)::$3 }
+
+Expr: 
+    | StatementList			{ $1 }
+    
+StatementList:
+	| Statement NL					{ $1 }
+	| Statement NL StatementList	{ $1@$3 }
+    
+Statement:
+	|								{ [] }
+	| SEMICOLON						{ [] }
+	| Instruction					{ $1 }
+	| Instruction SEMICOLON			{ $1 }
+	| Label							{ $1 }
+	| Label SEMICOLON				{ $1 }
+	| Label Instruction				{ $1@$2 }
+	| Label Instruction SEMICOLON	{ $1@$2 }
+	| SPEC							{ [Spec($1)] }
+	| ASSERT						{ [Assert($1)] }
+	| INVARIANT						{ [Invariant($1)] }
+	| SPECENDS						{ [SpecEnds] }
+	| ASSUME						{ [Assume($1)] }
+		
+Instruction:
+	| PREFIX Instruction				{ $2 }
+	| STRING							{ [Inst($1,[],0)] }
+	| STRING Parameter					{ [Inst($1,[$2],0)] }
+	| JMP Expression					{ [Jmp(EMPTY,$2)] }
+	| JE  Expression					{ [Jmp(E, $2)] }
+	| JNE Expression					{ [Jmp(NE,$2)] }
+	| JNZ Expression					{ [Jmp(NZ,$2)] }
+	| JNC Expression					{ [Jmp(NC,$2)] }
+	| JZ  Expression					{ [Jmp(Z, $2)] }
+	| STRING Parameter COMMA Parameter	{ [Inst($1,[$2;$4],0)] }
+	| STRING NEAR Parameter				{ [Inst($1,[$3],0)] }
+	| JMP NEAR Expression					{ [Jmp(EMPTY,$3)] }
+	| JE  NEAR Expression					{ [Jmp(E, $3)] }
+	| JNE NEAR Expression					{ [Jmp(NE,$3)] }
+	| JNZ NEAR Expression					{ [Jmp(NZ,$3)] }
+	| JNC NEAR Expression					{ [Jmp(NC,$3)] }
+	| JZ  NEAR Expression					{ [Jmp(Z, $3)] }
+	
+Label:
+	| STRING COLON { [Label($1)] }
+	| AT COLON  { [Label("Label_" + inc_count())] }
+	
+Expression:
+	| STRING						{ Def ($1,0) }
+	| Register						{ $1 }
+	| STRING FULLSTOP STRING		{ StructAcc ($1,$3,0) }
+	| SIZEOF STRING					{ SizeOf($2,64) }
+	| BACK							{ Def("Label_"+get_lastcount(),0) } 
+	| FORWARD						{ Def("Label_"+get_nextcount(),0) } 
+	| INT64							{ Const ($1,0) }
+	| Expression SLASH Expression	{ Div ($1,$3,0) }
+	| Expression ASTER Expression	{ Mul ($1,$3,0) }
+	| Expression PLUS Expression	{ Add ($1,$3,0) }
+	| Expression MINUS Expression	{ Sub ($1,$3,0) }
+	| LPAREN Expression RPAREN		{ $2 }
+	| NOT Expression				{ Not ($2, 0) }
+
+Register:
+	| REG_RAX							{ Reg(RAX,64) }
+	| REG_RBX							{ Reg(RBX,64) }
+	| REG_RCX							{ Reg(RCX,64) }
+	| REG_RDX							{ Reg(RDX,64) }
+	| REG_RDI							{ Reg(RDI,64) }
+	| REG_RSI							{ Reg(RSI,64) }
+	| REG_RBP							{ Reg(RBP,64) }
+	| REG_RSP							{ Reg(RSP,64) }
+	| REG_R8							{ Reg(R8,64) }
+	| REG_R9							{ Reg(R9,64) }
+	| REG_R10							{ Reg(R10,64) }
+	| REG_R11							{ Reg(R11,64) }
+	| REG_R12							{ Reg(R12,64) }
+	| REG_R13							{ Reg(R13,64) }
+	| REG_R14							{ Reg(R14,64) }
+	| REG_R15							{ Reg(R15,64) }
+	| REG_CR0							{ Reg(CR0,64) }
+	| REG_CR1							{ Reg(CR1,64) }
+	| REG_CR2							{ Reg(CR2,64) }
+	| REG_CR3							{ Reg(CR3,64) }
+	| REG_CR4							{ Reg(CR4,64) }
+	| REG_CR5							{ Reg(CR5,64) }
+	| REG_CR6							{ Reg(CR6,64) }
+	| REG_CR7							{ Reg(CR7,64) }
+	| REG_CR8							{ Reg(CR8,64) }
+	
+	| REG_EAX							{ Reg(RAX,32) }
+	| REG_EBX							{ Reg(RBX,32) }
+	| REG_ECX							{ Reg(RCX,32) }
+	| REG_EDX							{ Reg(RDX,32) }
+	| REG_EDI							{ Reg(RDI,32) }
+	| REG_ESI							{ Reg(RSI,32) }
+	| REG_EBP							{ Reg(RBP,32) }
+	| REG_ESP							{ Reg(RSP,32) }
+	| REG_R8D							{ Reg(R8,32) }
+	| REG_R9D							{ Reg(R9,32) }
+	| REG_R10D							{ Reg(R10,32) }
+	| REG_R11D							{ Reg(R11,32) }
+	| REG_R12D							{ Reg(R12,32) }
+	| REG_R13D							{ Reg(R13,32) }
+	| REG_R14D							{ Reg(R14,32) }
+	| REG_R15D							{ Reg(R15,32) }
+	
+	| REG_AX							{ Reg(RAX,16) }
+	| REG_BX							{ Reg(RBX,16) }
+	| REG_CX							{ Reg(RCX,16) }
+	| REG_DX							{ Reg(RDX,16) }
+	| REG_DI							{ Reg(RDI,16) }
+	| REG_SI							{ Reg(RSI,16) }
+	| REG_BP							{ Reg(RBP,16) }
+	| REG_SP							{ Reg(RSP,16) }
+	| REG_R8B							{ Reg(R8,16) }
+	| REG_R9B							{ Reg(R9,16) }
+	| REG_R10B							{ Reg(R10,16) }
+	| REG_R11B							{ Reg(R11,16) }
+	| REG_R12B							{ Reg(R12,16) }
+	| REG_R13B							{ Reg(R13,16) }
+	| REG_R14B							{ Reg(R14,16) }
+	| REG_R15B							{ Reg(R15,16) }
+	
+	| REG_AL							{ Reg(RAX,8) }
+
+	| REG_CS							{ Reg(CS,64) }
+	| REG_DS							{ Reg(DS,64) }
+	| REG_ES							{ Reg(ES,64) }
+	| REG_FS							{ Reg(FS,64) }
+	| REG_GS							{ Reg(GS,64) }
+	| REG_SS							{ Reg(SS,64) }
+	| REG_DR0							{ Reg(DR0,64) }
+	| REG_DR1							{ Reg(DR1,64) }
+	| REG_DR2							{ Reg(DR2,64) }
+	| REG_DR3							{ Reg(DR3,64) }
+	| REG_DR6							{ Reg(DR6,64) }
+	| REG_DR7							{ Reg(DR7,64) }
+	
+	| REG_XMM0							{ Reg(XMM0,128) }
+	| REG_XMM1							{ Reg(XMM1,128) }
+	| REG_XMM2							{ Reg(XMM2,128) }
+	| REG_XMM3							{ Reg(XMM3,128) }
+	| REG_XMM4							{ Reg(XMM4,128) }
+	| REG_XMM5							{ Reg(XMM5,128) }
+	| REG_XMM6							{ Reg(XMM6,128) }
+	| REG_XMM7							{ Reg(XMM7,128) }
+	| REG_XMM8							{ Reg(XMM8,128) }
+	| REG_XMM9							{ Reg(XMM9,128) }
+	| REG_XMM10							{ Reg(XMM10,128) }
+	| REG_XMM11							{ Reg(XMM11,128) }
+	| REG_XMM12							{ Reg(XMM12,128) }
+	| REG_XMM13							{ Reg(XMM13,128) }
+	| REG_XMM14							{ Reg(XMM14,128) }
+	| REG_XMM15							{ Reg(XMM15,128) }
+
+MemExpr :
+//TODO: do not ignore Segment Registers
+	| LBRACKET Expression RBRACKET { Mem ($2,64) }
+	| BYTEP LBRACKET Expression RBRACKET	{ Mem ($3,8) }
+	| WORDP LBRACKET Expression RBRACKET	{ Mem ($3,16) }
+	| DWORDP LBRACKET Expression RBRACKET	{ Mem ($3,32) }
+	| QWORDP LBRACKET Expression RBRACKET	{ Mem ($3,64) }
+	| Expression LBRACKET Expression RBRACKET { Mem (Add($3,$1,0),64) }
+	| BYTEP Expression LBRACKET Expression RBRACKET	 { Mem (Add($4,$2,0),8) }
+	| WORDP Expression LBRACKET Expression RBRACKET	 { Mem (Add($4,$2,0),16) }
+	| DWORDP Expression LBRACKET Expression RBRACKET { Mem (Add($4,$2,0),32) }
+	| QWORDP Expression LBRACKET Expression RBRACKET { Mem (Add($4,$2,0),64) }
+	| Expression COLON LBRACKET Expression RBRACKET { Mem($4,0) }
+	| BYTEP Expression COLON LBRACKET Expression RBRACKET { Mem ($5,8) }
+	| WORDP Expression COLON LBRACKET Expression RBRACKET { Mem ($5,16) }
+	| DWORDP Expression COLON LBRACKET Expression RBRACKET { Mem ($5,32) }
+	| QWORDP Expression COLON LBRACKET Expression RBRACKET { Mem ($5,64) }
+	
+	
+Parameter:
+    | Expression					{ $1 }
+    | MemExpr						{ $1 }
+	
+

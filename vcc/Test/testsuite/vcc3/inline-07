@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+_(primitive)
+union X {
+  int a:3;
+};
+
+union X foo()
+  _(ensures \result.a == 3)
+{
+  union X x;
+  x.a = 3;
+  return x;
+}
+
+`
+Verification of foo succeeded.
+`

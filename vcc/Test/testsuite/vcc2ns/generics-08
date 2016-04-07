@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+struct P { int a; };
+struct Q { int b; };
+
+template<typename S, typename T>void blah(void *s, void *t)
+  _(out_param (S*)s)
+  _(out_param (T*)t);
+
+
+void foo() {
+  struct P p;
+  struct Q q;
+	vcc_generic_instance(blah, <struct P, struct Q>)((void *)&p, (void *)&q);
+}
+`
+Verification of foo succeeded.
+`

@@ -1,0 +1,31 @@
+#include <vcc.h>
+
+struct A {
+  int a;
+  int b;
+};
+
+struct B {
+  struct A x;
+  struct A y;
+  int z;
+};
+
+void foo()
+{
+  struct B *b, *c;
+
+  _(assume \mutable(b) && \mutable(c))
+
+  _(assert &b->z \in \extent(b))
+  _(assert &b->x \in \extent(b))
+  _(assert &b->x.a \in \extent(b))
+  _(assert &b->y \in \extent(b))
+  _(assert &b->y.b \in \extent(b))
+
+  _(assert &b->y.b \in \extent(c))
+}
+`
+Verification of foo failed.
+testcase(26,12) : error VC9500: Assertion '&b->y.b \in \extent(c)' did not verify.
+`

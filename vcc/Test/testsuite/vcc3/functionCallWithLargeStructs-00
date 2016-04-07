@@ -1,0 +1,192 @@
+#include <vcc.h>
+
+typedef struct _LS {
+  unsigned __int32 x;
+  unsigned __int32 y;
+  unsigned __int32 z;
+} LS;
+
+void f(LS s)
+{
+    s.x = 0;
+    s.y = 0;
+    s.z = 0;
+    _(assert s.x == 0 && s.y == 0 && s.z == 0)
+}
+
+void g(LS s) 
+{
+  s.x = 1;
+  f(s);
+  _(assert s.x == 1)
+}
+
+void h(LS s) 
+{
+  f(s);
+  s.z = 1;
+  _(assert s.z == 1)
+}
+
+void f1(LS s)
+  _(requires s.x == 1 && s.y == 1 && s.z == 1)
+ {
+    _(assert s.x == 1)    
+    _(assert s.y == 1)    
+    _(assert s.z == 1)
+}
+
+void g1(LS s)
+  _(requires s.x == 1 && s.y == 1 && s.z == 1)
+{
+  f1(s);
+}
+
+void h1(LS s)
+{
+  s.x = 1;
+  s.y = 1;
+  s.z = 1;
+  f1(s);
+}
+
+void h1ShouldFail(LS s)
+  _(requires s.x == 1 && s.y == 1)
+{
+  f1(s);
+}
+
+void g2(LS s)
+  _(requires s.x == 1 && s.y == 1 && s.z == 1)
+{
+  LS t;
+  t.x = s.x;
+  t.y = s.y;
+  t.z = s.z;
+  f1(t);
+}
+
+_(pure) unsigned __int32 fx(LS s)
+  _(ensures \result == s.x)
+{
+  return s.x;
+}
+
+unsigned __int32 fxShouldFail(LS s)
+  _(ensures \result == s.y)
+{
+  return s.x;
+}
+
+_(pure) unsigned __int32 fy(LS s)
+  _(reads {})
+  _(ensures \result == s.y)
+{
+  return s.y;
+}
+
+_(pure) unsigned __int32 fz(LS s)
+  _(ensures \result == s.z) _(reads {})
+{
+  return s.z;
+}
+
+unsigned __int32 fzShouldFail(LS s)
+  _(ensures \result == s.x)
+{
+  return s.z;
+}
+
+unsigned __int32 gx(LS s)
+  _(ensures \result == s.x)
+{
+  return fx(s);
+}
+
+unsigned __int32 gy(LS s)
+  _(reads {})
+  _(ensures \result == s.y)
+{
+  return fy(s);
+}
+
+unsigned __int32 gz(LS s)
+  _(ensures \result == s.z)
+{
+  return fz(s);
+}
+
+unsigned __int32 hx(LS s)
+  _(requires s.x == 1)
+  _(ensures \result == 1)
+{
+  return fx(s);
+}
+
+unsigned __int32 hy(LS s)
+  _(reads {})
+  _(requires s.x == 1)
+  _(ensures \result == 1)
+{
+  return fx(s);
+}
+
+unsigned __int32 hz(LS s)
+  _(requires s.z == 1)
+  _(ensures \result == 1)
+{
+  return fz(s);
+}
+
+unsigned __int32 lx(LS s)
+  _(ensures \result == fx(s))
+{
+  return fx(s);
+}
+
+unsigned __int32 ly(LS s)
+  _(reads {})
+  _(ensures \result == fy(s))
+{
+  return fy(s);
+}
+
+unsigned __int32 lz(LS s)
+  _(reads {})
+  _(ensures \result == fz(s))
+{
+  return fz(s);
+}
+
+`
+Verification of f succeeded.
+Verification of g succeeded.
+Verification of h succeeded.
+Verification of f1 succeeded.
+Verification of g1 succeeded.
+Verification of h1 succeeded.
+Verification of h1ShouldFail failed.
+testcase(56,3) : error VC9502: Call 'f1(s)' did not verify.
+testcase(32,38) : error VC9599: (related information) Precondition: 's.z == 1'.
+Verification of g2 succeeded.
+Verification of fx succeeded.
+Verification of fxShouldFail failed.
+testcase(78,3) : error VC9501: Post condition '\result == s.y' did not verify.
+testcase(76,13) : error VC9599: (related information) Location of post condition.
+Verification of fy succeeded.
+Verification of fz succeeded.
+Verification of fzShouldFail failed.
+testcase(97,3) : error VC9501: Post condition '\result == s.x' did not verify.
+testcase(95,13) : error VC9599: (related information) Location of post condition.
+Verification of gx succeeded.
+Verification of gy succeeded.
+Verification of gz succeeded.
+Verification of hx succeeded.
+Verification of hy succeeded.
+Verification of hz succeeded.
+Verification of lx succeeded.
+Verification of ly succeeded.
+Verification of lz succeeded.
+Verification of fz#reads succeeded.
+Verification of fy#reads succeeded.
+`

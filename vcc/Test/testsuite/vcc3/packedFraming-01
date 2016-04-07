@@ -1,0 +1,45 @@
+#include <vcc.h>
+
+struct A {
+  int x;
+};
+
+void update(struct A *a)
+  _(maintains \wrapped(a))
+  _(writes a);
+
+void foo(struct A *a, struct A *b)
+  _(requires \wrapped(a) && \wrapped(b) && a != b)
+  _(writes a,b)
+{
+  _(assert b \in \domain(b))
+  update(a);
+  _(assert b->x == \old(b->x))
+}
+
+
+void fooFail1(struct A *a, struct A *b)
+  _(requires \wrapped(a) && \wrapped(b))
+  _(writes a,b)
+{
+  _(assert b \in \domain(b))
+  update(a);
+  _(assert b->x == \old(b->x))
+}
+
+
+vcc_attr("no_infer", "all")
+void fooMayFail1(struct A *a, struct A *b)
+  _(requires \wrapped(a) && \wrapped(b) && a != b)
+  _(writes a,b)
+{
+  update(a);
+  _(assert b->x == \old(b->x))
+}
+
+`
+Verification of foo succeeded.
+Verification of fooFail1 failed.
+testcase(27,12) : error VC9500: Assertion 'b->x == \old(b->x)' did not verify.
+Verification of fooMayFail1 succeeded.
+`

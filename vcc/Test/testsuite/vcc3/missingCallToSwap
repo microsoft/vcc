@@ -1,0 +1,39 @@
+#include <vcc.h>
+#include <sal.h>
+
+typedef unsigned __int8 UINT8;
+typedef unsigned __int64 UINT64, *PUINT64;
+
+static void swap(UINT8 arr[], UINT64 lo, UINT64 hi, UINT64 count)
+  _(requires 0 <= lo && lo <= hi && hi < count)
+  _(ensures arr[lo] == \old(arr[hi]))
+  _(ensures arr[hi] == \old(arr[lo]))
+  _(ensures \forall UINT64 i; 0 <= i && i < count && i != lo && i != hi ==> arr[i] == \old(arr[i]))
+  _(ensures \mutable_array(arr, count))
+  _(requires \thread_local_array(arr, count))
+  _(writes \array_range(arr, count))
+{
+  UINT8 tmp;
+  tmp = arr[hi];
+  arr[hi] = arr[lo];
+  arr[lo] = tmp;
+}
+
+static void foo(UINT8 arr[], UINT64 count)
+  _(requires count > 0 && count < (1UI64 << 40)) 
+  _(requires \thread_local_array(arr, count))
+  _(writes \array_range(arr, count))
+{
+  UINT64 p, max, hi;
+  hi = count-1;
+
+  _(assert \forall UINT64 i,j; 0 <= i && i < j && j < count && hi < j ==> arr[i] <= arr[j])
+  _(assume arr[0] >= arr[hi])
+  swap(arr, 0, hi, count);
+  _(assert arr[0] <= arr[hi])
+}
+
+`
+Verification of swap succeeded.
+Verification of foo succeeded.
+`

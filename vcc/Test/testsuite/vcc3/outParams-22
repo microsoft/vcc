@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+_(pure) int foo(int a, int b _(out int c))
+  _(ensures \result == _(unchecked)(a + b))
+  _(ensures c == 5) {
+    _(ghost c = 5)
+    return _(unchecked)(a+b);
+  }
+  
+void bar() {
+  _(ghost int c = 5)
+  _(assert foo(1,2 _(out c)) == 3 && c == 5)
+}
+`
+testcase(7,25) : warning VC9326: [possible unsoundness]: signed overflow (of '+') has undefined behavior in C
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

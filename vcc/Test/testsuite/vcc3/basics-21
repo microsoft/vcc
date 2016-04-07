@@ -1,0 +1,12 @@
+#include "vcc.h"
+
+struct Foo {
+    int a;
+    _(ghost int a)
+};
+
+void foo(struct Foo *s) {}
+`
+testcase(5,13) : error VC9677: 'a' : 'struct' member redefinition
+testcase(4,5) : error : (Location of symbol related to previous error.)
+`

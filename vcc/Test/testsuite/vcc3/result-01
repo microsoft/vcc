@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+_(unsigned \macro_on_success(\bool cond)
+_(ensures (\result == 0) ==> cond))
+
+void test()
+_(on_success(\true))
+{
+}
+`
+testcase(7,3) : error VC9746: Cannot use '\result' in this context.
+`

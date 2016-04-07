@@ -1,0 +1,74 @@
+#include <vcc.h>
+
+struct T { int a; };
+
+_(volatile_owns)
+struct X {
+
+  struct T t;
+  _(ghost volatile \bool f)
+  _(invariant f || \mine(&t))
+};
+
+struct Dummy { int a; };
+
+void foo_works(struct X *s _(ghost \claim(c)))
+  _(always c, s->\closed)
+  _(requires !s->f)
+  _(ensures \wrapped(&s->t))
+  _(ensures \fresh(&s->t))
+{
+  _(ghost_atomic s {
+    _(ghost s->\owns -= &s->t)
+    _(ghost s->f = \true)
+  })
+
+  _(assert \wrapped(&s->t))
+  _(assert \writable(&s->t))
+  _(assert \fresh(&s->t))
+}
+void foo_fails(struct X *s, struct Dummy *d _(ghost \claim(c)))
+  _(always c, s->\closed)
+  _(requires !s->f)
+  _(requires \wrapped(d)) _(writes d)
+  _(ensures \wrapped(&s->t))
+  _(ensures \fresh(&s->t))
+{
+  _(ghost_atomic s {
+    _(ghost s->\owns -= &s->t)
+    _(ghost s->\owns += d)
+    _(assert !(&s->t \in s->\owns))
+    _(assert d \in s->\owns)
+    _(ghost s->f = \true)
+  })
+
+  _(assert \wrapped(&s->t))
+  _(assert \writable(&s->t))
+  _(assert \fresh(&s->t))
+}
+
+void foo_fails2(struct X *s, struct Dummy *d _(ghost \claim(c)))
+  _(always c, s->\closed)
+  _(requires !s->f)
+  _(requires \wrapped(d)) _(writes d)
+  _(ensures \wrapped(&s->t))
+  _(ensures \fresh(&s->t))
+{
+  _(ghost_atomic s {
+    _(ghost s->\owns += d)
+    _(ghost s->\owns -= &s->t)
+    _(assert !(&s->t \in s->\owns))
+    _(assert d \in s->\owns)
+    _(ghost s->f = \true)
+  })
+
+  _(assert \wrapped(&s->t))
+  _(assert \writable(&s->t))
+  _(assert \fresh(&s->t))
+}
+`
+Verification of X#adm succeeded.
+Verification of foo_works succeeded.
+Verification of foo_fails succeeded.
+Verification of foo_fails2 succeeded.
+`

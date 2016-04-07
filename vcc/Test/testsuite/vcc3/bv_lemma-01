@@ -1,0 +1,59 @@
+#include "vcc.h"
+
+typedef enum _REG_NAME
+{
+    R1 = 0x00020000,
+    R2 = 0x00020001,
+    R3 = 0x00020002,
+    R4 = 0x00020003,
+    R5 = 0x00020004,
+    R6 = 0x00020005,
+    R7 = 0x00020006,
+    R8 = 0x00020007
+} REG_NAME;
+
+#define MASK \
+    ((1 << (R3 - R1)) | \
+     (1 << (R6 - R1)))
+
+unsigned int foo(REG_NAME Name)
+	_(requires R1 <= Name && Name <= R8)
+	_(ensures (Name == R3 || Name == R6) ==> (\result == 1))
+	_(ensures (!(Name == R3 || Name == R6)) ==> (\result == 0))
+{
+	unsigned int index;
+	unsigned int   res;
+
+	res = 0;
+	index = Name - R1;
+	
+	_(assert R3 - R1 == 2)
+	_(assert R6 - R1 == 5)
+	_(assert (1 << 2) & MASK)
+	_(assert (1 << 5) & MASK)
+
+	_(assert {:bv} \forall unsigned int i; ((1 << i) & MASK) <==> i == 2 || i == 5)
+
+	if ((1 << index) & MASK) 
+    {
+		_(assert R3 - R1 == 2 || R6 - R1 == 5)
+		_(assert R3 - R1 == 2)
+		_(assert R6 - R1 == 5)
+		_(assert (1 << 2) & MASK)
+		_(assert (1 << 5) & MASK)
+
+
+		_(assert index == 2 || index == 5)
+
+		res = 1;	
+    }
+
+	_(assert Name == R3 ==> res == 1)
+	_(assert Name == R6 ==> res == 1)
+
+	return res;
+}
+`
+Verification of foo succeeded.
+Verification of foo#bv_lemma#0 succeeded.
+`

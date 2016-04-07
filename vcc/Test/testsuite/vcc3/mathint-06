@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+_(ghost
+
+_(pure) \bool foo(\integer x)
+	_(ensures \result == \true)
+	;
+)
+
+unsigned short bar(unsigned char *b)
+	_(ensures foo(\result))
+{
+	return 5;
+}
+`
+Verification of bar succeeded.
+`

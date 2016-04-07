@@ -1,0 +1,25 @@
+#include <vcc.h>
+
+typedef struct _UINT128 {
+  unsigned int a;
+  unsigned int b;
+} UINT128;
+
+struct S {
+  UINT128 a;
+};
+
+void foo() {
+  UINT128 x,y;
+  x.a = y.a;
+}
+
+void bar()
+{
+  struct S x,y;
+  x.a=y.a;
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

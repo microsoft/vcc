@@ -1,0 +1,27 @@
+#include <vcc.h>
+
+void foo() 
+	{
+  int i = 5;
+  int j = 3;
+  
+    _(requires i <= 5 && j == 3)
+    _(ensures i == \old(i) + 1 && j == 3)
+  {
+    i++;
+     
+      _(requires j == 3)
+      _(ensures j == 4)
+    {
+      j++;
+    }
+    j--;
+  }
+  _(assert i == 6 && j == 3)
+}	
+
+`
+Verification of foo succeeded.
+Verification of foo#block#0 succeeded.
+Verification of foo#block#0#0 succeeded.
+`

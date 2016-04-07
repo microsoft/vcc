@@ -1,0 +1,15 @@
+#include <vcc.h>
+
+struct S {
+  int a;
+  int b;
+};
+
+void foo() {
+  struct S s = { .b = 10, .a = 5  };
+  _(assert s.a == 5)
+  _(assert s.b == 10)
+}
+`
+Verification of foo succeeded.
+`

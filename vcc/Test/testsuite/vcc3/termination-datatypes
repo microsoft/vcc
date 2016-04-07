@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+_(datatype List {
+case Nil();
+case Cons(\integer h, List t);
+})
+
+_(def \integer len(List l, void *x)
+{
+	switch(l) {
+	case Nil(): return 0;
+	case Cons(h, t): return len(t,x) + 1;
+	}
+}
+)
+`
+Verification of len succeeded.
+`

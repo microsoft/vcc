@@ -1,0 +1,15 @@
+#include <vcc.h>
+
+int aDoubleArr[3] = {3, 6, 9}; 
+
+int (*var7(int (*)[3]))[3];
+
+int (*var7( int (*aDoublePtr)[3]) )[3]{
+  return aDoublePtr;
+}
+
+int main(){
+}
+`
+testcase(8,10) : error VC0000: Cannot implicitly convert type 'int**' to 'int[3]*'.
+`

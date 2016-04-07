@@ -1,0 +1,8 @@
+#include <vcc.h>
+
+void foo(int i) {
+	_(assert i \is int) // buggy Boogie for this syntax error (right syntax would be: _(assert &i \is int))
+}
+`
+testcase(4,11) : error VC9748: Cannot apply '\is' to argument of type 'int32_t'
+`

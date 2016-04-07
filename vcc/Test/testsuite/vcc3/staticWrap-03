@@ -1,0 +1,28 @@
+#include "vcc2test.h"
+
+struct B { int x; };
+
+struct A {
+  struct B *b;
+  _(invariant \mine(b))
+};
+
+void failWrapped(struct B *b)
+  _(writes b)
+{
+  _(unwrap b)
+}
+
+void failWrites(struct B *b)
+  _(requires \wrapped(b))
+{
+  _(unwrap b)
+}
+
+`
+Verification of A#adm succeeded.
+Verification of failWrapped failed.
+testcase(13,12) : error VC8016: 'b' is not wrapped before unwrap.
+Verification of failWrites failed.
+testcase(19,12) : error VC8021: 'b' is not writable before unwrapping it.
+`

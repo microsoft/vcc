@@ -1,0 +1,25 @@
+#include "vcc.h"
+
+typedef unsigned __int64 uint64_t;
+
+typedef int (*F)(int);
+typedef unsigned (*G)(unsigned);
+
+int foo(int a);
+
+int baz(F f) 
+  _(requires f->\valid)
+{
+  f(4);
+}
+
+int bar() {
+  F x = foo;
+  G y = _(unchecked)((G)x);
+  baz(_(unchecked)((F)y));
+}
+`
+Verification of baz succeeded.
+Verification of bar succeeded.
+Verification of bar#fnptr#foo_to_F#1 succeeded.
+`

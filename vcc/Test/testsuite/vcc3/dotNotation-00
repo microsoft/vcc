@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+struct S {
+	int a;
+};
+
+void test()
+{
+	struct S s;
+	_(wrap &s)
+	_(assert s.\closed)
+	_(unwrap &s)
+}
+
+`
+Verification of test succeeded.
+`

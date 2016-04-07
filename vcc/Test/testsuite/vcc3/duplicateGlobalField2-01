@@ -1,0 +1,14 @@
+#include "vcc.h"
+
+int a;
+
+struct G {
+    int a;
+};
+
+void foo(struct G *x) {
+    _(assume a==3)
+}
+`
+Verification of foo succeeded.
+`

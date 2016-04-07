@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+struct S {
+	int a;
+};
+
+void foo(struct S *p) 
+{
+	_(assume \writable(&p->a))
+	p->a = 5;
+}
+`
+Verification of foo succeeded.
+`

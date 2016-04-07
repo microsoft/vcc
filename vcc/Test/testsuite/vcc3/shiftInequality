@@ -1,0 +1,85 @@
+#include <vcc.h>
+
+typedef unsigned __int64 UINT64;
+typedef unsigned __int32 UINT32;
+
+
+void foo19(UINT64 num)
+  _(requires num < (1UI64 << 19))
+{
+    __int32 stkptr;
+    unsigned __int32 nineteen = 19;
+    stkptr = 0;   
+
+    _(assert num < (1UI64 << nineteen))
+}
+
+void foo19ShouldFail(UINT64 num)
+  _(requires num < (1UI64 << 20))
+{
+    __int32 stkptr;
+    unsigned __int32 nineteen = 19;
+    stkptr = 0;   
+
+    _(assert num < (1UI64 << nineteen))
+}
+
+void foo20(UINT64 num)
+  _(requires num < (1UI64 << 20))
+{
+    __int32 stkptr;
+    unsigned __int32 twenty = 20;
+    stkptr = 0;   
+    _(assert num < (1UI64 << twenty))
+}
+
+void foo20ShouldFail(UINT64 num)
+  _(requires num < (1UI64 << 21))
+{
+    __int32 stkptr;
+    unsigned __int32 twenty = 20;
+    stkptr = 0;   
+    _(assert num < (1UI64 << twenty))
+}
+
+void foo62(UINT64 num)
+  _(requires num < (1UI64 << 62))
+{
+    __int32 stkptr;
+    unsigned __int32 sixtyTwo = 62;
+    stkptr = 0;   
+    _(assert num < (1UI64 << sixtyTwo))
+}
+
+void foo62ShouldFail(UINT64 num)
+  _(requires num < (1UI64 << 63))
+{
+    __int32 stkptr;
+    unsigned __int32 sixtyTwo = 62;
+    stkptr = 0;   
+    _(assert num < (1UI64 << sixtyTwo))
+}
+
+
+
+void bar(UINT64 num)
+  _(requires num < (1UI64 << 62))
+{
+    __int32 stkptr;
+    stkptr = 0;   
+    _(assert num < (1UI64 << 62))
+    _(assert num < (1UI64 << (62 - stkptr)))
+}
+
+`
+Verification of foo19 succeeded.
+Verification of foo19ShouldFail failed.
+testcase(24,14) : error VC9500: Assertion 'num < (1UI64 << nineteen)' did not verify.
+Verification of foo20 succeeded.
+Verification of foo20ShouldFail failed.
+testcase(42,14) : error VC9500: Assertion 'num < (1UI64 << twenty)' did not verify.
+Verification of foo62 succeeded.
+Verification of foo62ShouldFail failed.
+testcase(60,14) : error VC9500: Assertion 'num < (1UI64 << sixtyTwo)' did not verify.
+Verification of bar succeeded.
+`

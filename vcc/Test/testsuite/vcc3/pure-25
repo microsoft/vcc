@@ -1,0 +1,72 @@
+#include "vcc.h"
+
+
+_(ghost _(pure) unsigned foo(unsigned x)
+  _(ensures \result == x - 1000);)
+
+
+
+void bar(unsigned y)
+{
+   _(ghost unsigned tmp;) 
+  _(assert foo(y) >= 0)
+   _(ghost tmp = foo(100);) 
+  _(assert \false)
+}
+
+
+struct X {
+  unsigned x;
+  unsigned y;
+};
+
+_(pure) struct X bzz(unsigned x)
+  _(ensures  \result.x == x - 10);
+
+
+void bzz2()
+{
+  struct X x;
+  x = bzz(0);
+  _(assert x.x >= 0)
+  _(assert \false)
+}
+
+_(record) struct X2 {
+  unsigned x;
+  unsigned y;
+};
+
+_(ghost _(pure) struct X2 bzzX(unsigned x)
+  _(ensures  \result.x == x - 10))
+
+
+_(ghost void bzz2X()
+{
+  struct X2 x;
+  x = bzzX(0);
+  _(assert x.x >= 0)
+  _(assert \false)
+})
+
+_(ghost _(pure) struct X2 bzzX2(unsigned x)
+  _(ensures  \result == (struct X2) { .x = x - 10 }))
+
+
+_(ghost void bzz2X2()
+{
+  struct X2 x;
+  x = bzzX2(0);
+  _(assert x.x >= 0)
+  _(assert \false)
+})
+`
+Verification of bar failed.
+testcase(14,12) : error VC9500: Assertion '\false' did not verify.
+Verification of bzz2 failed.
+testcase(32,12) : error VC9500: Assertion '\false' did not verify.
+Verification of bzz2X failed.
+testcase(49,12) : error VC9500: Assertion '\false' did not verify.
+Verification of bzz2X2 failed.
+testcase(61,12) : error VC9500: Assertion '\false' did not verify.
+`

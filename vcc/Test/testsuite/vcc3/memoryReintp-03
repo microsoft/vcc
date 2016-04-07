@@ -1,0 +1,45 @@
+#include <vcc2test.h>
+
+typedef unsigned char byte;
+
+void *alloc(unsigned __int64  sz)
+  _(ensures \object_root(_(blob sz) (\result)))
+  _(ensures \mutable(_(blob sz) (\result)))
+  _(ensures \fresh(_(blob sz) (\result)))
+  ;
+
+struct A {
+  int x, y;
+};
+
+struct B {
+  struct A a1;
+  struct A a2;
+  int x;
+};
+
+void f1()
+{
+  struct B *b = _(unblobify) (struct B *) alloc(sizeof(struct B));
+  b->a1.x = 10;
+  b->a2.y = 20;
+  b->x = 20;
+}
+
+void mfree(void *p _(ghost unsigned __int64 sz))
+  _(writes \extent(_(blob sz) p));
+
+void f2()
+{
+  struct B *b = _(unblobify) (struct B *) alloc(sizeof(struct B));
+  b->a1.x = 10;
+  b->a2.y = 20;
+  b->x = 20;
+  _(blobify b)
+  mfree(b _(ghost sizeof(*b)));
+}
+
+`
+Verification of f1 succeeded.
+Verification of f2 succeeded.
+`

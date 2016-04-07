@@ -1,0 +1,29 @@
+#include <vcc.h>
+
+struct B { int x,y; };
+
+struct A2 {
+  int x;
+  struct B b;
+
+  _(invariant x ==> &b \in \this->\owns)
+};
+
+struct A3 {
+  int x;
+  struct B b;
+
+  _(invariant x ==> &b \in0 \this->\owns)
+};
+
+struct A4 {
+  int x;
+  struct B b[5];
+
+  _(invariant \forall int x; 0 <= x && x < 5 ==> &b[x] \in \this->\owns)
+};
+`
+testcase(9,28) : error VC9662: Explicit reference to owns-set of type 'A2', which is static. Use \mine(...) or mark 'A2' with _(dynamic_owns).
+testcase(16,29) : error VC9662: Explicit reference to owns-set of type 'A3', which is static. Use \mine(...) or mark 'A3' with _(dynamic_owns).
+testcase(23,60) : error VC9662: Explicit reference to owns-set of type 'A4', which is static. Use \mine(...) or mark 'A4' with _(dynamic_owns).
+`

@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{cdb01dbb-fd43-40f4-98f0-f5401e8c5919}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Translator</RootNamespace>
+    <AssemblyName>Microsoft.Research.Vcc.Translator</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Name>Vcc2Translator</Name>
+    <SccProjectName>
+    </SccProjectName>
+    <SccProvider>
+    </SccProvider>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccLocalPath>
+    </SccLocalPath>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>3</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>3</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OtherFlags>--keyfile:..\Common\InterimKey.snk</OtherFlags>
+    <Tailcalls>true</Tailcalls>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'CompilerOnly' ">
+    <OtherFlags>
+    </OtherFlags>
+    <Tailcalls>true</Tailcalls>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\CompilerOnly\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Graph, Version=2.0.10514.0, Culture=neutral, PublicKeyToken=736440c9b414ea16">
+      <Name>Graph</Name>
+      <AssemblyName>Graph.dll</AssemblyName>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Boogie\Graph.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="AIFramework, Version=1.0.11015.0, Culture=neutral, PublicKeyToken=null">
+      <Name>AIFramework</Name>
+      <AssemblyName>AIFramework.dll</AssemblyName>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Boogie\AIFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Basetypes, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <Name>Basetypes</Name>
+      <AssemblyName>Basetypes.dll</AssemblyName>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Boogie\Basetypes.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Core, Version=1.0.11015.0, Culture=neutral, PublicKeyToken=null">
+      <Name>Core</Name>
+      <AssemblyName>Core.dll</AssemblyName>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Boogie\Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Model">
+      <HintPath>..\Boogie\Model.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="ParserHelper">
+      <HintPath>..\Boogie\ParserHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="VCExpr, Version=2.0.10514.0, Culture=neutral, PublicKeyToken=736440c9b414ea16">
+      <Name>VCExpr</Name>
+      <AssemblyName>VCExpr.dll</AssemblyName>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Boogie\VCExpr.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="VCGeneration, Version=1.0.11016.0, Culture=neutral, PublicKeyToken=null">
+      <Name>VCGeneration</Name>
+      <AssemblyName>VCGeneration.dll</AssemblyName>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Boogie\VCGeneration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BoogieToken.fs" />
+    <Compile Include="BoogieAST.fs" />
+    <Compile Include="ToBoogieAST.fs" />
+    <Compile Include="TranslatorUtils.fs" />
+    <Compile Include="InformationFlow.fs" />
+    <Compile Include="BvTranslator.fs" />
+    <Compile Include="TriggerInference.fs" />
+    <Compile Include="Translator.fs" />
+    <Compile Include="VcOpt.fs" />
+    <Compile Include="..\Common\Include\version.fs">
+      <Link>version.fs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Ast\Ast.fsproj">
+      <Name>Ast</Name>
+      <Project>{c5203b00-b561-48f9-b56d-c4477a27ea01}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
+  </PropertyGroup>
+  <Choose>
+    <When Condition="'$(VisualStudioVersion)' == '11.0'">
+      <PropertyGroup>
+        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+  <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+	     Other similar extension points exist, see Microsoft.Common.targets.
+	<Target Name="BeforeBuild">
+	</Target>
+	<Target Name="AfterBuild">
+	</Target>
+	-->
+</Project>

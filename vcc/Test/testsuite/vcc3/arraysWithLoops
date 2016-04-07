@@ -1,0 +1,41 @@
+#include <vcc.h>
+#include <sal.h>
+
+void ArrayWriteInLoopTestOk(int a[], size_t size)
+  _(writes \array_range(a, size))
+  _(ensures \forall size_t k; k < 0 || k >= size || a[k] == 1)
+{ 
+  size_t i = 0;  
+  while (i < size) 
+    _(invariant 0 <= i && i <= size)
+    _(invariant \forall size_t t; t < 0 || t >= i || a[t]==1)
+  {
+    a[i++]=1;
+  }
+}
+
+void ArrayAssignWithLoopTestOk(int a[], size_t size)
+  _(writes \array_range(a, size))
+{ 
+  for(size_t i = 0; i < size; i++)
+    _(invariant 0 <= i && i <= size)
+  {
+    a[i] = 1;
+  }
+}
+
+void ArrayAssignWithLoopAlternativePreconditionTestOk(int a[], size_t size)
+  _(requires \forall size_t j; {a[j]} 0 <= j && j < size ==> (a+j)->\valid)
+  _(writes \array_range(a, size))
+{ 
+  for(size_t i = 0; i < size; i++)
+    _(invariant 0 <= i && i <= size)
+  {
+    a[i] = 1;
+  }
+}
+`
+Verification of ArrayWriteInLoopTestOk succeeded.
+Verification of ArrayAssignWithLoopTestOk succeeded.
+Verification of ArrayAssignWithLoopAlternativePreconditionTestOk succeeded.
+`

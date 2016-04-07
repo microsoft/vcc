@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+void foo(_Bool i, _Bool j){
+  _Bool* p = &i;
+  *p = 1;
+  j = i;
+  _(assert j == 1)
+  _(assert j == i)
+}
+`
+Verification of foo succeeded.
+`

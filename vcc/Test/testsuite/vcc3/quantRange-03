@@ -1,0 +1,14 @@
+#include "vcc.h"
+
+_(ghost _(pure) \bool m1(unsigned i) _(returns \true))
+_(ghost _(pure) \bool m2(unsigned i) _(returns \true))
+
+void foo(int *a) {
+  _(assume \forall unsigned i; {m1(i)} i < 42 ==> (a[i] == 0))
+  _(assume \forall unsigned i; {m2(i)} i >= 42 ==> (a[i] == 1))
+  _(assert \forall unsigned i; {:hint m1(i)} {:hint m2(i)} i < 42 ? a[i] == 0 : a[i] == 1)
+}
+
+`
+Verification of foo succeeded.
+`

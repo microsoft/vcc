@@ -1,0 +1,53 @@
+#include <vcc.h>
+
+struct S {
+  int nonvol;
+  volatile int vol;
+  _(ghost  volatile int specvol;)
+  _(ghost  int specnonvol;)
+};
+
+void foo1(struct S *s _(ghost \claim c))
+  _(always c, s->\closed)
+{
+  _(atomic c, s) {
+    s->nonvol = 1;
+    _(begin_update)
+  }
+}
+
+void foo2(struct S *s _(ghost \claim c))
+  _(always c, s->\closed)
+{
+  _(atomic c, s) {
+    _(begin_update)
+    s->nonvol = 1;
+  }
+}
+
+void foo3(struct S *s _(ghost \claim c))
+  _(always c, s->\closed)
+{
+  _(atomic c, s) {
+    s->vol = 1;
+    _(begin_update)
+  }
+}
+
+void foo4(struct S *s _(ghost \claim c))
+  _(always c, s->\closed)
+{
+  _(atomic c, s) {
+    _(begin_update)
+    s->vol = 1;
+  }
+}
+`
+Verification of foo1 failed.
+testcase(14,5) : error VC8507: Assertion 's->nonvol is writable' did not verify.
+Verification of foo2 failed.
+testcase(24,5) : error VC8507: Assertion 's->nonvol is writable' did not verify.
+Verification of foo3 failed.
+testcase(32,5) : error VC8507: Assertion 's->vol is writable' did not verify.
+Verification of foo4 succeeded.
+`

@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+struct x {
+  int dummy;
+  _(invariant !\inv(\this))
+};
+
+int f ()
+{
+  struct x X;
+  _(wrap &X)
+  _(assert \false)
+}
+`
+testcase(5,16) : error VC9712: Use of '\inv(...)' or '\inv2(...)' with negative polarity.
+`

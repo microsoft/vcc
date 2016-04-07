@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+int mul(int i)
+{
+  return i * 1000;
+}
+`
+Verification of mul failed.
+testcase(5,10) : error VC8004: i * 1000 might overflow.
+`

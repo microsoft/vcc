@@ -1,0 +1,20 @@
+#include <vcc.h>
+
+typedef long long __vcI8;
+typedef unsigned long long __vcU8;
+
+
+
+void foo(unsigned int n) {
+  n = 0;
+  while (n < 100) 
+    _(invariant n <= 100)
+  {
+    _(assert n <= 100)
+    n = n + 1;
+  }
+}
+
+`
+Verification of foo succeeded.
+`

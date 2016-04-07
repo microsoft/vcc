@@ -1,0 +1,21 @@
+#include <vcc.h>
+
+int foo(int i, int j) {
+		return i;
+}
+
+int f() { return 1; }
+
+void bar() {
+	int i;
+	foo(f(), 
+		f());
+}
+
+`
+testcase(11,6) : warning VC9325: [possible unsoundness]: Call to 'f' may have sequence conflict with call to 'f'
+testcase(12,3) : warning : (Location of symbol related to previous warning.)
+Verification of foo succeeded.
+Verification of f succeeded.
+Verification of bar succeeded.
+`

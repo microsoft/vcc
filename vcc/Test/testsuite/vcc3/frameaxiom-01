@@ -1,0 +1,19 @@
+#include <vcc.h>
+
+_(ghost _(pure, no_reads_check, frameaxiom) int val(int *p, size_t len)
+  _(reads \array_range(p,len))
+  )
+
+void nothing() {}
+
+void test() {
+    int *p;
+    size_t len;
+    _(assume \mutable_array(p,len) && val(p, len) == 0)
+    nothing();
+    _(assert val(p,len) == 0)
+}
+`
+Verification of nothing succeeded.
+Verification of test succeeded.
+`

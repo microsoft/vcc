@@ -1,0 +1,13 @@
+#include "vcc.h"
+
+void foo(int j) {
+    _(assert {:bv} \forall int i; i&1 || !((\bool)(i&1)))
+    _(assert {:bv} \forall int i; i&1 || !(i&1))   
+    _(assume \start_here())
+    _(assert j&1 || !(j&1))
+}
+`
+Verification of foo succeeded.
+Verification of foo#bv_lemma#0 succeeded.
+Verification of foo#bv_lemma#1 succeeded.
+`

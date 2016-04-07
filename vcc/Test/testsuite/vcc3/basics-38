@@ -1,0 +1,19 @@
+#include <vcc.h>
+
+_(
+\bool _(pure) zero1(int a)
+_(returns a == 0 ? (0 == 0) : \false);
+\bool _(pure) zero2(int a)
+_(returns a == 0 ? (0 == 0) : (1 < 0));
+\bool _(pure) zero3(int a)
+_(returns a == 0 ? (0 != 1) : (0 == 0) && (0 == 1));
+)
+
+void foo() {
+  _(assert zero1(0))
+  _(assert zero2(0))
+  _(assert zero3(0))
+}
+`
+Verification of foo succeeded.
+`

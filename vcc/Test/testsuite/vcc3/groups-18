@@ -1,0 +1,24 @@
+#include "vcc.h"
+
+struct A {
+  _(group B)
+
+  _(:B) int x;
+  int y;
+  _(invariant \mine(\this::B))
+};
+
+
+void foo(struct A *a)
+  _(writes a)
+{
+  _(wrap a)
+}
+`
+Verification of A#adm succeeded.
+Verification of foo failed.
+testcase(15,10) : error VC8018: '\this::B' is not wrapped before wrapping 'a' (its owner).
+testcase(15,10) : error VC8019: '\this::B' is not writable before wrapping 'a' (its owner).
+testcase(15,5) : error VC9502: Call 'wrap a' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the object being wrapped is mutable'.
+`

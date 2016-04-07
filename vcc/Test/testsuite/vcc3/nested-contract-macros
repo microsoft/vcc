@@ -1,0 +1,27 @@
+#include "vcc.h"
+
+
+_(\bool \macro_foo(int a)
+  _(requires a > 0)
+  _(ensures a > 1))
+
+_(\bool \macro_foo2(int a)
+  _(requires a > 0)
+  _(ensures a > 1))
+
+_(\bool \macro_bar(int x, int y)
+  _(foo x)
+  _(foo2 y))
+
+void baz(int xx, int yy)
+  _(bar xx, yy)
+{
+  _(assume xx > 1)
+}
+`
+Verification of baz failed.
+testcase(20,1) : error VC9501: Post condition 'a > 1' did not verify.
+testcase(17,5) : error VC9599: (related information) Location of post condition.
+testcase(14,5) : error VC9599: (related information) from expansion of '_(bar xx, yy)'.
+testcase(10,13) : error VC9599: (related information) from expansion of '_(foo2 y)'.
+`

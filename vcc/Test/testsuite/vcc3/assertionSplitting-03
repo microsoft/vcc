@@ -1,0 +1,13 @@
+#include "vcc.h"
+
+_(ghost _(pure) \bool foo(\bool b[int], int c)
+  _(returns {:split} {:split} \forall int x; c <= b[x] && b[x] <= c))
+
+void baz() {
+	_(ghost \bool b[int])
+	_(assert foo(b,4711))
+}
+`
+Verification of baz failed.
+testcase(8,11) : error VC9500: Assertion 'foo(b,4711)' did not verify.
+`

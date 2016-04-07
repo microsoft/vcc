@@ -1,0 +1,8 @@
+#include "vcc.h"
+
+_(atomic_inline) void foo();
+void bar() { foo(); }
+
+`
+Verification of bar succeeded.
+`

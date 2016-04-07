@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+_(logic \bool And3(\bool a, \bool b) = (\result && b);)
+
+void foo4()
+{
+  int a, b, c;
+  _(assert And3(a > b, b > c && b > 0))
+}
+`
+testcase(3,41) : error VC0000: Cannot use '\result' in this context.
+`

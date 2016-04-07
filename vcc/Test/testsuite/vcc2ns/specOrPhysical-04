@@ -1,0 +1,27 @@
+#include <vcc.h>
+
+struct S {
+  int a;
+};
+
+struct T {
+  struct S *p;
+  _(ghost struct S ^q;)
+  _(invariant \mine(p,q))
+};
+
+void foo(struct T *t) 
+  _(writes t)
+  _(maintains \wrapped(t))
+{
+  _(unwrapping t) {
+    _(assert (t->p)->\valid)
+    _(assert ((t->p)->\valid && !\ghost(t->p)))
+    _(assert (t->q)->\valid)
+    _(assert ((t->q)->\valid && \ghost(t->q)))
+  }
+}
+`
+Verification of T#adm succeeded.
+Verification of foo succeeded.
+`

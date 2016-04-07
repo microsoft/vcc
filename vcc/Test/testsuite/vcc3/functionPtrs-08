@@ -1,0 +1,14 @@
+#include <vcc.h>
+typedef unsigned __int64 uint64_t;
+
+typedef int (*F)(int);
+
+int foo(int a);
+
+int baz() {
+	uint64_t addr;
+	addr = (uint64_t) foo;
+}
+`
+Verification of baz succeeded.
+`

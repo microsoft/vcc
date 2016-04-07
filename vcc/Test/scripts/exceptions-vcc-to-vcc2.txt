@@ -1,0 +1,136 @@
+extern void free(void* ptr);
+extern void* malloc(unsigned int size);
+static Region __vcEmpty() {}
+static Region __vcJoin(Region r1, Region r2) {}
+static Region __vcRegion(void* p, unsigned __int64 length){ }
+static Region __vcSubtract(Region r1, Region r2) {}
+static Region __vcUniverse() {}
+static _Bool __vcNewElemsFresh(Region r) { return 1; }
+static _Bool __vcOverlaps(Region r1, Region r2){}
+static _Bool __vcValid(void* p, unsigned __int64 l){ return 1; }
+static void*  __vcBaseZero(void*p);
+typedef _Bool bool;
+typedef struct _Region{void* p;} *Region;
+static bool __vcContains(Region r1, Region r2) {}
+static bool __vcElementsAllocated(Region b) { }
+static bool __vcElemsFresh(Region b) { return 1; }
+static bool __vcNewElemsFresh(Region r) { return 1; }
+static bool __vcOverlaps(Region r1, Region r2){}
+static bool __vcValid(void* p, unsigned __int64 l){ return 1; }
+static _Bool __vcValid(void* p, size_t l){ return 1; }
+static _Bool __vcValid(void* p, unsigned __int64 l){ return true; }
+static _Bool __vcContains(Region r1, Region r2) {}
+static _Bool __vcElementsAllocated(Region b) { }
+static _Bool __vcElemsFresh(Region b) { return 1; }
+static _Bool  __vcIsFresh(void*);
+static void* __vcGhostName(void *) {}
+static Region __vcGhostAll(Region) {}
+static Region __vcGhostOnly(Region,void*) {}
+typedef struct _vcSet {void *p;} *__vcSet;
+static __vcSet __vcSetEmpty() {}
+static __vcSet __vcSetSingleton(void *p) {}
+static __vcSet __vcSetUnion(__vcSet s1, __vcSet s2) {}
+static _Bool __vcSetSubset(__vcSet s1, __vcSet s2) {}
+static _Bool __vcSetDisjoint(__vcSet s1, __vcSet s2) {}
+static _Bool __vcSetEqual(__vcSet s1, __vcSet s2) {}
+static _Bool __vcSetIn(void *p, __vcSet s) {}
+static Region __vcSetToRegion(__vcSet s) {}
+typedef signed char __vcI1;
+typedef unsigned char __vcU1;
+typedef short __vcI2;
+typedef unsigned short __vcU2;
+typedef int __vcI4;
+typedef unsigned int __vcU4;
+typedef long __vcI8;
+typedef unsigned long __vcU8;
+typedef void* __vcPtr;
+__specification __axiom a = __forall(__vcI1 x; __vcMatchI1(x));
+__specification __axiom a = __forall(__vcU1 x; __vcMatchU1(x));
+__specification __axiom a = __forall(__vcI2 x; __vcMatchI2(x));
+__specification __axiom a = __forall(__vcU2 x; __vcMatchU2(x));
+__specification __axiom a = __forall(__vcI4 x; __vcMatchI4(x));
+__specification __axiom a = __forall(__vcU4 x; __vcMatchU4(x));
+__specification __axiom a = __forall(__vcI8 x; __vcMatchI8(x));
+__specification __axiom a = __forall(__vcU8 x; __vcMatchU8(x));
+__specification __axiom a = __forall(__vcPtr x; __vcMatchPtr(x));
+static _Bool __vcMatchI1(__vcI1 x) __reads(__vcEmpty());
+static _Bool __vcMatchU1(__vcU1 x) __reads(__vcEmpty());
+static _Bool __vcMatchI2(__vcI2 x) __reads(__vcEmpty());
+static _Bool __vcMatchU2(__vcU2 x) __reads(__vcEmpty());
+static _Bool __vcMatchI4(__vcI4 x) __reads(__vcEmpty());
+static _Bool __vcMatchU4(__vcU4 x) __reads(__vcEmpty());
+static _Bool __vcMatchI8(__vcI8 x) __reads(__vcEmpty());
+static _Bool __vcMatchU8(__vcU8 x) __reads(__vcEmpty());
+static _Bool __vcMatchPtr(__vcPtr x) __reads(__vcEmpty());
+static Region __vcRegionNonNull(void*p, unsigned __int64 length) { }
+static bool __vcOnlySingleGhostChanged(Region,void*) {}
+typedef __vcSet Set;
+static bool __vcContains(Region r1, Region r2) {}
+static bool __vcElementsAllocated(Region b) { }
+static bool __vcElemsFresh(Region b) { return true; }
+static Region __vcEmpty() {}
+static Region __vcJoin(Region r1, Region r2) {}
+static bool __vcNewElemsFresh(Region r) { return true; }
+static bool __vcOverlaps(Region r1, Region r2){}
+static Region __vcRegion(void* p, size_t length){ return 0; }
+static bool __vcValid(void* p, size_t l){ return true; }
+static Region __vcUniverse() {}
+static _Bool __vcMatchI1(__vcI1 x) __reads(__vcEmpty()) __ensures(result == 1);
+static _Bool __vcMatchU1(__vcU1 x) __reads(__vcEmpty()) __ensures(result == 1);
+static _Bool __vcMatchI2(__vcI2 x) __reads(__vcEmpty()) __ensures(result == 1);
+static _Bool __vcMatchU2(__vcU2 x) __reads(__vcEmpty()) __ensures(result == 1);
+static _Bool __vcMatchI4(__vcI4 x) __reads(__vcEmpty()) __ensures(result == 1);
+static _Bool __vcMatchU4(__vcU4 x) __reads(__vcEmpty()) __ensures(result == 1);
+static _Bool __vcMatchI8(__vcI8 x) __reads(__vcEmpty()) __ensures(result == 1);
+static _Bool __vcMatchU8(__vcU8 x) __reads(__vcEmpty()) __ensures(result == 1);
+static _Bool __vcMatchPtr(__vcPtr x) __reads(__vcEmpty()) __ensures(result == 1);
+typedef struct _vcSet {void *p;} *__vcSet;
+static __vcSet __vcSetEmpty() {}
+static __vcSet __vcSetSingleton(void *p) {}
+static __vcSet __vcSetUnion(__vcSet s1, __vcSet s2) {}
+static bool __vcSetSubset(__vcSet s1, __vcSet s2) {}
+static bool __vcSetDisjoint(__vcSet s1, __vcSet s2) {}
+static bool __vcSetEqual(__vcSet s1, __vcSet s2) {}
+static bool __vcSetIn(void *p, __vcSet s) {}
+static Region __vcSetToRegion(__vcSet s) {}
+__axiom __specification a = __forall (UINT64 x; __vcMatchU8(x));
+bool __vcMatchU8(UINT64 x) __reads(__vcEmpty());
+typedef struct _Region{void* p;}* Region;
+typedef unsigned int size_t;
+static _Bool __vcContains(Region r1, Region r2) {}
+static _Bool __vcElementsAllocated(Region b) { }
+static _Bool __vcElemsFresh(Region b) { return true; }
+static Region __vcEmpty() {}
+static Region __vcJoin(Region r1, Region r2) {}
+static _Bool __vcNewElemsFresh(Region r) { return true; }
+static _Bool __vcOverlaps(Region r1, Region r2){}
+static Region __vcRegion(void* p, unsigned __int64 length){ return 0; }
+static _Bool __vcValid(void* p, unsigned __int64 l){ return true; }
+static Region __vcUniverse() {}
+static bool __vcIsFresh(void*) {}
+static _Bool __vcAssumeHintKind(enum _vcHintKind kind);
+static __vcSet __vcSetDifference(__vcSet s1, __vcSet s2) {}
+static bool __vcMatchI8(__vcI8 x) reads(empty());
+static _Bool __vcZeroRegion(void *p, unsigned __int64 size);
+static bool  __vcIsFresh(void*);
+typedef struct _Bag {int nmElements;} Bag;
+typedef _Bool bool;
+typedef struct _Region{void* p;}* Region;
+static bool __vcContains(Bag b, void* p, size_t length) {}
+static bool __vcElementsAllocated(Bag b) { }
+static bool __vcElemsFresh(Bag b) { return 1; }
+static Bag __vcEmpty() {}
+static Bag __vcInsert(Bag b, void* p, size_t length) {}
+static Bag __vcJoin(Bag b1, Bag b2) {}
+static bool __vcNewElemsFresh(Bag b) { return 1; }
+static bool __vcOverlap(Bag b, void* p, size_t length) {}
+static bool __vcRegionsOverlap(void* r1, void* r2){}
+static void* __vcRegion(void* p, size_t length){ return (void *)0; }
+static bool __vcValid(void* p, size_t l){ return 1; }
+static Bag __vcUniverse() {}
+static bool __vcIsFresh(void*) {return 1;}
+static _Bool __vcSetIsEmpty(__vcSet s) {}
+static _Bool __vcModifies(void* p, size_t length){ return 0; }
+static bool  __vcIsFresh(void*) {}
+static bool __vcMatchI8(__vcI8 x) __reads(__vcEmpty());
+__specification __axiom a = __forall (__vcI8 x; __vcMatchI8(x));

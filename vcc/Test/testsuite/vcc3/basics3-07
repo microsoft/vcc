@@ -1,0 +1,14 @@
+#include "vcc.h"
+
+_(ghost _(record) struct Output {
+    unsigned out;
+    unsigned x;
+})
+
+void foo(_(ghost struct Output o))
+    _(requires o.out==5)
+    _(requires o.x==5)
+{}
+`
+Verification of foo succeeded.
+`

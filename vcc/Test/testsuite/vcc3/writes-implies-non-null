@@ -1,0 +1,22 @@
+#include "vcc.h"
+
+void foo(int *p)
+  _(writes p)
+  _(ensures *p == 7)
+{
+  _(assert p)
+  *p = 7;
+}
+
+void bar()
+{
+  int x;
+  int y;
+  foo(&x);
+  foo(&y);
+  _(assert x == 7 && y == 7)
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

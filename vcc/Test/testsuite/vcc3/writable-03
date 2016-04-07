@@ -1,0 +1,15 @@
+#include <vcc.h>
+
+struct S {
+	int a;
+};
+
+void foo(struct S *p) 
+{
+	struct S s;
+	_(assert \writable(&s))
+	_(assert \writable(&(s.a)))
+}
+`
+Verification of foo succeeded.
+`

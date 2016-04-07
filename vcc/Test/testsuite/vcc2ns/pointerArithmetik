@@ -1,0 +1,25 @@
+#include <vcc.h>
+
+typedef __int32 INT32;
+typedef unsigned __int8 UINT8;
+typedef unsigned __int16 UINT16;
+typedef unsigned __int32 UINT32;
+typedef unsigned __int64 UINT64;
+typedef void VOID;
+
+
+VOID foo (
+    VOID *base    )
+{
+    UINT8 *lo, *hi;
+    UINT64 size;
+
+    lo = (UINT8 *)base;
+    hi = (UINT8 *)base + 4 * 9;
+    size = ((UINT64)(hi - lo)) / 4 + 1; 
+    _(assert size == 10)
+}    
+
+`
+Verification of foo succeeded.
+`

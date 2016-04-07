@@ -1,0 +1,9 @@
+#include "vcc.h"
+
+void foo() {
+  _(ghost \bool mapmap[int][int])
+  _(ghost \bool map[int] = (\lambda int j; (\exists int i; mapmap[i][j])))
+}
+`
+Verification of foo succeeded.
+`

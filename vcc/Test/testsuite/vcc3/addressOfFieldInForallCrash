@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+typedef unsigned __int64 UINT_PTR;
+
+typedef struct _RTL_RBNODE
+{
+  int i;
+} RTL_RBNODE, *PRTL_RBNODE;
+
+typedef struct _RTL_RBTREE
+{    
+    RTL_RBNODE NilNode;
+    
+    _(ghost PRTL_RBNODE nodesMap[UINT_PTR])
+
+    _(invariant \forall UINT_PTR key; (nodesMap[key] != &NilNode))
+                          
+} RTL_RBTREE, *PRTL_RBTREE;
+
+`
+Verification of _RTL_RBTREE#adm succeeded.
+`

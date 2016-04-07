@@ -1,0 +1,29 @@
+#include <vcc.h>
+
+struct S {
+	int a;
+	int b;
+	_(invariant a == b)
+};
+
+_(pure)
+void Validate(struct S *p)
+  _(requires \wrapped(p))
+{
+  _(assert p->a == p->b)
+}
+
+_(pure) int GetA(struct S *p)
+  _(requires \wrapped(p))
+  _(reads &p->a)
+  _(ensures \result == p->a)
+{
+  Validate(p);
+  return p->a;
+}
+`
+Verification of S#adm succeeded.
+Verification of Validate succeeded.
+Verification of GetA succeeded.
+Verification of GetA#reads succeeded.
+`

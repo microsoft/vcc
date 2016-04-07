@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+_(primitive)
+struct S {
+	int i;
+	int j;
+};
+
+void foo(struct S *s) 
+	_(writes s)
+	_(ensures s->i == 0)
+{
+	s->i = 0;
+}
+`
+testcase(4,1) : error VC9741: type 'S' has more than one field and thus cannot be marked 'primitive'
+`

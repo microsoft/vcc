@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+enum E { XXX, XXXX };
+static _Bool carry(enum E op) { return 0; }
+void ApplyALU() { _Bool x = carry("9"); }
+void main(){}
+`
+testcase(5,29) : error VC0000: The best overloaded method match for '__Globals__.carry(E)' has some invalid arguments.
+testcase(5,35) : error VC0000: Argument '1': cannot convert from 'sbyte*' to 'E'.
+`

@@ -1,0 +1,25 @@
+#include "vcc.h"
+
+typedef unsigned __int8 UINT8;
+typedef unsigned __int64 UINT64;
+
+int _(pure) Contains(UINT8 a[], UINT64 count, UINT8 elem)
+  _(reads \array_range(a, count))
+  _(ensures \result == \exists UINT64 j; 0 <= j && j < count && a[j] == elem);
+
+void writeArray(UINT8 a[], UINT64 count)
+  _(writes \array_range(a, count));
+
+void foo()
+{
+  UINT8 A[256];
+  UINT64 i;
+  A[0] = 0;
+  _(assert Contains(A, 1, 0))
+  writeArray(A+1, 255);
+  _(assert Contains(A, 1, 0))
+}
+`
+Verification of foo succeeded.
+Verification of Contains#reads succeeded.
+`

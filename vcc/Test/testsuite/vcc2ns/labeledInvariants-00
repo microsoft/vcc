@@ -1,0 +1,54 @@
+#include "vcc.h"
+
+struct S {
+  int a;
+  _(ghost int b)
+  _(invariant a > 0)
+  _(invariant :public a % 2 == 0)
+  _(invariant :private a == b)
+  _(invariant :secret b == 20)
+};
+
+void foo(struct S *s) 
+  _(requires \wrapped(s))
+{
+  _(assert s->a > 0 && s->a % 2 == 0)
+}
+  
+void fooShouldFail(struct S *s) 
+  _(requires \wrapped(s))
+{
+  _(assert s->a == s->b)
+}
+
+void bar(struct S *s) 
+  _(requires \wrapped(s))
+{
+  _(assert {:use private} s \in \domain(s))
+  _(assert s->a == s->b)  
+}
+
+void barShouldFail(struct S *s) 
+  _(requires \wrapped(s))
+{
+  _(assert {:use secret} s \in \domain(s))
+  _(assert s->a == 20)  
+}
+
+void baz(struct S *s) 
+  _(requires \wrapped(s))
+{
+  _(assert {:use private|secret} s \in \domain(s))
+  _(assert s->a == 20)  
+}
+
+`
+Verification of S#adm succeeded.
+Verification of foo succeeded.
+Verification of fooShouldFail failed.
+testcase(21,12) : error VC9500: Assertion 's->a == s->b' did not verify.
+Verification of bar succeeded.
+Verification of barShouldFail failed.
+testcase(35,12) : error VC9500: Assertion 's->a == 20' did not verify.
+Verification of baz succeeded.
+`

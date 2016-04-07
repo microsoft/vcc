@@ -1,0 +1,36 @@
+#include <vcc2test.h>
+
+
+_(ghost _(record) struct S {
+  int a;
+  int b;
+};)
+
+
+
+_(ghost _(record) struct T {
+  struct S s;
+  int c;
+};)
+
+
+void bar() {
+    _(ghost struct T t) 
+    _(ghost t.c = 10;)
+    _(ghost t.s.a = 20;)
+    _(ghost t.s.b = 21;)
+
+    _(assert t.c == 10)
+    _(assert t.s.a == 20)
+    _(assert t.s.b == 21)
+
+    _(ghost t = t / { .s = t.s / { .b = 30 } };)
+    _(ghost t = t / { .c = 20 };)
+
+    _(assert t.s.b == 30)
+    _(assert t.c == 20)
+    _(assert t.s.a == 20)
+}
+`
+Verification of bar succeeded.
+`

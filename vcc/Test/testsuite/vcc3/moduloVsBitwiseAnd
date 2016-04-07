@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+unsigned int foo(unsigned int i)
+  _(requires (i % 4)  == 0)
+  _(ensures (\result & 3) == 0)
+{
+  return i;
+}
+
+`
+Verification of foo succeeded.
+`

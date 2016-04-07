@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+struct S {
+  int a;
+  int b;
+};
+
+
+_(dynamic_owns) struct T {
+  struct S s1;
+  struct S s2;
+  _(invariant \this->\owns == {&s1, &s2})
+  _(invariant s1.a == s2.a)
+  _(invariant s1.b == s2.b)
+};
+
+void foo(struct T t) { }
+
+`
+Verification of T#adm succeeded.
+Verification of foo succeeded.
+`

@@ -1,0 +1,25 @@
+#include <vcc.h>
+
+void foo(
+    unsigned i
+    _(out \claim a)
+    )
+{
+    _(ghost \claim b, c)
+
+    _(ghost a = b = c)
+}
+
+void bar(
+    unsigned i
+    )
+{
+    _(ghost \claim a, b, c)
+
+    _(ghost a = b = c)
+}
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

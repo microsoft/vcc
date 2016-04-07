@@ -1,0 +1,31 @@
+#include "vcc.h"
+
+typedef struct S{
+    int i;
+}S;
+
+typedef struct A{
+    volatile S* s;
+    _(invariant \mine(s))
+}A;
+
+void ok(A* a)
+    _(requires \wrapped(a))
+{
+    _(atomic a->s){}
+}
+
+void fail(A* a)
+    _(requires \wrapped(a))
+{
+    _(atomic a->s){
+        _(assert a->s \in a->\owns)
+        _(assert a->s->\closed)
+        a->s->i = 5;
+    }
+}
+`
+Verification of A#adm succeeded.
+Verification of ok succeeded.
+Verification of fail succeeded.
+`

@@ -1,0 +1,32 @@
+#include <vcc.h>
+
+typedef __int32 INT32;
+typedef unsigned __int8 UINT8;
+typedef unsigned __int16 UINT16;
+typedef unsigned __int32 UINT32;
+typedef unsigned __int64 UINT64, *PUINT64;
+typedef void VOID, *PVOID;
+
+
+_(ghost _(pure) \bool IsBijectiveMap(UINT64 *map, UINT64 count)
+  _(reads \universe())
+  _(ensures \result == \forall UINT64 j; \match_ulong(j) && 0 <= j && j < count ==> \exists UINT64 k; \match_ulong(k) && map[k] == j))
+
+static UINT64 bij[10];
+
+void foo()
+  _(writes \array_range(bij,10))
+{
+    UINT64 i;
+
+    for (i = 0; i < 10; i++)
+      _(invariant \forall UINT64 j; 0 <= j && j < i ==> bij[j] == j)
+      _(invariant IsBijectiveMap(bij, i))
+    {
+      bij[i] = i;
+    }  
+}
+
+`
+Verification of foo succeeded.
+`

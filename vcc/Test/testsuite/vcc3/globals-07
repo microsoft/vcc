@@ -1,0 +1,28 @@
+#include <vcc.h> 
+
+struct A {
+    int foo;
+};
+
+_(claimable) struct LockContainer {
+    struct A embedded;
+    _(invariant \mine(&embedded))
+} Container;
+
+void Initialize() 
+    _(requires \mutable(&Container))
+    _(ensures \wrapped(&Container))
+    _(writes \extent(&Container))
+    ;
+
+void Main() 
+    _(requires \program_entry_point())    
+    //writes(set_universe(), extent(&Container))
+    _(writes \universe())
+{
+    Initialize();
+}
+`
+Verification of LockContainer#adm succeeded.
+Verification of Main succeeded.
+`

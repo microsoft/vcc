@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+typedef unsigned __int64 UINT64, *PUINT64;
+
+void foo(PUINT64 p, UINT64 c)
+  _(reads \universe())
+{
+  UINT64 i;
+  PUINT64 q;
+  
+  q = p;
+  for (i = 0; i < c; i++)
+    _(invariant p == q)
+  {
+    p++;
+    q++;
+  }
+}
+
+`
+Verification of foo succeeded.
+`

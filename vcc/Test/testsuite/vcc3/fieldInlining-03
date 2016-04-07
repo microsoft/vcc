@@ -1,0 +1,29 @@
+#include <vcc.h>
+
+union U {
+  struct {
+    int a : 16;
+    int b : 16;
+  };
+  
+  _(backing_member) int AsInt;
+};
+
+
+struct S {
+  _(inline) union U u;
+  int dummy;
+};
+
+void foo(struct S *p) 
+  _(writes p)
+  _(maintains \wrapped(p))
+{
+  union U u;
+  _(unwrap p)
+  p->u = u;
+  _(wrap p)
+}
+`
+Verification of foo succeeded.
+`

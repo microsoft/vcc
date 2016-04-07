@@ -1,0 +1,118 @@
+#include <vcc.h>
+
+struct _A{
+    int dummy;
+};
+
+typedef _(volatile_owns) struct _B{
+    struct _A *a;
+    _(invariant a \in \this->\owns)
+
+ //here should be other components that are conditionally owned 
+//...
+} B;
+
+
+struct X { int x; };
+
+void wr(struct X *x)
+  _(ensures \mutable(x))
+  _(ensures \unchanged(\embedding(x)))
+  _(writes x);
+
+void foo(B *b)
+_(requires \wrapped(b))
+{
+struct X unrelated;
+    _(assert b \in \domain(b))
+    _(assert b->a \in \vdomain(b))
+    _(assume b->a->dummy == 12)
+    wr(&unrelated);
+    _(assert b->a->dummy == 12)
+}
+
+struct C {
+  struct B *b;
+  _(invariant \mine(b))
+};
+_(volatile_owns) struct VC {
+  struct B *b;
+  _(invariant \mine(b))
+};
+
+void foo2(struct C *b)
+_(requires \wrapped(b))
+{
+struct X unrelated;
+    _(assert b \in \domain(b))
+    _(assert b->b \in \domain(b))
+    _(assert b->b->a \in \vdomain(b))
+    _(assume b->b->a->dummy == 12)
+    wr(&unrelated);
+    _(assert b->b->a->dummy == 12)
+}
+
+void foo3(struct VC *b)
+_(requires \wrapped(b))
+{
+struct X unrelated;
+    _(assert b \in \domain(b))
+    _(assert b->b \in \vdomain(b))
+    _(assert b->b->a \in \vdomain(b))
+    _(assume b->b->a->dummy == 12)
+    wr(&unrelated);
+    _(assert b->b->a->dummy == 12)
+}
+
+
+typedef _(volatile_owns) struct _B2{
+    struct _A *a;
+    int f;
+    _(invariant f ==> a \in \this->\owns)
+} B2;
+
+
+void fooFail1(B2 *b)
+_(requires \wrapped(b))
+{
+    _(assert b \in \domain(b))
+    _(assert b->a \in \vdomain(b))
+}
+
+void fooComplex(B2 *b)
+_(requires \wrapped(b))
+_(requires b->f)
+{
+    _(assert b \in \domain(b))
+    _(assert b->a \in \vdomain(b))
+}
+
+typedef _(volatile_owns) struct _B3 {
+    struct _A *a;
+    volatile int f;
+    _(invariant f ==> a \in \this->\owns)
+} B3;
+
+
+void fooFail2(B3 *b)
+_(requires \wrapped(b))
+_(requires b->f)
+{
+    _(assert b \in \domain(b))
+    _(assert b->a \in \vdomain(b))
+}
+`
+Verification of _B#adm succeeded.
+Verification of C#adm succeeded.
+Verification of VC#adm succeeded.
+Verification of _B2#adm succeeded.
+Verification of _B3#adm succeeded.
+Verification of foo succeeded.
+Verification of foo2 succeeded.
+Verification of foo3 succeeded.
+Verification of fooFail1 failed.
+testcase(79,14) : error VC9500: Assertion 'b->a \in \vdomain(b)' did not verify.
+Verification of fooComplex succeeded.
+Verification of fooFail2 failed.
+testcase(102,14) : error VC9500: Assertion 'b->a \in \vdomain(b)' did not verify.
+`

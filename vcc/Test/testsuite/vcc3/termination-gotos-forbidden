@@ -1,0 +1,17 @@
+#include <vcc.h>
+#include <limits.h>
+
+_(void foo()
+  _(decreases 1)
+{
+  \integer i, n;
+
+    l:
+      i = i + 1;
+      goto l;
+})
+
+`
+testcase(11,7) : warning VC9316: [possible unsoundness]: backward gotos are currently not supported in termination checking
+Verification of foo succeeded.
+`

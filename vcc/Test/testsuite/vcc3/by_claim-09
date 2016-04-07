@@ -1,0 +1,45 @@
+#include <stdlib.h>
+#include <vcc.h>
+
+typedef _(claimable) _(volatile_owns) struct _SPIN_LOCK
+{
+  volatile int Lock;
+  _(ghost \object protected_obj)
+  _(invariant !Lock ==> \mine(protected_obj))
+} SPIN_LOCK;
+
+void Acquire(SPIN_LOCK *SpinLock _(ghost \claim access_claim))   
+  _(always access_claim, SpinLock->\closed)
+  _(ensures \wrapped(SpinLock->protected_obj))
+  _(ensures \fresh(SpinLock->protected_obj))
+  ;
+
+void Release(SPIN_LOCK *SpinLock _(ghost \claim access_claim))
+  _(writes SpinLock->protected_obj)
+  _(always access_claim, SpinLock->\closed)
+  _(requires access_claim != SpinLock->protected_obj)
+  _(requires \wrapped(SpinLock->protected_obj))
+  ;
+
+_(claimable) struct LockedArray {
+  _(as_array) int arr[10];
+  SPIN_LOCK Lock;
+  _(invariant \mine(&Lock))
+  _(invariant Lock.protected_obj == (void[10])arr)
+};
+
+void WriteArr(struct LockedArray *larr, unsigned int pos, int val _(ghost \claim cl))
+  _(always cl, larr->\closed)
+  _(requires pos < 10)
+{
+  Acquire(&larr->Lock _(ghost cl));
+  _(unwrapping (void[10])(larr->arr)) {
+    larr->arr[pos] = val;
+  }
+  Release(&larr->Lock _(ghost cl));
+}
+`
+Verification of _SPIN_LOCK#adm succeeded.
+Verification of LockedArray#adm succeeded.
+Verification of WriteArr succeeded.
+`

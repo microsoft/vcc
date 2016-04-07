@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+_(pure) unsigned int bar();
+
+void foo(unsigned int x)
+_(requires x > 10)
+{
+    _(assert bar() >= 0)
+    return;
+}
+
+`
+Verification of foo succeeded.
+`

@@ -1,0 +1,37 @@
+#include <vcc.h>
+
+union U {
+  _(backing_member) unsigned __int64 AsUINT64;
+  struct {
+    unsigned __int64 a:32;    
+    unsigned __int64 b:32;
+  };
+};
+
+union V {
+  _(backing_member) union U u;
+  struct {
+    unsigned __int64 a:16;    
+    unsigned __int64 b:16;
+    unsigned __int64 c:16;    
+    unsigned __int64 d:16;
+  };
+};
+
+void foo(union V *v) 
+  _(requires \mutable(v))
+  _(writes \extent(v))
+{ 
+  v->u.AsUINT64 = 1;
+  _(assert v->u.AsUINT64 == 1)
+  _(assert v->u.a == 1)
+  _(assert v->u.b == 0)
+  v->a = 2;
+  _(assert v->a == 2)
+  _(assert v->b == 0)
+  _(assert v->c == 0)
+  _(assert v->d == 0)
+}
+`
+Verification of foo succeeded.
+`

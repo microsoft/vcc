@@ -1,0 +1,34 @@
+#include "vcc.h"
+
+#define UINT32 unsigned int
+
+#define MAX_GPX 10
+
+typedef union pte_t {
+    struct {
+        unsigned reserved_9_0:10;    /* bits [9:0] */
+        unsigned p:1;    /* bit [10] */
+        unsigned v:1;    /* bit [11] */
+        unsigned ppx:20;    /* bits [31:12] */
+    };            /* PTE fields */
+    _(backing_member) 
+        UINT32 uint32;    /* complete word */
+} pte_t;
+
+void test1(UINT32 *mem)
+_(requires \thread_local_array(mem, 100))
+{
+   UINT32 b;
+   b = mem[0];
+}
+
+void test2(UINT32 *mem)
+_(requires \thread_local_array(mem, 100))
+{
+    pte_t tmp;
+    tmp.uint32 = mem[0];
+}
+`
+Verification of test1 succeeded.
+Verification of test2 succeeded.
+`

@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+typedef unsigned __int8 PAGE[4096];
+
+void *f(PAGE *p, unsigned __int64 n) {
+  return (void *)p[n];
+}
+
+`
+Verification of f succeeded.
+`

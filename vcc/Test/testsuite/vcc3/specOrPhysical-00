@@ -1,0 +1,12 @@
+#include "vcc.h"
+
+typedef unsigned __int64 uint64_t;
+
+void foo() {
+    uint64_t a, *b;
+    a = (uint64_t) b;
+    _(assert a >= 0)
+}
+`
+Verification of foo succeeded.
+`

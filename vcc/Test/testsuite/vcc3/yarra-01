@@ -1,0 +1,78 @@
+` /yarra
+#include <vcc.h>
+
+typedef _(yarra) struct 
+{
+  int x;
+  _(invariant x > 0)
+} S;
+
+typedef struct 
+{
+  int y;
+} T;
+
+void baz();
+
+void foo(T *t, S *s)
+  _(updates s)
+{
+  t->y = 17;
+  _(unwrapping s)
+  {
+    s->x = 12;
+    t->y = 17;
+  }
+  _(assert s->x == 12) // OK
+  _(assert t->y == 17) // fails
+  t->y = 18;
+  _(assert t->y == t->y) // OK
+  _(assert t->y == 18) // fails
+  baz();
+  _(assert s->x == 12) // OK
+  _(assert t->y == 18) // fails
+}
+
+typedef _(yarra) struct {
+  int x;
+  T t;
+  _(invariant \mine(&t))
+} ST;
+
+void ff(ST *st)
+  _(updates st)
+{
+  _(unwrapping st) {
+    _(unwrapping &st->t) {
+      st->t.y = 12;
+      _(assert st->t.y == 12)
+    }
+  }
+  _(assert st->t.y == 12)
+}
+
+
+void ff_fail(ST *st)
+  _(updates st)
+{
+  T *t;
+  t = &st->t;
+  _(unwrapping st) {
+    _(unwrapping t) {
+      t->y = 12;
+      _(assert t->y == 12) // fails
+    }
+  }
+}
+
+`
+Verification of S#adm succeeded.
+Verification of ST#adm succeeded.
+Verification of foo failed.
+testcase(26,12) : error VC9500: Assertion 't->y == 17' did not verify.
+testcase(29,12) : error VC9500: Assertion 't->y == 18' did not verify.
+testcase(32,12) : error VC9500: Assertion 't->y == 18' did not verify.
+Verification of ff succeeded.
+Verification of ff_fail failed.
+testcase(62,16) : error VC9500: Assertion 't->y == 12' did not verify.
+`

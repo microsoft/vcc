@@ -1,0 +1,1 @@
+xcopy /s /y \\emicvccbld\drops\cci\latest .

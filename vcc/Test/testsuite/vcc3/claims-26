@@ -1,0 +1,27 @@
+#include "vcc.h"
+
+_(claimable) struct S {
+    int one;
+    _(invariant one==1)
+};
+
+void foo(struct S *s, int y _(ghost \claim c))
+    _(always c,s->\closed)
+    _(requires y==1)
+    _(writes c)
+{
+    _(ghost \claim d)
+    int x;
+    _(ghost d = \make_claim({c},s->\closed && s->one==1))
+    _(ghost d = \make_claim({c},s->\closed && s->one==\when_claimed(1))) // warn
+    x = 1;
+    _(ghost d = \make_claim({c},s->\closed && s->one==\when_claimed(x))) // warn
+    _(ghost d = \make_claim({c},s->\closed && s->one==\when_claimed(y))) // warn
+}
+`
+testcase(16,55) : warning VC9106: '\old', '\at', or '\when_claimed' in '\at(\when_claimed_marker(), expr)' has no effect
+testcase(18,55) : warning VC9106: '\old', '\at', or '\when_claimed' in '\at(\when_claimed_marker(), expr)' has no effect
+testcase(19,55) : warning VC9106: '\old', '\at', or '\when_claimed' in '\at(\when_claimed_marker(), expr)' has no effect
+Verification of S#adm succeeded.
+Verification of foo succeeded.
+`

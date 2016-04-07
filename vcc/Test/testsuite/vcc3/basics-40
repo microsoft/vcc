@@ -1,0 +1,134 @@
+#include <vcc.h>
+
+struct X {
+  int x;
+  _(invariant x > 7)
+};
+
+struct X *get_x()
+  _(ensures \result->\closed);
+
+struct X *test_ens()
+  _(ensures \inv(\result))
+  _(ensures \result->x > 4)
+{
+  return get_x();
+}
+
+struct X *test_ens_may_fail()
+  _(ensures \result->x > 4)
+  _(ensures \inv(\result))
+{
+  return get_x();
+}
+
+void test_req(struct X *p)
+  _(requires \inv(p))
+  _(requires p->x > 3)
+{
+}
+
+void use_test_req(struct X *p)
+  _(requires p->\closed)
+{
+  test_req(p);
+}
+
+void test_req_inv(struct X *p)
+  _(requires p->x > 3)
+  _(requires \inv(p))
+{
+}
+
+void use_test_req_may_fail(struct X *p)
+  _(requires p->\closed)
+{
+  test_req_inv(p);
+}
+
+void loop_inv()
+{
+  struct X *p = get_x();
+  int k;
+
+  while(1)
+    _(invariant \inv(p))
+    _(invariant p->x > 3)
+  {
+    k = 7;
+  }
+}
+
+void loop_inv_may_fail()
+{
+  struct X *p = get_x();
+  int k;
+
+  while(1)
+    _(invariant p->x > 3)
+    _(invariant \inv(p))
+  {
+    k = 7;
+  }
+}
+
+
+_(ghost _(pure) \bool f1(int x)
+  _(reads \universe())
+  _(returns x > 0);) 
+
+_(ghost _(pure) \bool f2(int x)
+  _(reads \universe()) ;) 
+
+_(axiom \forall int x; {f1(x)} f1(x) ==> f2(x))
+
+struct A {
+  int x;
+  _(invariant f1(x))
+  _(invariant f2(x))
+};
+
+void wrap_order(struct A *a)
+  _(writes \extent(a))
+{
+  a->x = 7;
+  _(wrap a)
+}
+
+struct A_may_fail {
+  int x;
+  _(invariant f2(x))
+  _(invariant f1(x))
+};
+
+void wrap_order_may_fail(struct A_may_fail *a)
+  _(writes \extent(a))
+{
+  a->x = 7;
+  _(wrap a)
+}
+
+`
+Verification of X#adm succeeded.
+Verification of A#adm succeeded.
+Verification of A_may_fail#adm failed.
+testcase(100,15) : error VC8018: invariant(f2(x)) of A_may_fail forbids unwrapping.
+testcase(100,15) : error VC8012: invariant(f2(x)) of A_may_fail is not admissible.
+Verification of test_ens succeeded.
+Verification of test_ens_may_fail failed.
+testcase(22,3) : error VC9501: Post condition '\result->x > 4' did not verify.
+testcase(19,13) : error VC9599: (related information) Location of post condition.
+Verification of test_req succeeded.
+Verification of use_test_req succeeded.
+Verification of test_req_inv succeeded.
+Verification of use_test_req_may_fail failed.
+testcase(46,3) : error VC9502: Call 'test_req_inv(p)' did not verify.
+testcase(38,14) : error VC9599: (related information) Precondition: 'p->x > 3'.
+Verification of loop_inv succeeded.
+Verification of loop_inv_may_fail failed.
+testcase(68,17) : error VC9500: Loop entry invariant 'p->x > 3' did not verify.
+Verification of wrap_order succeeded.
+Verification of wrap_order_may_fail failed.
+testcase(108,10) : error VC8014: invariant(f2(x)) of A_may_fail fails on wrap.
+testcase(100,15) : error VC9599: (related information) location of the invariant.
+`

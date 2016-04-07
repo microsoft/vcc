@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+unsigned Bitcount (unsigned Target)
+  _(requires Target < 256)
+{   
+  Target = Target & 0x0F;
+  return Target;
+}
+`
+Verification of Bitcount succeeded.
+`

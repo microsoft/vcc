@@ -1,0 +1,101 @@
+{
+module Microsoft.Research.Vcc.SyntaxConverter.Lexer
+
+open Microsoft.Research.Vcc.SyntaxConverter.PreToken
+open Microsoft.FSharp.Text.Lexing
+
+let lexeme  (lexbuf : LexBuffer<char>) = new System.String(lexbuf.Lexeme)
+let newline (lexbuf:LexBuffer<char>) = lexbuf.EndPos <- lexbuf.EndPos.NextLine
+let stringBuf = new System.Text.StringBuilder()
+let add (ch:char) = stringBuf.Append ch |> ignore
+let newlines lexbuf =
+  let s = lexeme lexbuf
+  for c in s do
+    if c = '\n' then newline lexbuf
+  s.Replace ("\r", "")
+let comm lexbuf =  
+  Comment (newlines lexbuf)
+}
+
+
+// Base regular expressions
+let digit = ['0'-'9']
+let hexdigit = (digit | ['A' - 'F'] | ['a' - 'f'])
+let idbeg = (['A' - 'Z'] | ['a'-'z'] | '_')
+let idbody = (idbeg | digit)
+let whitespace = [' ' '\t']
+let intSuff = ['u' 'U' 'l' 'L']*
+let floatSuff = ['f' 'F' 'l' 'L']?
+let exponent = ['E' 'e'] ("" | '+' | '-') digit+
+
+rule token = parse
+| "..."		{ Op "..." }
+| ">>="		{ Op ">>=" }
+| "<<="		{ Op "<<=" }
+| "+="		{ Op "+=" }
+| "-="		{ Op "-=" }
+| "*="		{ Op "*=" }
+| "/="		{ Op "/=" }
+| "%="		{ Op "%=" }
+| "&="		{ Op "&=" }
+| "^="		{ Op "^=" }
+| "|="		{ Op "|=" }
+| ">>"		{ Op ">>" }
+| "<<"		{ Op "<<" }
+| "++"		{ Op "++" }
+| "--"		{ Op "--" }
+| "->"		{ Op "->" }
+| "&&"		{ Op "&&" }
+| "||"		{ Op "||" }
+| "<="		{ Op "<=" }
+| ">="		{ Op ">=" }
+| "=="		{ Op "==" }
+| "!="		{ Op "!=" }
+| ";"		{ Op ";" }
+| "{"		{ Op "{" }
+| "}"		{ Op "}" }
+| ","		{ Op "," }
+| "::"  { Op "::" }
+| ":"		{ Op ":" }
+| "="		{ Op "=" }
+| "("		{ Op "(" }
+| ")"		{ Op ")" }
+| "["		{ Op "[" }
+| "]"		{ Op "]" }
+| "."		{ Op "." }
+| "&"		{ Op "&" }
+| "!"		{ Op "!" }
+| "~"		{ Op "~" }
+| "-"		{ Op "-" }
+| "+"		{ Op "+" }
+| "*"		{ Op "*" }
+| "/"		{ Op "/" }
+| "%"		{ Op "%" }
+| "<"		{ Op "<" }
+| ">"		{ Op ">" }
+| "^"		{ Op "^" }
+| "|"		{ Op "|" }
+| '?'		{ Op "?" }
+| '#'		{ Op "#" }
+| '\\'		{ Op "\\" }
+
+| idbeg idbody* { Id (lexeme lexbuf) }
+| whitespace+   { Whitespace (lexeme lexbuf) }
+| ('\n' | '\r' '\n') { newline lexbuf; Whitespace "\n" }
+
+| '0' ('x'|'X') hexdigit+ intSuff { Literal (lexeme lexbuf) }
+| digit+ intSuff { Literal (lexeme lexbuf) }
+| "'" ([^ '\\'] | '\\' [^ '\'']+ ) "'" { Literal (newlines lexbuf) }
+| digit+ exponent floatSuff { Literal (lexeme lexbuf) }
+| digit* "." digit+ exponent floatSuff { Literal (lexeme lexbuf) }
+| digit+ "." digit* exponent floatSuff { Literal (lexeme lexbuf) }
+| '"' ([^ '\\' '"'] | '\\' _)* '"' { Literal (newlines lexbuf) }
+
+
+| "//" [^ '\r' '\n']*  { Comment (lexeme lexbuf) }
+| "`/" [^ '\r' '\n']* { Comment (lexeme lexbuf) }
+| "/*" ([^ '*'] | '*' [^ '/'])* "*/"
+                      { comm lexbuf }
+| "`" [^ '/'] [^ '`']* "`"    { comm lexbuf }
+| eof                { Eof }
+| _                  { Invalid (lexeme lexbuf) }

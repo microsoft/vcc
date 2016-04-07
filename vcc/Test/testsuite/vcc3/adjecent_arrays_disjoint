@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+void test() {
+  int *p;
+  size_t i,j;
+  _(assume 0 <= i && i <= j && \mutable_array(p,j))
+  _(assert \arrays_disjoint(p,i,p+i,j-i))
+}
+`
+Verification of test succeeded.
+`

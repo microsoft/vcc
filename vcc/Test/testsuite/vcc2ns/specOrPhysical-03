@@ -1,0 +1,22 @@
+#include "vcc2test.h"
+void foo()
+{
+  _(ghost char *xyz[char*];)
+  _(ghost int foo[int*];)
+  char arr[10];
+  int x = 20;
+  char *p = (char *)malloc(10);
+  _(assume p != NULL)
+  _(ghost xyz = (\lambda char *c; c + 1);)
+  _(assert (&arr)->\valid)
+  _(assert (&arr[1])->\valid)
+  _(assert ((&arr)->\valid && !\ghost(&arr)))
+  _(assert ((&arr[1])->\valid && !\ghost(&arr[1])))
+  _(assert (&p)->\valid)
+  _(assert (&p[1])->\valid)
+  _(assert ((&p)->\valid && !\ghost(&p)))
+  _(assert ((&p[9])->\valid && !\ghost(&p[9])))
+}
+`
+Verification of foo succeeded.
+`

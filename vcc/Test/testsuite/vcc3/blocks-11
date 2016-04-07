@@ -1,0 +1,40 @@
+#include <vcc.h>
+
+void bar(int *p) 
+  _(writes p)
+{
+  *p = 5;
+}
+
+void foo(int x) {
+  int i = 1;  
+  int j;
+  int k;
+  int l;
+  if (x > 0) {
+     
+      _(requires i == 1)
+      _(ensures i == 2)
+      _(writes &l,&j)
+    {
+      bar(&j);
+      bar(&l);
+      i = 2;
+    }
+     
+      _(requires i == 2)
+      _(ensures i == 3)
+      _(writes &l,&k)
+    {
+      bar(&k);
+      bar(&l);
+      i = 3;
+    }
+  }
+}
+`
+Verification of bar succeeded.
+Verification of foo succeeded.
+Verification of foo#block#0 succeeded.
+Verification of foo#block#1 succeeded.
+`

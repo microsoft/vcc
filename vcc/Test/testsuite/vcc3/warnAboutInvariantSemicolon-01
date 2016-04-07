@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+void bar() {
+  while(1) 
+    _(invariant 1);
+    _(invariant 1)
+  {
+  }
+}
+
+`
+testcase(5,19) : warning VC0000: Possible mistaken null statement.
+testcase(6,7) : error VC0000: ) expected.
+testcase(6,7) : error VC0000: Invalid expression term 'invariant'.
+testcase(6,18) : error VC0000: Invalid expression term ')'.
+testcase(7,3) : error VC0000: ; expected.
+testcase(6,17) : warning VC9001: The expression '1' has no side effect; expected operation with side effect.
+`

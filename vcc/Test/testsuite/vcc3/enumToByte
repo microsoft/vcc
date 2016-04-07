@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+typedef enum
+{
+    Sch1 = 1,
+    Sch2,
+    Sch3
+} SCH;
+
+
+void foo() { 
+  unsigned __int8 b = Sch3;
+  _(assert b == Sch3)
+}
+
+`
+Verification of foo succeeded.
+`

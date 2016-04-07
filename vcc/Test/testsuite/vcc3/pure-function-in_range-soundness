@@ -1,0 +1,25 @@
+#include <vcc.h>
+
+_(pure) int v(size_t) 
+  _(decreases 0)
+;
+
+_(def size_t count(int val, size_t len) 
+        _(ensures \result <= len)
+{
+        return (len == 0) ?  0 : count(val, len-1) + (v(len - 1) == val ?  1 :  0); 
+})
+
+int f(size_t len) 
+        _(ensures 0)
+{
+        size_t i = 0;
+        _(assert \forall int c; {:hint count(c,i-1)} 2 * count(c,0) == 0)
+}
+
+`
+Verification of count succeeded.
+Verification of f failed.
+testcase(14,19) : error VC9501: Post condition '0' did not verify.
+testcase(14,19) : error VC9599: (related information) Location of post condition.
+`

@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+typedef struct {
+  unsigned x:10;
+  unsigned y:22;
+} A;
+
+void serialize_unsigned(unsigned *p)
+_(requires \mutable(p));
+
+void serialize_A(A *a)
+  _(requires \mutable(a))
+{
+  serialize_unsigned((unsigned *)a);
+}
+`
+Verification of serialize_A succeeded.
+`

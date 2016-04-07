@@ -1,0 +1,18 @@
+#include "vcc.h"
+
+struct S {
+ _(group G)
+ _(:G) int a;
+             int b;
+};
+
+
+struct S2 {
+ _(group G)
+ _(:G) int a;
+             int b;
+ _(invariant \mine((((struct S *)\this)::G1)))
+};
+`
+testcase(14,21) : error VC0000: 'S' does not contain a definition for 'G1'.
+`

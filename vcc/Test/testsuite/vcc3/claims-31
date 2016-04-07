@@ -1,0 +1,37 @@
+// Authors: Mark Hillebrand, Dirk Leinenbach (with inspiration from Ernie Cohen)
+#include "vcc.h"
+
+#define stays_unchanged(o) ((o)==\when_claimed(o))
+#define protects(structure,protector,expression) \
+    (\wrapped(structure) && structure->\claim_count==1 && \
+    \wrapped0((structure)->protector) && \
+    \active_claim((structure)->protector) && \claims_object(((structure)->protector),(structure)) && \
+    \claims(((structure)->protector), structure->\closed && stays_unchanged(structure->protector)) && \
+    \claims(((structure)->protector), (expression)))
+
+_(claimable) struct S {
+    unsigned dummy;
+    _(ghost volatile \claim protector)
+    _(ghost volatile unsigned protected)
+    _(invariant (\old(protector))->\closed ==> \unchanged(protector) && \unchanged(protected))
+};
+
+void middle(struct S *s)
+    _(requires protects(s,protector,s->protected==2))
+    _(ensures protects(s,protector,s->protected==1))
+    _(ensures \fresh(s->protector))
+    _(writes s->protector)
+{
+    _(atomic s) {
+        _(assert \active_claim(\old(s->protector)))
+        _(begin_update)
+        
+	  _(ghost s->protected = 1;)
+          _(ghost s->protector = \upgrade_claim({s->protector}, stays_unchanged(s->protector) && s->protected==1);)
+	
+    }
+}
+`
+Verification of S#adm succeeded.
+Verification of middle succeeded.
+`

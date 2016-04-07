@@ -1,0 +1,15 @@
+#include <vcc.h>
+
+volatile int i;
+
+void fooShouldFail(_(ghost \claim p))
+  _(always p, (\gemb(&i))->\closed)
+{
+  _(atomic p, \gemb(&i)) {
+    i = 5;
+  }
+}
+`
+Verification of fooShouldFail failed.
+testcase(8,15) : error VC8525: Assertion 'invariant of \gemb(&i) holds after atomic' did not verify.
+`

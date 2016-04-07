@@ -1,0 +1,62 @@
+#include <vcc.h>
+
+_(abstract \bool P(int q, int x))
+
+struct A {
+  volatile int x;
+  struct B *b;
+  _(invariant P(b->y, x))
+};
+
+struct B {
+  int blah;
+  _(ghost volatile int y)
+  _(invariant y > 0)
+};
+
+
+void foo(struct A *a, struct B *b)
+  _(requires \wrapped(a) && \wrapped(b) && a->b == b)
+{
+  int tmp;
+
+  _(atomic _(read_only)a, b) {
+    tmp = a->x;
+    _(ghost b->y = 42)
+  }
+  _(assert \inv(a))
+  _(assert P(42, tmp))
+}
+
+void foo_fail(struct A *a, struct B *b)
+  _(requires \wrapped(a) && \wrapped(b))
+{
+  int tmp;
+
+  _(atomic a, b) {
+    tmp = a->x;
+    _(ghost b->y = 42)
+  }
+}
+
+void foo_fail2(struct A *a, struct B *b)
+  _(requires \wrapped(a) && \wrapped(b) && a->b == b)
+{
+  int tmp;
+
+  _(atomic _(read_only)a, _(read_only)b) {
+    tmp = a->x;
+    _(ghost b->y = 42)
+  }
+}
+
+`
+Verification of A#adm failed.
+testcase(8,15) : error VC8012: invariant(P(b->y, x)) of A is not admissible.
+Verification of B#adm succeeded.
+Verification of foo succeeded.
+Verification of foo_fail failed.
+testcase(36,12) : error VC8524: Assertion 'chunk P(b->y, x) of invariant of a holds after atomic' did not verify.
+Verification of foo_fail2 failed.
+testcase(49,13) : error VC8507: Assertion 'b->y is writable' did not verify.
+`

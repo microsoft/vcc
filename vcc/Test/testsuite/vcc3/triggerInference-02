@@ -1,0 +1,81 @@
+` /dt:1
+#include "vcc.h"
+
+struct Node {
+  struct Node *next;
+  unsigned idx;
+};
+
+_(typedef unsigned perm_t[unsigned]; )
+
+_(dynamic_owns) struct Mgr {
+  unsigned k;
+  // test \mine in addition to \in \owns, which is tested below
+  _(ghost perm_t perm)
+  _(invariant \forall struct Node *n; \mine(n) ==> \mine(n->next))
+  _(invariant \forall struct Node *n; \mine(n) ==> perm[n->idx] == k)
+};
+
+
+void commonHandledPatterns(struct Mgr *m)
+{
+  int *buf, *buf2;
+  unsigned len;
+  struct Node *q;
+  _(ghost perm_t perm)
+  _(ghost \state s0)
+
+  _(assume \false)
+  
+  // sortedness
+  _(assert \forall unsigned i, j; i < j && j < len ==> buf[i] <= buf[j])
+  _(assert \forall unsigned i, j; i < j && j < len ==> perm[i] <= perm[j])
+
+  // buf*perm = buf2
+  _(assert \forall unsigned i; i < len ==> perm[i] < len && buf2[perm[i]] == buf[i])
+
+  // buf@s0*perm = buf
+  _(assert \forall unsigned i; i < len ==> perm[i] < len && \at(s0, buf[perm[i]]) == buf[i])
+
+  // uniqueness, for map and array
+  _(assert \forall unsigned i, j; i < j && j < len ==> perm[i] != perm[j])
+  _(assert \forall unsigned i, j; i < j && j < len ==> buf[i] != buf[j])
+
+  // simple map/array property
+  _(assert \forall unsigned i; i < len ==> perm[i] < len)
+  _(assert \forall unsigned i; i < len ==> buf[i] < 0)
+
+  // object graph things:
+  
+  // next-closedness
+  _(assert \forall struct Node *n; n \in q->\owns ==> n->next \in q->\owns)
+
+  // for everything I own ...
+  _(assert \forall struct Node *n; n \in q->\owns ==> perm[n->idx] == 0)
+}
+
+void bugs()
+{
+  _(ghost perm_t p1, p2, p3)
+  _(assume \false)
+
+  _(assert \forall unsigned i; p2[p1[i]] == i && p3[p1[i]] == i)
+}
+`
+testcase(14,15) : warning VC9122: inferred triggers at {:level 0}: {\mine(n->next)} {:hint \mine(n->next)} for '\forall struct Node *n; \mine(n) ==> \mine(n->next))'
+testcase(15,15) : warning VC9122: inferred triggers at {:level 0}: {\mine(n)} {:hint \mine(n)} for '\forall struct Node *n; \mine(n) ==> perm[n->idx] == k)'
+testcase(30,12) : warning VC9122: inferred triggers at {:level 3}: {(&)buf[i], (&)buf[j]} for '\forall unsigned i, j; i < j && j < len ==> buf[i] <= buf[j])'
+testcase(31,12) : warning VC9122: inferred triggers at {:level 3}: {perm[i], perm[j]} for '\forall unsigned i, j; i < j && j < len ==> perm[i] <= perm[j])'
+testcase(34,12) : warning VC9122: inferred triggers at {:level 1}: {perm[i]} for '\forall unsigned i; i < len ==> perm[i] < len && buf2[perm[i]] == buf[i])'
+testcase(37,12) : warning VC9122: inferred triggers at {:level 1}: {perm[i]} for '\forall unsigned i; i < len ==> perm[i] < len && \at(s0, buf[perm[i]]) == buf[i])'
+testcase(40,12) : warning VC9122: inferred triggers at {:level 3}: {perm[i], perm[j]} for '\forall unsigned i, j; i < j && j < len ==> perm[i] != perm[j])'
+testcase(41,12) : warning VC9122: inferred triggers at {:level 3}: {(&)buf[i], (&)buf[j]} for '\forall unsigned i, j; i < j && j < len ==> buf[i] != buf[j])'
+testcase(44,12) : warning VC9122: inferred triggers at {:level 1}: {perm[i]} for '\forall unsigned i; i < len ==> perm[i] < len)'
+testcase(45,12) : warning VC9122: inferred triggers at {:level 2}: {(&)buf[i]} for '\forall unsigned i; i < len ==> buf[i] < 0)'
+testcase(50,12) : warning VC9122: inferred triggers at {:level 0}: {n->next \in q->\owns} {:hint n->next \in q->\owns} for '\forall struct Node *n; n \in q->\owns ==> n->next \in q->\owns)'
+testcase(53,12) : warning VC9122: inferred triggers at {:level 0}: {n \in q->\owns} {:hint n \in q->\owns} for '\forall struct Node *n; n \in q->\owns ==> perm[n->idx] == 0)'
+testcase(61,12) : warning VC9122: inferred triggers at {:level 1}: {p1[i]} for '\forall unsigned i; p2[p1[i]] == i && p3[p1[i]] == i)'
+Verification of Mgr#adm succeeded.
+Verification of commonHandledPatterns succeeded.
+Verification of bugs succeeded.
+`

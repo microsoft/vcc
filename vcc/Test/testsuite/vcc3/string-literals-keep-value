@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+void foo()
+{
+  const char *p = _(precise)("foo");
+  char c = p[2];
+  _(assert p[0] == 'f')
+  _(assert p[1] == 'o')
+  _(assert p[3] == '\0')
+}
+
+void foo_fail()
+{
+  const char *p = "foo";
+  char c = p[2];
+  _(assert p[0] == 'f')
+}
+`
+Verification of foo succeeded.
+Verification of foo_fail failed.
+testcase(16,12) : error VC9500: Assertion 'p[0] == 'f'' did not verify.
+`

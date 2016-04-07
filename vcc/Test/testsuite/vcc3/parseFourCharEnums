@@ -1,0 +1,9 @@
+#include <vcc.h>
+
+typedef enum _VM_SAVE_CHUNK_TAG
+{
+    Vm0               = 'RdHI',
+    Vm1            = 'DnIV'
+} VM_SAVE_CHUNK_TAG, *PVM_SAVE_CHUNK_TAG;
+`
+`

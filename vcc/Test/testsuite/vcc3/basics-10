@@ -1,0 +1,9 @@
+#include <vcc.h>
+
+typedef _(volatile_owns) struct key{
+  int data;
+  _(invariant \unchanged(\this->\owns) || (data == 0))
+} key;
+`
+Verification of key#adm succeeded.
+`

@@ -1,0 +1,7 @@
+#include <vcc.h>
+
+void main(){
+}
+`
+Verification of main succeeded.
+`

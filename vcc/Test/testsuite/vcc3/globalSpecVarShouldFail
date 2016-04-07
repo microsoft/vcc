@@ -1,0 +1,30 @@
+#include <vcc.h>
+
+_(ghost int x = 0)
+_(ghost int y = 0)
+
+_(ghost void foo()
+  _(writes &x)
+{
+  x = 1;
+  _(assert x == 0)
+})
+
+_(ghost void foo2()
+{
+  x = 1;
+})
+
+_(ghost void foo3()
+  _(writes &x)
+{
+  y = 1;
+})
+`
+Verification of foo failed.
+testcase(10,12) : error VC9500: Assertion 'x == 0' did not verify.
+Verification of foo2 failed.
+testcase(15,3) : error VC8507: Assertion 'x is writable' did not verify.
+Verification of foo3 failed.
+testcase(21,3) : error VC8507: Assertion 'y is writable' did not verify.
+`

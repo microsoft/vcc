@@ -1,0 +1,29 @@
+#include <vcc.h>
+
+typedef unsigned __int64 UINT64;
+typedef unsigned __int8 PAGE[4096];
+
+typedef union _PTE {
+  _(backing_member)
+  UINT64 AsUINT64;
+  struct {
+    UINT64 Present:1;
+    UINT64 ReadWrite:1;
+    UINT64 Pfn:9;
+    UINT64 Reserved:52;
+  };
+} PTE, *PPTE;
+
+_(ghost _(pure) \bool PteIsPresent(PPTE p)
+  _(reads p)
+  _(ensures \result == (p->Present)))
+
+ void foo(PPTE p)
+    _(reads p)
+    _(requires PteIsPresent(p))
+    {
+    } 
+`
+Verification of foo succeeded.
+Verification of PteIsPresent#reads succeeded.
+`

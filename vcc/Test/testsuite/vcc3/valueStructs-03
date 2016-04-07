@@ -1,0 +1,66 @@
+#include <vcc.h>
+
+typedef unsigned __int64 UINT64;
+
+struct T
+{
+    UINT64 AsUINT64;
+    UINT64 Dummy;
+};
+
+struct S {
+  struct T Privileges;
+  _(invariant \mine(&Privileges))
+};
+
+struct S1 {
+  struct T Privileges;
+};
+
+void foo(struct S *q)
+  _(requires \wrapped(q))
+{ 
+  struct S s;
+  _(assert &q->Privileges \in \domain(q))
+  s.Privileges = q->Privileges;
+}
+
+void fooShouldFail(struct S1 *q)
+  _(requires \wrapped(q))
+{ 
+  struct S s;
+  s.Privileges = q->Privileges;
+}
+
+void fooShouldFailToo(struct S1 *q)
+  _(requires \wrapped(q))
+{ 
+  struct S s;
+  _(assert &q->Privileges \in \domain(q))
+  s.Privileges = q->Privileges;
+}
+
+ 
+void bar(struct S s);
+void bar1(struct S1 s);
+
+void baz(struct S *s)
+  _(requires \wrapped(s)) {
+  bar(*s);
+}
+
+void bazShouldFail(struct S1 *s)
+  _(requires \wrapped(s)) {
+  bar1(*s);
+}
+`
+Verification of S#adm succeeded.
+Verification of foo succeeded.
+Verification of fooShouldFail failed.
+testcase(32,18) : error VC8538: Assertion 'q->Privileges has thread-local extent in struct assignment' did not verify.
+Verification of fooShouldFailToo failed.
+testcase(39,12) : error VC9500: Assertion '&q->Privileges \in \domain(q)' did not verify.
+Verification of baz succeeded.
+Verification of bazShouldFail failed.
+testcase(54,9) : error VC8538: Assertion 's has thread-local extent in struct assignment' did not verify.
+`

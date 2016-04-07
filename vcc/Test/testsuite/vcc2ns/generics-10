@@ -1,0 +1,32 @@
+#include "vcc.h"
+
+typedef unsigned __int8 uint8_t;
+
+template<typename T>
+bool
+zero(
+    void *a,
+    unsigned n
+    )
+    _(requires n==sizeof(T))
+    // Currently translates to "requires P#n == 0;" to Boogie, function
+    // call_zero verifies when this is changed to "requires P#n ==
+    // $sizeof(^^TV#T);"
+    _(writes \array_range((uint8_t *)a, n))
+    _(ensures *((uint8_t*)a)==0)
+    _(ensures \forall unsigned i; i < n ==> ((uint8_t *)a)[i] == 0)
+    ;
+
+struct S { int a, b, c; };
+
+void call_zero(struct S *s)
+    _(requires \object_root(s))
+    _(writes \extent(s))
+{
+    _(to_bytes s)
+    zero<struct S>((void*) s, sizeof(*s));
+    _(from_bytes s, \false)
+}
+`
+Verification of call_zero succeeded.
+`

@@ -1,0 +1,29 @@
+#include <vcc.h>
+
+typedef __int32 INT32;
+typedef unsigned __int8 UINT8;
+typedef unsigned __int16 UINT16;
+typedef unsigned __int32 UINT32;
+typedef unsigned __int64 UINT64;
+typedef void VOID;
+
+void myswap(UINT8 *a, UINT8 *b)
+  _(reads \array_range(a, 2), \array_range(b, 2))
+  _(writes \array_range(a, 2), \array_range(b, 2))
+  _(requires \disjoint(\array_range(a, 2), \array_range(b, 2)))
+  _(requires \thread_local_array(a, 2) && \thread_local_array(b,2))
+  _(ensures \forall UINT64 i; i<2 ==> a[i] == \old(b[i]))
+  _(ensures \forall UINT64 i; 0 <= i && i<2 ==> b[i] == \old(a[i]))
+{
+  UINT8 tmp;
+  tmp = a[0];
+  a[0] = b[0];
+  b[0] = tmp;
+  tmp = a[1];
+  a[1] = b[1];
+  b[1] = tmp;
+
+}
+`
+Verification of myswap succeeded.
+`

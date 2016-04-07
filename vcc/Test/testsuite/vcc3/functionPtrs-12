@@ -1,0 +1,15 @@
+#include <vcc.h>
+
+typedef int (* F) (struct G* x) _(ensures &x->v);
+
+struct G { 
+  _(ghost int v;) 
+  F x; 
+  _(invariant x != (void *)0)
+};
+
+void foo(struct G *p) { }
+`
+Verification of G#adm succeeded.
+Verification of foo succeeded.
+`

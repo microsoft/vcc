@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+typedef unsigned __int32 UINT32;
+UINT32 HalReadLocalApicRegister(UINT32 Offset)
+{
+    return *((volatile UINT32 *)((0xFFFFF80080000000UI64 + (2*0x1000UI64)) + Offset));
+}
+`
+Verification of HalReadLocalApicRegister failed.
+testcase(6,14) : error VC8512: Assertion '(volatile UINT32 *)((0xFFFFF80080000000UI64 + (2*0x1000UI64)) + Offset) is thread local' did not verify.
+`

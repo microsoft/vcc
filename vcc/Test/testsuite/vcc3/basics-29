@@ -1,0 +1,13 @@
+#include "vcc.h"
+
+typedef unsigned __int8 UINT8;
+
+void foo() {
+    UINT8 x = 5;
+    void *p = (void *)x;
+    _(assert p)
+    _(assert (UINT8)p == 5)
+}
+`
+Verification of foo succeeded.
+`

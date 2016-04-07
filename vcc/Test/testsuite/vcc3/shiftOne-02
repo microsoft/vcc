@@ -1,0 +1,16 @@
+#include <vcc.h>
+
+unsigned int PowerOfTwo(unsigned int i)
+  _(requires i < 32)
+{	
+  return 1 << i;
+}
+static int foo(){
+  return (int)(PowerOfTwo(3)-8);
+}
+`
+Verification of PowerOfTwo succeeded.
+Verification of foo failed.
+testcase(9,16) : error VC8518: Assertion 'PowerOfTwo(3)-8 fits range of int32_t' did not verify.
+testcase(9,16) : error VC8004: PowerOfTwo(3)-8 might overflow.
+`

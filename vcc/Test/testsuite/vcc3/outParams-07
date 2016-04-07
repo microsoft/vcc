@@ -1,0 +1,20 @@
+#include <vcc.h>
+
+void foo(int * x _(out int o))
+  _(ensures o == 5)
+  _(writes x)
+{
+  _(ghost o = 5)
+}
+
+void bar()
+{
+  int x;
+  _(ghost int o)
+
+  foo(&x _(out o));
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

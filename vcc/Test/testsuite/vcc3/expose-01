@@ -1,0 +1,15 @@
+#include "vcc.h"
+
+_(dynamic_owns) struct S { int i; };
+
+void test(struct S *a)
+_(requires \wrapped(a))
+{ 
+  _(unwrapping a) { 
+    a->i = 0; 
+  } 
+}
+`
+Verification of test failed.
+testcase(8,16) : error VC8510: Assertion 'a is writable in call to _(unwrap a)' did not verify.
+`

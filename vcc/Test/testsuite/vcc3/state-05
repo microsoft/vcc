@@ -1,0 +1,10 @@
+#include <vcc.h>
+
+void foo(int x) {
+  int x0 = x;
+  x = 0;
+  _(assert x0 == \old(x))
+}
+`
+Verification of foo succeeded.
+`

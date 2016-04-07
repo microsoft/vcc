@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+_(ghost const int foo)
+
+_(axiom foo == 1)
+
+void bar(){
+}
+`
+Verification of bar succeeded.
+`

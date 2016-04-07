@@ -1,0 +1,23 @@
+#include "vcc.h"
+
+void foo(int x) {
+    _(ghost int map[int])
+    _(ghost int i)
+    _(assume \forall int j; (j|x)==42)
+    _(assert (i|x)==42)
+    _(ghost i = map[3])
+    // We lose $in_range_i4() here, so the following assert doesn't verify...
+    _(assert (i|x)==42)
+}
+
+typedef unsigned __int64 UINT64;
+ _(ghost typedef UINT64 MAP[UINT64];) 
+
+
+_(ghost void foo2(MAP m) {
+  _(assert m[0] >= 0)
+})
+`
+Verification of foo succeeded.
+Verification of foo2 succeeded.
+`

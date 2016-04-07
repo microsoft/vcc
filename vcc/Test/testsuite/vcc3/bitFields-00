@@ -1,0 +1,95 @@
+#include <vcc.h>
+#include <sal.h>
+
+
+
+typedef struct{
+  short a;
+  int y;
+  int empty:2;
+  short b;
+  int full:5;
+} Status, *PStatus ;
+
+void BitfieldReadTestOk(PStatus s)
+  _(requires \thread_local(s))
+{ int x;
+  
+  x = s->empty;
+  x = s->b;
+  x = s->full;
+}
+
+void BitfieldWriteTestOk(PStatus s)
+  _(ensures s->full==2)
+  _(writes \extent(s))
+{
+  s->full = 2;
+}
+
+void BitfieldSimpleFramingTestOk(PStatus s)
+  _(ensures s->full==2)
+  _(writes \extent(s))
+{
+  s->full = 2;
+  s->empty = 0;
+}
+
+typedef struct{
+  int x:3;
+  int between;
+  int y:3;
+} Point, *PPoint ;
+
+void BitfieldSimpleFraming2TestOk(PPoint s)
+  _(ensures s->x==2)
+  _(writes \extent(s))
+{
+  s->x = 2;
+  s->y = 0;
+}
+
+typedef struct {
+  int x:9;
+  int y:3;
+} XY, *PXY ;
+
+void BitfieldComplexFramingTestOk(PXY s)
+  _(ensures s->x==2)   
+  _(writes \extent(s))
+{
+  s->x = 2;
+  s->y = 0;
+}
+
+typedef struct {
+  int x: 10;
+  int y: 30;
+} S, *PS;
+
+void BitfieldTestOk(PS s)
+  _(writes \extent(s))
+{
+  s->x = 2;
+  s->y = 0;
+}
+
+void BitFieldReadWriteTestOk(PStatus s)
+  _(ensures s->empty ==0)
+  _(ensures s->full == \old(s->empty)+1)
+  _(writes \extent(s))
+{
+  s->full = s->empty+1;
+  s->empty = 0;
+}
+
+
+`
+Verification of BitfieldReadTestOk succeeded.
+Verification of BitfieldWriteTestOk succeeded.
+Verification of BitfieldSimpleFramingTestOk succeeded.
+Verification of BitfieldSimpleFraming2TestOk succeeded.
+Verification of BitfieldComplexFramingTestOk succeeded.
+Verification of BitfieldTestOk succeeded.
+Verification of BitFieldReadWriteTestOk succeeded.
+`

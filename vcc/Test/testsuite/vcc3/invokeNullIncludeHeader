@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+typedef void (*FOO)();
+
+void foo() 
+{
+  FOO fp = (void*)0;
+  fp();
+}
+
+`
+Verification of foo failed.
+testcase(8,3) : error VC8504: Assertion 'fp is valid function pointer' did not verify.
+`

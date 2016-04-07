@@ -1,0 +1,17 @@
+#include "vcc.h"
+
+struct S {
+    int dummy;
+    _(group a)
+    _(:a) int b;
+};
+
+struct T {
+    int dummy;
+    _(ghost struct S ^s)
+    _(invariant \mine(s))
+    _(invariant \mine(s::a))
+};
+`
+Verification of T#adm succeeded.
+`

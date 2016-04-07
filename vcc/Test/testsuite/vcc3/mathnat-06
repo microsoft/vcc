@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+typedef unsigned __int64  digit_t;
+#define RADIXM1 ((digit_t)(-1))
+#define RADIX (_(\natural)RADIXM1 + (\natural)1)
+
+_(logic \natural plus(\natural a, \natural b) = a + b)
+
+void add_single(digit_t a, digit_t b) {
+  digit_t c;
+  digit_t carry;
+  c = _(unchecked)(a + b);
+  _(assert plus(a,b) != c ==> plus(a,b) == plus(c,RADIX))
+}
+`
+Verification of add_single succeeded.
+`

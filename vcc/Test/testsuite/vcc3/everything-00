@@ -1,0 +1,44 @@
+#include <vcc.h>
+
+typedef unsigned char            BYTE;
+
+_(ghost
+typedef BYTE ByteSequence[\integer];
+
+typedef _(record) struct ByteString {
+    ByteSequence bytes;
+    \integer length;
+} ByteString;
+)
+
+_(def ByteString from_array(BYTE a[], \integer size)
+    _(reads \universe())
+    _(requires size >= 0)
+    _(ensures \forall \integer i; {a[i]} 0 <= i && i < size ==> a[i] == \result.bytes[i])
+    
+{
+    return (ByteString) { 
+        .length = size,
+        .bytes = \lambda \integer i; 
+            0 <= i && i < size  ?   a [i] : 
+                                    (BYTE) 0
+        };
+}
+)
+
+_(abstract \bool foo(ByteString b) { return \true; })
+
+#define MAX_RSA_KEY_BYTES 100
+
+typedef struct {
+    unsigned     keySize;
+    BYTE      key[MAX_RSA_KEY_BYTES];
+    _(invariant keySize <= MAX_RSA_KEY_BYTES)
+        _(invariant foo(from_array(key, (\size_t)keySize)))
+} PUBLIC; // TPM2B_PUBLIC_ID_RSA
+
+`
+Verification of PUBLIC#adm succeeded.
+Verification of from_array succeeded.
+Verification of foo succeeded.
+`

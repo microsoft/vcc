@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+template<typename T> void foo(T* t)
+  _(requires \wrapped(t));
+  
+struct S {
+  int a;
+};
+  
+void bar(struct S *s) 
+{
+  foo(s);
+}
+`
+Verification of bar failed.
+testcase(12,3) : error VC9502: Call 'foo(s)' did not verify.
+testcase(4,14) : error VC9599: (related information) Precondition: '\wrapped(t)'.
+`

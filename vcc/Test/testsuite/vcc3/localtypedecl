@@ -1,0 +1,32 @@
+#include <vcc.h>
+
+typedef struct rec {int x;} rec;
+
+int main () {
+  /*
+  this inner struct rec* has a mangled name that is not right.... maybe we shouldnt mangle the second part... for now.
+  struct rec {struct rec* self;}  v;
+  v.self = &v;
+  */
+  struct rec {int f; int f1;};
+  struct {int f;} v;
+
+  int i = sizeof(struct rec);
+  v.f = i;
+  {
+    struct rec x;
+    x.f = v.f;
+    _(assert x.f == 8)
+    _(assert sizeof(rec) == 4)
+  }
+  {
+    struct rec { char c;} v;
+    v.c = 'c';
+    _(assert v.c == 'c')
+  }
+  return 0;
+}
+
+`
+Verification of main succeeded.
+`

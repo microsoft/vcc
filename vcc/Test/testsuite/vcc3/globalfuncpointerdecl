@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+int (*foo) ();
+
+int main (){
+  int (*x) () = foo;
+  if (x== foo) return 0;
+}
+`
+Verification of main failed.
+testcase(6,17) : error VC8512: Assertion 'foo is thread local (accessing field data)' did not verify.
+`

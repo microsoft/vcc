@@ -1,0 +1,29 @@
+#include "vcc.h"
+
+_(ghost struct X1 {
+    struct { unsigned Y; };
+    unsigned Z;
+})
+
+_(ghost struct X1 foo(unsigned x) _(ensures \result.Y == x)
+{
+  struct X1 x1;
+  x1.Y = x;
+  return x1;
+
+})
+struct X2 {
+    struct { unsigned Y; };
+    unsigned Z;
+};
+
+struct X2 foo(unsigned x) _(ensures \result.Y == x)
+{
+  struct X2 x2;
+  x2.Y = x;
+  return x2;
+}
+`
+Verification of foo#overload#struct_X1#spec_uint32_t succeeded.
+Verification of foo#overload#struct_X2#uint32_t succeeded.
+`

@@ -1,0 +1,53 @@
+#include <stdlib.h>
+#include "vcc.h"
+
+
+
+
+typedef unsigned int UINT32;
+
+typedef struct itype_instr_t {
+    int simm16:16;
+    unsigned rd:5;
+    unsigned rs1:5;
+    unsigned opc:6;
+} itype_instr_t;
+
+typedef struct rtype_instr_t {
+    unsigned fu:6;
+    unsigned sa:5;
+    unsigned rd:5;
+    unsigned rs2:5;
+    unsigned rs1:5;
+    unsigned opc:6;
+} rtype_instr_t;
+
+typedef struct jtype_instr_t {
+    int simm26:26;
+    unsigned opc:6;
+} jtype_instr_t;
+
+typedef union instr_t {
+    rtype_instr_t rtype;
+    itype_instr_t itype;
+    jtype_instr_t jtype;
+    _(backing_member) UINT32 uint32;
+} instr_t;
+
+typedef struct proc_t {
+    UINT32 gpr[32];    /* general-purpose register file */
+    UINT32 spr[17];    /* special-purpose register file */
+    UINT32 dpc;        /* delayed program counter */
+    UINT32 pcp;        /* (primed) program counter */
+} proc_t;
+
+
+_(ghost _(pure) instr_t Mem2Instr(proc_t *proc)	
+     //reads(&proc->gpr[0])
+     _(reads proc)
+     _(ensures \result.uint32 == proc->gpr[0])
+    ;)
+
+`
+Verification of Mem2Instr#reads succeeded.
+`

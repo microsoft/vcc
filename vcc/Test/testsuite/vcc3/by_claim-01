@@ -1,0 +1,35 @@
+#include <vcc.h>
+
+
+_(claimable) struct A {
+  int x;
+  volatile int vol_x;
+};
+
+struct B_fail1 {
+  int y;
+  struct A *a;
+  _(ghost \claim ca)
+
+  _(invariant \mine(ca) && \claims(ca, (\when_claimed(a))->\closed))
+  _(invariant y == _(by_claim ca)(a->vol_x))
+};
+
+void fail1(struct A*a _(ghost \claim c))
+  _(always c, a->\closed)
+{ 
+  int z = _(by_claim c)(a->vol_x);
+}
+
+void fail2(struct A*a, int *x _(ghost \claim c))
+  _(always c, a->\closed)
+{ 
+  int z = _(by_claim c)(*x);
+}
+`
+testcase(15,20) : error VC9629: by_claim(...) can only refer to a non-volatile field
+testcase(6,3) : error : (Location of symbol related to previous error.)
+testcase(21,11) : error VC9629: by_claim(...) can only refer to a non-volatile field
+testcase(6,3) : error : (Location of symbol related to previous error.)
+testcase(27,11) : error VC9628: by_claim(...) expects field or embedded array reference as a second parameter
+`

@@ -1,0 +1,16 @@
+#include "vcc.h"
+
+struct A {
+  int y;
+   _(ghost int m[int];) 
+};
+
+void foo(struct A *a)
+  _(requires \thread_local(a))
+{
+   _(ghost a->m[12] = 11;) 
+}
+`
+Verification of foo failed.
+testcase(11,12) : error VC8507: Assertion 'a->m is writable' did not verify.
+`

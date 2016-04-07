@@ -1,0 +1,10 @@
+#include "vcc.h"
+
+void foo() {
+    _(ghost int map[int][unsigned])
+    _(ghost map = (\lambda int x; unsigned y; (42)))
+    _(assert map[2][3] == 42)
+}
+`
+Verification of foo succeeded.
+`

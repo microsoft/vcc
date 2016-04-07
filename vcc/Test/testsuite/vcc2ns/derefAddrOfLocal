@@ -1,0 +1,29 @@
+#include <vcc.h>
+
+typedef unsigned int UINT32;
+
+/* {{{ Page-table entries */
+typedef union pte_t {
+    struct {
+        unsigned reserved_9_0:10;    /* bits [9:0] */
+        unsigned p:1;    /* bit [10] */
+        unsigned v:1;    /* bit [11] */
+        unsigned ppx:20;    /* bits [31:12] */
+    } f;            /* PTE fields */
+    _(backing_member)
+    UINT32 uint32;    /* complete word */
+} pte_t;
+/* }}} */
+
+
+  
+void foo()
+{
+  UINT32 a, b;
+  _(assume a == b)
+  _(assert ((pte_t*)(&a))->uint32 == ((pte_t*)(&b))->uint32)
+}
+
+`
+Verification of foo succeeded.
+`

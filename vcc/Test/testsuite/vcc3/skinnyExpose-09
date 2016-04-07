@@ -1,0 +1,38 @@
+#include "vcc.h"
+
+struct B {
+  int x;
+  int y;
+};
+
+
+_(ghost struct C {
+  int x;
+  _(ghost int y)
+})
+
+struct A {
+  struct B *b;
+  _(ghost struct C *c)
+  _(invariant \mine(b) && \mine(c))
+  _(invariant b->x == c->y)
+};
+
+ 
+void foo(struct A *a)
+  _(maintains \wrapped(a))
+  _(writes a)
+  _(ensures \domain_updated_at(a, {&a->b->x} \union {&a->c->y}))
+{
+  _(unwrapping a, a->b, a->c)
+    _(writes &a->b->x)
+	_(writes &a->c->y)
+  {
+    a->b->x = 12;
+	_(ghost a->c->y = 12)
+  }
+}
+`
+Verification of A#adm succeeded.
+Verification of foo succeeded.
+`

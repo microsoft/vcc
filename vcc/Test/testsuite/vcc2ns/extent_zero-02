@@ -1,0 +1,334 @@
+#include "vcc.h"
+
+struct S { 
+  unsigned __int8 u1;
+  unsigned __int16 u2;
+  unsigned __int32 u4;
+  unsigned __int64 u8;
+  __int8 i1;
+  __int16 i2;
+  __int32 i4;
+  __int64 i8;
+  void *p;
+  _(ghost void *pp)
+  _(ghost void ^gp)
+  int *ip;
+  _(ghost int *ipp)
+  _(ghost int ^igp)
+};
+
+void foo(struct S *s) 
+  _(requires \wrapped(s))
+  _(requires \extent_zero(s))
+{
+  _(assert s->u1 == 0)
+  _(assert s->u2 == 0)
+  _(assert s->u4 == 0)
+  _(assert s->u8 == 0)
+  _(assert s->i1 == 0)
+  _(assert s->i2 == 0)
+  _(assert s->i4 == 0)
+  _(assert s->i8 == 0)
+  _(assert s->p == (void *)0)
+  _(assert s->pp == (void *)0) // not clear if needed
+  _(assert s->gp == (void ^)0) // not clear if needed
+  _(assert s->ip == (int *)0)
+  _(assert s->ipp == (int *)0) // not clear if needed
+  _(assert s->igp == (int ^)0) // not clear if needed
+}
+
+void bar_u1() {
+  unsigned __int8 x;
+  _(assume \extent_zero(&x))
+  _(assert x == 0)
+}
+
+void bar_u2() {
+  unsigned __int16 x;
+  _(assume \extent_zero(&x))
+  _(assert x == 0)
+}
+
+void bar_u4() {
+  unsigned __int32 x;
+  _(assume \extent_zero(&x))
+  _(assert x == 0)
+}
+
+void bar_u8() {
+  unsigned __int64 x;
+  _(assume \extent_zero(&x))
+  _(assert x == 0)
+}
+
+void bar_i1() {
+  __int8 x;
+  _(assume \extent_zero(&x))
+  _(assert x == 0)
+}
+
+void bar_i2() {
+  __int16 x;
+  _(assume \extent_zero(&x))
+  _(assert x == 0)
+}
+
+void bar_i4() {
+  __int32 x;
+  _(assume \extent_zero(&x))
+  _(assert x == 0)
+}
+
+void bar_i8() {
+  __int64 x;
+  _(assume \extent_zero(&x))
+  _(assert x == 0)
+}
+
+void bar_p() {
+  void *x;
+  _(assume \extent_zero(&x))
+  _(assert x == (void *)0)
+}
+
+void bar_pp() {
+  _(ghost void *x)
+  _(assume \extent_zero(&x))
+  _(assert x == (void *)0)
+}
+
+void bar_gpp() {
+  _(ghost void ^x)
+  _(assume \extent_zero(&x))
+  _(assert x == (void *)0)
+}
+
+void bar_ip() {
+  int *x;
+  _(assume \extent_zero(&x))
+  _(assert x == (void *)0)
+}
+
+void bar_ipp() {
+  _(ghost int *x)
+  _(assume \extent_zero(&x))
+  _(assert x == (void *)0)
+}
+
+void bar_igp() {
+  _(ghost int ^x)
+  _(assume \extent_zero(&x))
+  _(assert x == (void *)0)
+}
+
+typedef void *pvoid;
+#ifdef VERIFY
+typedef void ^gpvoid;
+#endif
+typedef int *pint;
+#ifdef VERIFY
+typedef int ^gpint;
+#endif
+
+void baz_u1()
+{
+  unsigned __int8 a[42];
+  _(assume \extent_zero((void[42])a))
+  _(assert a[17]==0)
+}
+
+void baz_u2()
+{
+  unsigned __int16 a[42];
+  _(assume \extent_zero((void[42])a))
+  _(assert a[17]==0)
+}
+
+void baz_u4()
+{
+  unsigned __int32 a[42];
+  _(assume \extent_zero((void[42])a))
+  _(assert a[17]==0)
+}
+
+void baz_u8()
+{
+  unsigned __int64 a[42];
+  _(assume \extent_zero((void[42])a))
+  _(assert a[17]==0)
+}
+
+void baz_i1()
+{
+  __int8 a[42];
+  _(assume \extent_zero((void[42])a))
+  _(assert a[17]==0)
+}
+
+void baz_i2()
+{
+  __int16 a[42];
+  _(assume \extent_zero((void[42])a))
+  _(assert a[17]==0)
+}
+
+void baz_i4()
+{
+  __int32 a[42];
+  _(assume \extent_zero((void[42])a))
+  _(assert a[17]==0)
+}
+
+void baz_i8()
+{
+  __int64 a[42];
+  _(assume \extent_zero((void[42])a))
+  _(assert a[17]==0)
+}
+
+void baz_p()
+{
+  pvoid a[42];
+  _(assume \extent_zero((void[42])a))
+  _(assert a[17]==(void *)0)
+}
+
+void baz_pp()
+{
+  _(ghost pvoid a[42])
+  _(assume \extent_zero((void[42])a))
+  _(assert a[17]==(void *)0)
+}
+
+void baz_gpp()
+{
+  _(ghost void ^a[42])
+  _(assume \extent_zero((void[42])a))
+  _(assert a[17]==(void *)0)
+}
+
+void baz_ip()
+{
+  pint a[42];
+  _(assume \extent_zero((void[42])a))
+  _(assert a[17]==(void *)0)
+}
+
+void baz_ipp()
+{
+  _(ghost pint a[42])
+  _(assume \extent_zero((void[42])a))
+  _(assert a[17]==(void *)0)
+}
+
+void baz_igp()
+{
+  _(ghost int ^a[42])
+  _(assume \extent_zero((void[42])a))
+  _(assert a[17]==(void *)0)
+}
+
+
+struct BF32 {
+  unsigned a : 17;
+  int b : 15;
+};
+
+void bf_foo(struct BF32 *bf32)
+  _(requires \wrapped(bf32))
+  _(requires \extent_zero(bf32))
+{
+  _(assert bf32->a==0)
+  _(assert bf32->b==0)
+}
+
+union T { 
+  struct BF32 bf32;
+  _(backing_member) unsigned c;
+};
+
+
+void bm_foo(union T *t)
+  _(requires \wrapped(t))
+  _(requires \extent_zero(t))
+{
+  _(assert t->bf32.a==0)
+  _(assert t->bf32.b==0)
+  _(assert t->c==0)
+}
+
+union U { 
+  unsigned a;
+  int b;
+};
+
+void union_foo1(union U *u)
+  _(requires \wrapped(u))
+  _(requires \union_active(&u->a))
+  _(requires \extent_zero(u))
+{
+  _(assert u->a==0)
+}
+
+void union_foo2ShouldFail(union U *u)
+  _(requires \wrapped(u))
+  _(requires \union_active(&u->a))
+  _(requires \extent_zero(u))
+{
+  _(assert u->b==0)
+}
+
+void union_foo3(union U *u)
+  _(requires \wrapped(u))
+  _(requires \union_active(&u->b))
+  _(requires \extent_zero(u))
+{
+  _(assert u->b==0)
+}
+
+void union_foo4ShouldFail(union U *u)
+  _(requires \wrapped(u))
+  _(requires \union_active(&u->b))
+  _(requires \extent_zero(u))
+{
+  _(assert u->a==0)
+}
+`
+Verification of foo succeeded.
+Verification of bar_u1 succeeded.
+Verification of bar_u2 succeeded.
+Verification of bar_u4 succeeded.
+Verification of bar_u8 succeeded.
+Verification of bar_i1 succeeded.
+Verification of bar_i2 succeeded.
+Verification of bar_i4 succeeded.
+Verification of bar_i8 succeeded.
+Verification of bar_p succeeded.
+Verification of bar_pp succeeded.
+Verification of bar_gpp succeeded.
+Verification of bar_ip succeeded.
+Verification of bar_ipp succeeded.
+Verification of bar_igp succeeded.
+Verification of baz_u1 succeeded.
+Verification of baz_u2 succeeded.
+Verification of baz_u4 succeeded.
+Verification of baz_u8 succeeded.
+Verification of baz_i1 succeeded.
+Verification of baz_i2 succeeded.
+Verification of baz_i4 succeeded.
+Verification of baz_i8 succeeded.
+Verification of baz_p succeeded.
+Verification of baz_pp succeeded.
+Verification of baz_gpp succeeded.
+Verification of baz_ip succeeded.
+Verification of baz_ipp succeeded.
+Verification of baz_igp succeeded.
+Verification of bf_foo succeeded.
+Verification of bm_foo succeeded.
+Verification of union_foo1 succeeded.
+Verification of union_foo2ShouldFail failed.
+testcase(278,12) : error VC9500: Assertion 'u->b==0' did not verify.
+Verification of union_foo3 succeeded.
+Verification of union_foo4ShouldFail failed.
+testcase(294,12) : error VC9500: Assertion 'u->a==0' did not verify.
+`

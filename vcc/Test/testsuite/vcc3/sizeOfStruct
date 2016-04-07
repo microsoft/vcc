@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+typedef struct _S0_8 {
+  __int8 i8;
+  __int16 i16;
+  __int8 d0;
+  __int32 i32;
+  __int64 i64;
+  __int8 i8b;
+} S0_8;
+
+typedef S0_8 AS0_8[10];
+
+void SizeAndOffsetOfStructPack8Ok()
+{
+  _(assert sizeof(struct _S0_8) == 32)
+  _(assert sizeof(S0_8) == 32)
+  _(assert sizeof(AS0_8) == 10 * sizeof(S0_8))
+}
+`
+Verification of SizeAndOffsetOfStructPack8Ok succeeded.
+`

@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+_(pure) unsigned fu(unsigned);
+_(pure) unsigned fi(int);
+
+void f() {
+  _(assert \forall unsigned x; fu(x) >= 0)
+  _(assert \forall int *p; p \is int)
+  _(assert \forall int k; 10 <= fi(k) ==> 0 <= fi(k))
+  _(assert \forall unsigned x,y,z; {fu(x),fu(y),fu(z)} x+y+z >= 0)
+}
+`
+Verification of f succeeded.
+`

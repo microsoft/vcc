@@ -1,0 +1,36 @@
+#include "vcc.h"
+
+typedef unsigned __int16 UINT16;
+typedef unsigned __int32 UINT32;
+typedef unsigned __int64 UINT64;
+
+typedef union _UNION_TYPE
+{
+    _(backing_member) UINT64 AsArrayUINT64[2];
+
+    struct
+    {
+		UINT64 ValueUINT64;
+        union
+        {
+            // Long Mode
+            _(backing_member) UINT64 AsUINT64;
+            // 32 Bit Mode
+            struct
+            {
+                UINT32 ValueUINT32;
+                UINT16 ValueUINT16;
+            };
+        };
+    };
+} UNION_TYPE, *PUNION_TYPE;
+
+PUNION_TYPE testit(PUNION_TYPE arg) 
+	_(maintains \wrapped(arg))
+	_(ensures \result == arg)
+{
+	return arg;
+}
+`
+Verification of testit succeeded.
+`

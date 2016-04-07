@@ -1,0 +1,20 @@
+#include <vcc.h>
+
+#define pow2(y) (1UI32<<(y))
+
+unsigned foo(unsigned j)
+  _(requires \exists unsigned i; i < 13 ==> j == (1UI32 << i))
+  _(returns 42)
+{
+  return 42;
+}
+
+void bar() {
+  unsigned x = foo(pow2(12));
+  // pow2(12) must be an unsigned shift to match
+}
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

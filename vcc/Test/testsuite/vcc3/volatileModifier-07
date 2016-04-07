@@ -1,0 +1,31 @@
+#include "vcc.h"
+
+typedef union COUNTER
+{
+    struct
+    {
+        unsigned InUse            :  1;
+        unsigned Generation       : 31;
+   };
+
+    _(backing_member) unsigned AsUINT32;
+} COUNTER;
+
+typedef _(claimable) struct _S
+{
+    volatile COUNTER cntr;
+    _(invariant \mine(&cntr))
+} S;
+
+void foo(S* p _(ghost \claim c))
+    _(always c,p->\closed)
+{
+    unsigned x;
+    _(atomic c,p,&p->cntr) {
+        x = p->cntr.InUse;
+    }
+}
+`
+Verification of _S#adm succeeded.
+Verification of foo succeeded.
+`

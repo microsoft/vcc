@@ -1,0 +1,12 @@
+#include <stdlib.h>
+#include "vcc.h"
+
+void test(int *p, size_t i) {
+int *q = p+i;
+_(assert p <= q) // may overflow, so should fail
+_(assert q == p+i) 
+}
+`
+Verification of test failed.
+testcase(6,10) : error VC9500: Assertion 'p <= q' did not verify.
+`

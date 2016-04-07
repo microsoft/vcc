@@ -1,0 +1,23 @@
+#include <vcc.h>
+ 
+_(claimable) struct Foo
+{
+  _(invariant \true)
+    int x;
+};
+ 
+void foo(struct Foo *o _(ghost \claim c))
+  _(always c,o->\closed)
+  _(writes o)
+  _(ensures \false)
+{
+  _(ghost \claim c1)
+
+  _(ghost c1 = \make_claim({o}, \false))
+  _(assert \false)
+}
+`
+Verification of Foo#adm succeeded.
+Verification of foo failed.
+testcase(16,16) : error VC8520: Assertion 'chunk \false of the claim initially holds' did not verify.
+`

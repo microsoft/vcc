@@ -1,0 +1,22 @@
+#include "vcc2test.h"
+
+struct A {
+  volatile int x;
+  _(invariant \depends(\this->\owner,\this))
+};
+
+void OldInInvCheckInLoop()
+{ 
+  int x;
+  while (_(unchecked)(x++)) 
+  {
+    struct A *a;
+    a = malloc(sizeof(*a));
+    if (a != NULL) _(wrap a)
+  }
+}
+`
+testcase(11,23) : warning VC9326: [possible unsoundness]: signed overflow (of '+') has undefined behavior in C
+Verification of A#adm succeeded.
+Verification of OldInInvCheckInLoop succeeded.
+`

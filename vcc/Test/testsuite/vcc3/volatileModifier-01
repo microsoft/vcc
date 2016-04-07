@@ -1,0 +1,138 @@
+#include "vcc.h"
+
+typedef struct _X {
+  int nonvol;
+  volatile int vol;
+
+  _(ghost int specnonvol;)
+  _(ghost volatile int specvol;)
+} X;
+
+
+void ok1(X*x _(ghost \claim c))
+  _(always c, x->\closed)
+{
+  int q;
+  _(atomic c,x) {
+    q = x->vol;
+  }
+}
+
+void ok11(X*x _(ghost \claim c))
+  _(always c, x->\closed)
+{
+  int q;
+  _(atomic c,x) {
+    q = x->nonvol;
+  }
+}
+
+void nok2(X*x)
+  _(requires x->\valid)
+{
+  int q;
+  _(atomic x) {
+    q = x->vol;
+  }
+}
+
+void ok2(X*x,X*y _(ghost \claim c))
+  _(always c, x->\closed && y->\closed)
+{
+  _(atomic c,x,y) {
+    x->vol = 7;
+  }
+}
+
+void nok3(X*x,X*y _(ghost \claim c))
+  _(always c, x->\closed && y->\closed)
+{
+  _(atomic c,x,y) {
+    x->nonvol = 7;
+  }
+}
+
+void nok4(X*x,X*y _(ghost \claim c))
+  _(always c, x->\closed && y->\closed)
+{
+  _(atomic c,y) {
+    x->vol = 7;
+  }
+}
+
+
+_(ghost 
+void specok1(X*x _(ghost \claim c))
+  _(always c, x->\closed)
+{
+  _(ghost int q;)
+  _(atomic c,x) {
+    q = x->specvol;
+  }
+})
+
+_(ghost 
+void specok11(X*x _(ghost \claim c))
+  _(always c, x->\closed)
+{
+  int q;
+  _(atomic c,x) {
+    q = x->specnonvol;
+  }
+})
+
+_(ghost 
+void nspecok2(X*x)
+  _(requires x->\valid)
+{
+  int q;
+  _(atomic x) {
+    q = x->specvol;
+  }
+})
+
+
+void specok2(X*x,X*y _(ghost \claim c))
+  _(always c, x->\closed && y->\closed)
+{
+  _(atomic c,x,y) {
+    _(ghost x->specvol = 7;)
+  }
+}
+
+void nspecok3(X*x,X*y _(ghost \claim c))
+  _(always c, x->\closed && y->\closed)
+{
+  _(atomic c,x,y) {
+    _(ghost x->specnonvol = 7;)
+  }
+}
+
+void nspecok4(X*x,X*y _(ghost \claim c))
+  _(always c, x->\closed && y->\closed)
+{
+  _(atomic c,y) {
+    _(ghost x->specvol = 7;)
+  }
+}
+
+`
+Verification of ok1 succeeded.
+Verification of ok11 succeeded.
+Verification of nok2 failed.
+testcase(34,12) : error VC8527: Assertion 'x is closed (for atomic(...))' did not verify.
+Verification of ok2 succeeded.
+Verification of nok3 failed.
+testcase(51,5) : error VC8507: Assertion 'x->nonvol is writable' did not verify.
+Verification of nok4 failed.
+testcase(59,5) : error VC8507: Assertion 'x->vol is writable' did not verify.
+Verification of specok1 succeeded.
+Verification of specok11 succeeded.
+Verification of nspecok2 failed.
+testcase(89,12) : error VC8527: Assertion 'x is closed (for atomic(...))' did not verify.
+Verification of specok2 succeeded.
+Verification of nspecok3 failed.
+testcase(107,13) : error VC8507: Assertion 'x->specnonvol is writable' did not verify.
+Verification of nspecok4 failed.
+testcase(115,13) : error VC8507: Assertion 'x->specvol is writable' did not verify.
+`

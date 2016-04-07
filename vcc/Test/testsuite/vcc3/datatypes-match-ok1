@@ -1,0 +1,27 @@
+#include <vcc.h>
+
+_(datatype D1 {
+  case A();
+  case B(int);
+})
+
+_(def
+int foo0(D1 d)
+{
+  switch (d) {
+  case A(): return 0;
+  case B(x): return x;
+  }
+  return 13;
+})
+
+_(ghost 
+void t0()
+{
+  _(assert foo0(A()) == 0)
+  _(assert foo0(B(7)) == 7)
+})
+`
+Verification of foo0 succeeded.
+Verification of t0 succeeded.
+`

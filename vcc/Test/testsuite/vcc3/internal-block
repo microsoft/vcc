@@ -1,0 +1,38 @@
+#include "vcc.h"
+
+void bar() {
+  int x = 0;
+  int y = 7;
+
+ _(requires \full_context())
+ _(ensures x > 0)
+ {
+   x = y;
+ }
+
+
+ _(assert x > 0)
+ _(assert y == 7)
+
+}
+
+void barFail() {
+  int x = 0;
+  int y = 7;
+
+ _(requires \full_context())
+ _(ensures x > 0)
+ {
+   x = y;
+ }
+
+
+ _(assert x == 7)
+ _(assert y == 7)
+
+}
+`
+Verification of bar succeeded.
+Verification of barFail failed.
+testcase(30,11) : error VC9500: Assertion 'x == 7' did not verify.
+`

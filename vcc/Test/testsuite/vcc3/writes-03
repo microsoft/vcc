@@ -1,0 +1,15 @@
+#include <vcc.h>
+
+typedef struct { int x; } A;
+
+void update_after_wrap(A* p)
+  _(writes \extent(p))
+{
+  _(ghost p->\owns =  {});
+  _(wrap p)
+  p->x = 12;
+}
+`
+Verification of update_after_wrap failed.
+testcase(10,3) : error VC8507: Assertion 'p->x is writable' did not verify.
+`

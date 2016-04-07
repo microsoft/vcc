@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+void test()
+{
+  _(assert \forall \integer m; 0 < m ==> ((1 % m) == (0 % m) ))
+  _(assert \forall \integer m; 0 < m ==> ((1 / m) == (0 / m) ))
+} 
+`
+Verification of test failed.
+testcase(5,12) : error VC9500: Assertion '\forall \integer m; 0 < m ==> ((1 % m) == (0 % m) ))' did not verify.
+testcase(6,12) : error VC9500: Assertion '\forall \integer m; 0 < m ==> ((1 / m) == (0 / m) ))' did not verify.
+`

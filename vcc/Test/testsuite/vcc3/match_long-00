@@ -1,0 +1,32 @@
+#include "vcc.h"
+
+typedef unsigned __int8 UINT8;
+typedef unsigned __int64 UINT64;
+
+
+int _(pure) Contains(UINT8 a[], UINT64 count, UINT8 elem)
+  _(reads \universe())
+  _(ensures \result == \exists UINT64 j; \match_ulong(j) && 0 <= j && j < count && a[j] == elem);
+
+int _(pure) SameElements(UINT8 a[], UINT8 b[], UINT64 count)
+  _(reads \universe())
+  _(ensures \result == \forall UINT64 i; \match_ulong(i) && 0 <= i && i < count 
+    ==> Contains(a, count, b[i]) && Contains(b, count, a[i]));
+
+
+void foo()
+{
+  UINT64 i;
+  UINT8 A[256];
+  for (i = 0; i < 256; i++)
+    _(invariant 0 <= i && i <= 256)
+    _(invariant \forall UINT64 j; \match_ulong(j) && 0 <= j && j < i ==> A[j] == j)
+    _(invariant \forall UINT64 j; \match_ulong(j) && 0 <= j && j < i ==> Contains(A, i, (UINT8)j))
+    _(invariant SameElements(A, A, i))
+  {
+    A[i] = (UINT8)i;
+  }
+}
+`
+Verification of foo succeeded.
+`

@@ -1,0 +1,85 @@
+#include <stdlib.h>
+#include <vcc.h>
+
+struct A { int x,y; };
+
+struct B {
+  struct A a1;
+  struct A a2;
+  int z;
+};
+
+void foo(struct B *b)
+  _(requires \extent_mutable(b))
+{
+  _(assert \mutable(b))
+  _(assert \mutable(&b->a1))
+  _(assert \mutable(&b->a2))
+}
+
+struct B *alloc_B()
+  _(ensures \result == NULL || (\extent_fresh(\result) && \extent_mutable(\result)))
+{
+  return (struct B*)malloc(sizeof(struct B));
+}
+
+void baz()
+{
+  struct B *b;
+
+  b = alloc_B();
+  if (b != NULL) {
+    b->z = 12;
+    b->a1.y = 12;
+    b->a2.x = 12;
+  }
+}
+
+struct C {
+  struct A a[10];
+};
+
+struct C *alloc_C()
+  _(ensures \result == NULL || (\extent_fresh(\result) && \extent_mutable(\result)))
+{
+  return (struct C*)malloc(sizeof(struct C));
+}
+
+void baz_C()
+{
+  struct C *b;
+
+  b = alloc_C();
+  if (b != NULL) b->a[1].x = 12;
+}
+
+void fail()
+{
+  struct B *b;
+  _(assert \mutable(b) ==> \extent_mutable(b))
+}
+
+
+void ok()
+{
+  struct A *b;
+  _(assert \mutable(b) ==> \extent_mutable(b))
+}
+
+void ok2(struct B *b)
+  _(writes \extent(b))
+{
+  _(assert \extent_mutable(b))
+}
+
+`
+Verification of foo succeeded.
+Verification of alloc_B succeeded.
+Verification of baz succeeded.
+Verification of alloc_C succeeded.
+Verification of baz_C succeeded.
+Verification of fail failed.
+testcase(59,12) : error VC9500: Assertion '\mutable(b) ==> \extent_mutable(b)' did not verify.
+Verification of ok succeeded.
+Verification of ok2 succeeded.
+`

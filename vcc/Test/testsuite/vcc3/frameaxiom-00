@@ -1,0 +1,21 @@
+#include <vcc.h>
+
+_(ghost 
+_(no_reads_check)
+_(frameaxiom) int foo(int *p);)
+
+_(ghost 
+int foo(int *p) 
+  _(reads p) { _(assume \false) })
+
+void bar() {
+  int i = 0;
+  _(ghost int a = foo(&i);)
+  _(ghost int b = foo(&i);)
+  _(assert a == b)
+}
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

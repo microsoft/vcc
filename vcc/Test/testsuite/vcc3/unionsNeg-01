@@ -1,0 +1,37 @@
+#include "vcc.h"
+
+struct A {
+  int a;
+  int b;
+  int c;
+};
+
+struct IntWrap {
+  int i;
+};
+
+struct PtrWrap {
+  int* p;
+};
+
+union B {
+  struct A x;
+  struct IntWrap y;
+  struct PtrWrap z;
+};
+
+void reint(union B *b)
+  _(requires b->\valid)
+  _(writes \extent(b))
+{
+  _(union_reinterpret &b->y);
+  b->y.i = 7;
+  _(assert b->y.i == 7)
+  _(union_reinterpret &b->z);
+  _(union_reinterpret &b->x);
+  _(assert b->x.a == 7)
+}
+`
+Verification of reint failed.
+testcase(32,12) : error VC9500: Assertion 'b->x.a == 7' did not verify.
+`

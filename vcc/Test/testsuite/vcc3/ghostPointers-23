@@ -1,0 +1,18 @@
+#include "vcc.h"
+
+struct List;
+struct Node
+{
+  struct Node* next;
+  _(ghost struct List* list)
+  _(ghost \bool initialized)
+  _(invariant initialized ==> next == &list->nil)
+};
+struct List
+{
+  struct Node nil;
+  struct Node* first;
+};
+`
+Verification of Node#adm succeeded.
+`

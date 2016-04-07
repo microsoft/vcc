@@ -1,0 +1,25 @@
+#include <vcc.h>
+
+struct U {
+  int a;
+  int b;
+};
+
+
+struct S {
+  _(inline) struct U u;	
+  int dummy;
+};
+
+void foo(struct S *p) 
+  _(writes p)
+  _(maintains \wrapped(p))
+{
+  struct U u;
+  _(unwrap p)
+  p->u = u;
+  _(wrap p)
+}
+`
+testcase(20,3) : error VC9679: Field 'u' has been inlined and cannot be referred to as such; refer to its nested fields instead
+`

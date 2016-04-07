@@ -1,0 +1,30 @@
+#include<vcc.h>
+
+int foo(int x)
+  _(ensures \assume(\result > 0))
+{
+  return x;
+}
+
+int foo2(int x)
+  _(requires \assume(x > 0))
+  _(ensures \result > 0)
+{
+  return x;
+}
+
+void bar()
+{
+  int x, y;
+
+  y = foo(x);
+  _(assert y > 0)
+
+  y = foo2(x);
+  _(assert y > 0)
+}
+`
+Verification of foo succeeded.
+Verification of foo2 succeeded.
+Verification of bar succeeded.
+`

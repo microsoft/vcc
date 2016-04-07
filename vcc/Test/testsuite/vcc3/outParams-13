@@ -1,0 +1,15 @@
+#include "vcc.h"
+
+void foo(_(out int a)) {
+   
+    _(ensures a == 10)
+  {
+    _(ghost a = 10)
+    _(assert a == 10)
+  }
+  _(assert a == 10)
+}
+`
+Verification of foo succeeded.
+Verification of foo#block#0 succeeded.
+`

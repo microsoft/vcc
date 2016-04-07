@@ -1,0 +1,21 @@
+#include <vcc.h>
+
+_(datatype List {
+       case Nil();
+       case Cons(List, List);
+})
+
+
+_(def List F(List k)
+{
+       switch (k) {
+              case Nil(): return k;
+              case Cons(h,z): 
+                 _(assert \false)
+       }
+})
+
+`
+Verification of F failed.
+testcase(14,27) : error VC9500: Assertion '\false' did not verify.
+`

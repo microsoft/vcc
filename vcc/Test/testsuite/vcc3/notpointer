@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+void foo()
+{
+  int itest;
+  int *ptest;
+  ptest = &itest;
+
+  if (!ptest)
+  {
+    _(assert 0)
+  }
+  
+}
+
+`
+Verification of foo succeeded.
+`

@@ -1,0 +1,9 @@
+#include <vcc.h>
+
+void foo() {
+  unsigned int x;
+  _(assert 1 * x / (\natural) 1 == x)
+}
+`
+Verification of foo succeeded.
+`

@@ -1,0 +1,15 @@
+#include <vcc.h>
+
+union U {
+  unsigned __int32 a[4];
+  _(backing_member) unsigned __int64 b[2];
+};
+
+void foo() { 
+  union U u;
+  u.b[0] = 1;
+}
+
+`
+Verification of foo succeeded.
+`

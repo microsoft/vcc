@@ -1,0 +1,23 @@
+#include <vcc.h>
+
+typedef int (*foo)(int i);
+int test(int i)
+{
+  return i;
+}
+
+int bar(foo fum)
+  _(reads fum)  _(requires fum->\valid)
+{
+  return fum(0);
+}
+
+int myn(){
+  return bar((foo)&test);
+}
+`
+Verification of test succeeded.
+Verification of bar succeeded.
+Verification of myn succeeded.
+Verification of myn#fnptr#test_to_foo#1 succeeded.
+`

@@ -1,0 +1,16 @@
+` /dt:3
+#include "vcc.h"
+
+void trg2()
+{
+  int *p;
+
+  _(assume \false)
+  _(assert \forall unsigned x; p[x] > 0)
+  _(assert \forall unsigned x; {p[x]} p[x] > 0)
+}
+`
+testcase(8,12) : warning VC9122: inferred triggers at {:level 2}: {(&)p[x]} for '\forall unsigned x; p[x] > 0)'
+testcase(9,12) : warning VC9122: inferred triggers at {:level 2}: {(&)p[x]} for '\forall unsigned x; {p[x]} p[x] > 0)'
+Verification of trg2 succeeded.
+`

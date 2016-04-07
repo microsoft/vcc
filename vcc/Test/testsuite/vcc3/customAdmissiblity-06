@@ -1,0 +1,18 @@
+#include <vcc.h>
+
+struct A {
+  int x;
+  
+  _(invariant \this->x > 0)
+};
+
+_(ghost _(admissibility)
+void adm_A(struct A* x)
+  _(ensures \false)
+{
+  _(havoc_others x)
+  _(assert x->x > 0)
+})
+`
+testcase(9,11) : error VC9624: custom admissibility checks are not allowed to have explicit requires/ensures/writes
+`

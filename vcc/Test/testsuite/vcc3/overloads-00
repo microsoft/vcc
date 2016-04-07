@@ -1,0 +1,23 @@
+#include <vcc.h>
+
+_(pure) int foo(int i) _(ensures \result == 1) {
+  return 1;
+}
+_(pure) unsigned int foo(unsigned int ui) _(ensures \result == 2) {
+  return 2;
+}
+
+void bar() {
+  int i = 0;
+  unsigned int ui = 1;
+  
+  i = foo(i);
+  ui = foo(ui);
+  _(assert i == 1)
+  _(assert ui == 2)
+}
+`
+Verification of foo#overload#int32_t#int32_t succeeded.
+Verification of foo#overload#uint32_t#uint32_t succeeded.
+Verification of bar succeeded.
+`

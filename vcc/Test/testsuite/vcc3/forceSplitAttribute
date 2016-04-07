@@ -1,0 +1,8 @@
+#include <vcc.h>
+
+vcc_force_splits(20)
+void foo() { }
+
+`
+Verification of foo succeeded.
+`

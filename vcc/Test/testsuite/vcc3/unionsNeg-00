@@ -1,0 +1,32 @@
+#include "vcc.h"
+
+struct A {
+  int a;
+  int b;
+  int c;
+};
+
+struct IntWrap {
+  int i;
+};
+
+struct PtrWrap {
+  int* p;
+};
+
+union B {
+  struct A x;
+  struct IntWrap y;
+  struct PtrWrap z;
+};
+
+void reint(union B *b)
+  _(writes \extent(b))
+{
+  _(assert &b->y.i \in \extent(b))
+  b->y.i = 7;
+}
+`
+Verification of reint failed.
+testcase(26,12) : error VC9500: Assertion '&b->y.i \in \extent(b)' did not verify.
+`

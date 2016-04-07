@@ -1,0 +1,16 @@
+#include "vcc.h"
+
+typedef unsigned __int64 uint64;
+
+void testme(uint64* p)
+  _(requires \thread_local(p))
+  _(requires \mutable((uint64*)(*p)))
+  _(requires p != (uint64 *)(*p))
+  _(writes (uint64 *)*p)
+{
+
+    *((uint64*)(*p)) = 5;
+}
+`
+Verification of testme succeeded.
+`

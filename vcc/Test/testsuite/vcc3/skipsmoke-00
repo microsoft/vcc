@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+_(skip_smoke)
+void foo(int a) 
+	_(requires a > 0)
+{
+	if (a <= 0) {
+	}
+}
+`
+Verification of foo succeeded.
+`

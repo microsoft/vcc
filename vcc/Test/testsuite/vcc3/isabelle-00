@@ -1,0 +1,7 @@
+`/b:/prover:Isabelle /b:/proverOpt:ISABELLE_INPUT=..\dummy.b2i 
+
+#include <vcc.h>
+void foo() { }
+`
+Verification of foo was inconclusive.
+`

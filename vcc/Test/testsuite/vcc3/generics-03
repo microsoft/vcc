@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+template<typename T> void foo(T* t)
+{
+  T *s = t;
+  T q = *s;
+}
+`
+testcase(6,3) : error VC9693: Cannot declare local 'q' of generic type 'T'
+testcase(6,9) : error VC9691: Expression '*s' is of generic type 'T'; only pointers to generic types are supported.
+`

@@ -1,0 +1,14 @@
+#include <vcc.h>
+
+typedef unsigned __int8 UINT8;
+typedef unsigned __int32 UINT32;
+
+void foo()
+{
+     UINT8   bitmapBitOffset=0;
+     UINT8   mask = (UINT8)(3 << bitmapBitOffset);
+}
+
+`
+Verification of foo succeeded.
+`

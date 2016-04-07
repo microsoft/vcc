@@ -1,0 +1,9 @@
+#include "vcc.h"
+_(template<typename T> _(pure) size_t check() _(ensures \result == sizeof(T)))
+
+void foo() { 
+  _(assert check<int>() == 4) 
+}
+`
+Verification of foo succeeded.
+`

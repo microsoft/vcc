@@ -1,0 +1,25 @@
+#include <vcc.h>
+
+_(record) struct R
+{
+	int x;
+};
+
+struct Rc
+{
+  int a;
+	_(ghost struct R r)
+};
+
+void test(struct Rc *s)
+  _(writes s)
+  _(maintains \wrapped(s))
+  _(ensures \unchanged(s->r))
+{
+  _(unwrapping s) {
+    _(ghost s->r = s->r / {.x = s->r.x })
+	}
+}
+`
+Verification of test succeeded.
+`

@@ -1,0 +1,13 @@
+#include "vcc.h"
+enum X { A, B, C};
+struct Y { 
+  unsigned __int64 x:3; 
+};
+_(pure) enum X foo(enum X x) _(returns x);
+enum X bar(struct Y y) _(returns foo(y.x))
+{
+  return foo(y.x);
+}
+`
+Verification of bar succeeded.
+`

@@ -1,0 +1,10 @@
+#include <vcc2test.h>
+
+_(pure)
+void donothing_pure_fail(int *x)
+  _(writes x)
+{
+}
+`
+testcase(3,3) : error VC9623: writes specified on a pure function
+`

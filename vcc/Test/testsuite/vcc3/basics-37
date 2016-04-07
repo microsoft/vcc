@@ -1,0 +1,9 @@
+#include <vcc2test.h>
+
+struct S {
+  volatile int a;
+  _(invariant \old(\old(a)) == a)
+};
+`
+Verification of S#adm succeeded.
+`

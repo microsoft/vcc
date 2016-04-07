@@ -1,0 +1,11 @@
+#include <vcc.h>
+
+void foo()
+{
+  int i = 1;
+  int result = i--;
+  _(assert result == 1)
+}
+`
+Verification of foo succeeded.
+`

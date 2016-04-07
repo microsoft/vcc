@@ -1,0 +1,33 @@
+#include <vcc.h>
+
+struct A { int x; };
+
+void foo()
+{
+  struct A a;
+
+  _(wrap &a)
+
+  _(unwrapping &a) 
+     _(requires a.x > 0)
+   {
+     a.x = 1;
+   }
+
+  _(unwrapping &a) 
+     _(reads &a)
+   {
+     a.x = 1;
+   }
+
+  _(unwrapping &a) 
+     _(ensures a.x > 0)
+   {
+     a.x = 1;
+   }
+}
+`
+testcase(12,17) : error VC9674: _(unwrapping ...) does not allow contracts other than _(writes ...)
+testcase(18,14) : error VC9674: _(unwrapping ...) does not allow contracts other than _(writes ...)
+testcase(24,16) : error VC9674: _(unwrapping ...) does not allow contracts other than _(writes ...)
+`

@@ -1,0 +1,26 @@
+#include "vcc.h"
+
+typedef unsigned __int64 uint64;
+
+struct DESC {
+	_(ghost uint64   R[16])
+	uint64        GPR[16];
+	_(invariant \forall uint64 i; i < 16 ==> R[i] == GPR[i])
+};
+
+void SetConcGpr(struct DESC *desc, uint64 index, uint64 Value)
+	_(maintains \wrapped(desc))
+    _(writes desc)
+	_(requires 0 <= index)
+	_(requires index < 16)
+    _(ensures desc->R[index] == Value)
+{
+	_(unwrap desc)
+	desc->GPR[index] = Value;
+	_(ghost desc->R[index] = Value);
+	_(wrap desc)
+}
+`
+Verification of DESC#adm succeeded.
+Verification of SetConcGpr succeeded.
+`

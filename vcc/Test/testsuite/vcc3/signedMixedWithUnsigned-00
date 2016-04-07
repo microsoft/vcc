@@ -1,0 +1,39 @@
+#include <vcc.h>
+
+unsigned int foo() {
+  unsigned int x = 5;
+  return x & (unsigned)~7;
+}
+
+unsigned short foo2() {
+  unsigned short x = 5;
+  return x | 3;
+}
+
+void foo3() {
+  __int8 x = 10;
+  unsigned __int8 y = 15;
+  x &= y;
+}
+
+
+void foo4() {
+  int x = 10;
+  unsigned int y = 5;
+  
+  x = x / y;
+}
+
+void foo5() {
+  __int64 x = 10;
+  unsigned __int64 y = 5;
+  
+  x = x / y;
+}
+
+
+void main(){}
+`
+testcase(24,7) : error VC0000: Operator '/' cannot be applied to operands of type '__int32' and 'unsigned __int32'.
+testcase(31,7) : error VC0000: Operator '/' cannot be applied to operands of type '__int64' and 'unsigned __int64'.
+`

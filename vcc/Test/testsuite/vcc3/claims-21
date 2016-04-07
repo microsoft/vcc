@@ -1,0 +1,20 @@
+#include <vcc.h>
+
+_(claimable) struct FooBar {
+  int x;
+};
+
+void f(struct FooBar *b _(ghost \claim cc))
+  _(requires \wrapped(b))
+  _(requires cc->\closed)
+  _(writes b)
+{
+  _(ghost \claim c)
+
+  
+    _(ghost c = \make_claim({b}, \true);)
+    _(ghost _(assert c != cc))
+}
+`
+Verification of f succeeded.
+`

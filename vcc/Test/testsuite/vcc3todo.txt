@@ -1,0 +1,81 @@
+# weird pointer arithmetic
+groups-02
+groups-10
+
+# memory reinterpretation
+fieldInlining-05
+fieldInlining-06
+generics-10
+memoryReintp-02
+memoryReintp-04
+memoryReintp-09
+memoryReintp-10
+
+# extent_zero
+extent_zero-00
+extent_zero-01
+extent_zero-02
+extent_zero-03
+extent_zero-04
+
+# extent_zero & memory reinterpretation
+memoryReintp-07
+memoryReintp-08
+
+# as_array locals
+specOrPhysical-10
+
+# record with bitfields
+records-09
+
+###START
+# Real TODO starts here
+containingRecord-00
+fieldInlining-01
+functionPtrs-07
+functionPtrs-09
+generics-08
+groups-17
+invs-03
+labeledInvariants-00
+not_shared-00
+quantRange-01
+specOrPhysical-01
+specOrPhysical-02
+specOrPhysical-03
+specOrPhysical-04
+specOrPhysical-08
+specOrPhysical-09
+structEquality-01
+volatile-03
+
+# mostly fixed by removing the trigger
+volatileModifier-09
+
+# problem with static wrap, _(dynamic_owns) fixes it
+staticWrap-07
+
+# new ones?
+writes-06
+ghosts-02
+
+as_array-04
+
+# seems to be something broken in the types in AST
+records-19
+
+# unions
+unionsNeg-02
+
+# examples3/LockFreeStack.c (NOTYET?)
+
+# Left-overs from old testsuite\done directory:
+AllocFree-00
+AllocFree-01
+derefAddrOfLocal
+funcPtrEquality
+pointerArithmetik
+ptrToStructInLocalOrPar
+subRegion
+writeLocalArrayInLoop-00
+writeLocalArrayInLoop-01

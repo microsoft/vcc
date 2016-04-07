@@ -1,0 +1,42 @@
+#include <vcc.h>
+
+void explicitClassifs()
+{
+	int h;
+	int x = 0, y = 0, z = 0;
+
+	if (h  > 0) x = 1;
+	if (test_classifier(lambda(obj_t p; true),x == 0)) y = 1;
+	z = 1;
+	x = 0;
+
+	assert(is_low(z));
+	assert(is_low(x));
+}
+
+void explicitClassifsWrong()
+{
+	int h;
+	int x = 0;
+
+	if (h  > 0) x = 1;
+	if (test_classifier(lambda(obj_t p; h == 0),x == 0)) x = 1;
+}
+
+void explicitClassifsFail()
+{
+	int h;
+	int x = 0;
+	
+	if (h > 0) x = 1;
+	if (test_classifier(lambda(obj_t p; true),x ==0)) x = 1;
+	
+	assert(is_low(x)); // LIN makes it succeed, but we require an extra annotation for this
+}
+`
+Verification of explicitClassifs succeeded.
+Verification of explicitClassifsWrong failed.
+testcase(23,27) : error VC0000: Assertion 'the provided test classifier is valid' did not verify.
+Verification of explicitClassifsFail failed.
+testcase(34,11) : error VC9500: Assertion '_vcc_lblset_leq(_vcc_label_of(x), _vcc_seclabel_bot())' did not verify.
+`

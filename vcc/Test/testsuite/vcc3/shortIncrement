@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+void foo() {
+  short i = 0;
+  i++;
+  i--;
+  --i;
+  ++i;
+}
+
+void bar() {
+  unsigned short i = 0;
+  i++;
+  i--;
+  ++i;
+  --i;
+}
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

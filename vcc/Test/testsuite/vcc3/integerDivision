@@ -1,0 +1,25 @@
+#include <vcc.h>
+
+typedef __int32 INT32;
+typedef unsigned __int8 UINT8;
+typedef unsigned __int16 UINT16;
+typedef unsigned __int32 UINT32;
+typedef unsigned __int64 UINT64;
+typedef void VOID;
+
+VOID bar (UINT64 width)
+  _(requires 0 < width && width < 1024)
+{
+    UINT64 lo, hi;
+    UINT64 size;
+
+    lo = 0;
+    hi = lo + width;
+    size = (hi - lo) / width; 
+    
+    _(assert size == 1)
+}
+
+`
+Verification of bar succeeded.
+`

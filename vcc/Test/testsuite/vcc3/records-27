@@ -1,0 +1,10 @@
+#include "vcc.h"
+
+_(ghost _(record) struct R { int a; })
+
+void foo() {
+	_(ghost struct R s = ((struct R) {}))
+}
+`
+Verification of foo succeeded.
+`

@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+typedef unsigned __int32 UINT32;
+
+void foo(UINT32 n)
+  _(requires n < 32)
+{
+  UINT32 i = _(unchecked)(1 << n);
+}
+`
+Verification of foo succeeded.
+`

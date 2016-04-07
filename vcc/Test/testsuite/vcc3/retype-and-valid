@@ -1,0 +1,53 @@
+#include <vcc.h>
+
+typedef struct Gicc {
+  int volatile a;
+  _(invariant \on_unwrap(\this, \false)) // never open, always constant
+} Gicc;
+
+typedef struct T 
+{
+   Gicc* gicc;
+  _(invariant \mine(gicc))
+  _(invariant (42 == \addr(gicc)))
+} T;
+
+typedef _(volatile_owns) struct TV 
+{
+    Gicc* gicc;
+    volatile int bootOver;
+    
+    _(invariant \old(bootOver) ==> bootOver)
+    _(invariant \approves(\this->\owner, bootOver))
+
+    _(invariant bootOver ==> \mine(gicc))
+    _(invariant bootOver ==> (42 == \addr(gicc)))
+} TV;
+
+void works(T* t)
+    _(requires \wrapped(t))
+{
+    Gicc* gicc = _(retype) (Gicc*)42;
+    
+    _(assert gicc ==  t->gicc)
+    _(atomic gicc){}
+}
+
+
+void fails(TV* tv)
+    _(requires \wrapped(tv))
+    _(requires tv->bootOver)
+{
+    Gicc* gicc = _(retype) (Gicc*)42;
+    
+//    _(assert gicc == tv->gicc) // not needed
+    _(atomic tv, gicc){}
+}
+
+`
+Verification of Gicc#adm succeeded.
+Verification of T#adm succeeded.
+Verification of TV#adm succeeded.
+Verification of works succeeded.
+Verification of fails succeeded.
+`

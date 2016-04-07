@@ -1,0 +1,43 @@
+#include<vcc.h>
+
+typedef struct _T {
+        int dummy;
+        _(invariant (!\old(\this->\closed) && \this->\closed) || \false)
+} T;
+
+void bar()
+{
+        T t;
+        t.dummy = 1;
+        _(wrap &t)
+        _(assert \inv(&t))
+        _(assert \false)
+}
+
+
+typedef  struct _S {
+    volatile unsigned x;
+} S;
+
+typedef struct _T2 {
+    S s; 
+    _(invariant s.x < 10)
+    _(invariant \old(s.x) > s.x)
+
+} T2;
+
+void foo(T2* p)
+    _(requires \wrapped(p))
+{
+    _(assert p->s.x < 10)
+    p->s.x = 111;
+    _(assert \false)
+}
+`
+Verification of _T#adm failed.
+testcase(5,22) : error VC8013: invariant(!\old(\this->\closed)) is not admissible (stuttering).
+Verification of _T2#adm failed.
+testcase(25,17) : error VC8013: invariant(\old(s.x) > s.x) is not admissible (stuttering).
+Verification of bar succeeded.
+Verification of foo succeeded.
+`

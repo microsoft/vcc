@@ -1,0 +1,8 @@
+#include <vcc.h>
+
+typedef unsigned short wchar_t;
+typedef  const wchar_t* PCWSTR;
+PCWSTR S = L"This is a test";
+wchar_t C = L'w';
+`
+`

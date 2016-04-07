@@ -1,0 +1,24 @@
+#include <vcc.h>
+
+_(volatile_owns) struct A {
+  int x;
+};
+
+struct B { int y; };
+
+void foo();
+
+void bar(struct A *a, struct B *b)
+  _(requires \wrapped(a) && b \in a->\owns)
+{
+  _(assert a \in \domain(a))
+  _(assert b \in \domain(a))
+  _(assume b->y == 10)
+  foo();
+  _(assert b \in \domain(a))
+  _(assert b->y == 10)
+}
+`
+Verification of bar failed.
+testcase(15,12) : error VC9500: Assertion 'b \in \domain(a)' did not verify.
+`

@@ -1,0 +1,28 @@
+#include "vcc.h"
+
+typedef unsigned __int16 UINT16;
+typedef unsigned __int32 UINT32;
+
+void foo(UINT16 t)
+{
+	UINT16 a;
+	UINT16 b;
+	UINT16 res;
+
+	a = (t & 0x0f00);
+	b = (t & 0x00ff);
+	res = a | b;
+
+	_(assert a == (t & 0x0f00))
+	_(assert b == (t & 0x00ff))
+	_(assert res == (a | b))
+	
+	_(assert {:bv} \forall UINT32 a,b; ((a & b) & b) == (a & b))
+	_(assert {:bv} \forall UINT16 a,b; (a|b) == (int)((UINT32)a | (UINT32)b))
+	_(assert res == ((a & 0x0f00) | (b & 0x00ff)))
+}
+`
+Verification of foo succeeded.
+Verification of foo#bv_lemma#0 succeeded.
+Verification of foo#bv_lemma#1 succeeded.
+`

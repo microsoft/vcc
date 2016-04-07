@@ -1,0 +1,13 @@
+#include <vcc.h>
+void oopsExample() 
+{
+  int x;  
+  unsigned int entries[unsigned int];
+  for(x = 0; x<5; x++){
+      entries[x] = x;
+  }
+}
+`
+testcase(7,7) : error VC0000: The best overloaded method match for 'System.Diagnostics.Contracts.CodeContract.Map<uint, uint>.Item.get(uint)' has some invalid arguments.
+testcase(7,15) : error VC0000: Argument '1': cannot convert from '__int32' to 'unsigned __int32'.
+`

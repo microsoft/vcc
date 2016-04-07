@@ -1,0 +1,73 @@
+#include <vcc.h>
+
+typedef struct _Foo2
+{
+    int Flag;
+} Foo2;
+
+typedef struct _Foo
+{
+    int Flag;
+} Foo;
+
+typedef struct _Bar
+{
+  Foo* foo;
+  _(invariant \mine(foo))
+  _(invariant foo->Flag == 0)
+} Bar;
+
+typedef struct _Baz
+{
+  Foo2* foo;
+  Bar* bar;
+  _(invariant \mine(foo))
+  _(invariant \mine(bar))
+} Baz;
+
+
+void test_bad(Baz* baz)
+  _(updates baz)
+{
+  _(unwrap baz)
+
+  _(assert \wrapped(baz->bar))
+  _(assert baz->bar \in \domain(baz->bar))
+  _(assert baz->bar->foo \in \domain(baz->bar))
+
+  _(unwrap baz->bar)
+  _(unwrap baz->bar->foo)
+
+  _(assert baz->foo \in \domain(baz->foo))
+
+  baz->bar->foo->Flag = 1;
+
+  _(assert \false)
+}
+
+void test_ok(Bar* bar1, Bar* bar2)
+  _(requires bar1 != bar2)
+  _(updates bar1)
+  _(updates bar2)
+{
+  _(assert \wrapped(bar1))
+  _(assert bar1 \in \domain(bar1))
+  _(assert bar1->foo \in \domain(bar1))
+
+  _(unwrap bar1)
+  _(unwrap bar1->foo)
+
+  _(assert bar2 \in \domain(bar2))
+
+  bar1->foo->Flag = 1;
+
+  _(assert \false)
+}
+`
+Verification of _Bar#adm succeeded.
+Verification of _Baz#adm succeeded.
+Verification of test_bad failed.
+testcase(45,12) : error VC9500: Assertion '\false' did not verify.
+Verification of test_ok failed.
+testcase(64,12) : error VC9500: Assertion '\false' did not verify.
+`

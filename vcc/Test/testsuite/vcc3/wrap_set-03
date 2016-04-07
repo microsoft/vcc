@@ -1,0 +1,63 @@
+`
+#include <vcc.h>
+
+struct T
+{
+  int x;
+  _(invariant x > 3)
+};
+
+
+void succeeds1(struct T* p, struct T* q)
+  _(maintains \wrapped(p) && \wrapped(q))
+  _(writes p, q)
+{
+  _(unwrap p, q)
+  _(wrap q, p)
+}
+
+void succeeds2(struct T* p, struct T* q)
+  _(maintains \wrapped(p) && \wrapped(q))
+  _(requires p->x == 7 && q->x < 15)
+  _(writes p, q)
+  _(ensures p->x > 10)
+{
+  _(unwrap p, q)
+  p->x += q->x;
+  _(wrap q, p)
+}
+
+void fails1(struct T* p, struct T* q)
+  _(maintains \wrapped(p) && \wrapped(q))
+  _(requires p->x == 7 && q->x < 15)
+  _(writes p, q)
+  _(ensures p->x > 10)
+{
+  _(unwrap p)
+  _(unwrap q)
+  p->x += q->x;
+  _(wrap q, p)
+}
+
+void fails2(struct T* p, struct T* q)
+  _(maintains \wrapped(p) && \wrapped(q))
+  _(requires p->x == 7 && q->x < 15)
+  _(writes p, q)
+  _(ensures p->x > 10)
+{
+  _(unwrap p, q)
+  p->x += q->x;
+  _(wrap q)
+  _(wrap p)
+}
+
+`
+Verification of T#adm succeeded.
+Verification of succeeds1 succeeded.
+Verification of succeeds2 succeeded.
+Verification of fails1 failed.
+testcase(36,12) : error VC8016: 'q' is not wrapped before unwrap.
+Verification of fails2 failed.
+testcase(50,5) : error VC9502: Call 'wrap p' did not verify.
+testcase(0,0) : error VC9599: (related information) Precondition: 'the object being wrapped is mutable'.
+`

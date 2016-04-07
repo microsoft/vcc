@@ -1,0 +1,24 @@
+#include <vcc.h>
+
+struct A {
+  int x, y, z; 
+  int *p;
+  _(ghost \object pp;)
+};
+
+struct A foo()
+  _(ensures \result.x == 12)
+{
+ struct A a;
+ int x;
+ a.x = 12;
+ a.y = 13;
+ a.p = &x;
+ _(ghost  a.pp = &x;)
+ return a;
+}
+
+
+`
+Verification of foo succeeded.
+`

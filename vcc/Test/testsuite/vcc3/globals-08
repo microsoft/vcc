@@ -1,0 +1,29 @@
+#include "vcc2test.h"
+
+int a = 10;
+void *n = NULL;
+
+void foo()
+  _(requires \program_entry_point())
+{
+  int x = a;
+  _(assert x == 10)
+}
+
+void fooShouldFail()
+{
+  _(assert a == 10)
+}
+
+void bar() 
+  _(requires \program_entry_point())
+{
+  void* x = n;
+  _(assert x == NULL)
+}
+`
+Verification of foo succeeded.
+Verification of fooShouldFail failed.
+testcase(15,12) : error VC9500: Assertion 'a == 10' did not verify.
+Verification of bar succeeded.
+`

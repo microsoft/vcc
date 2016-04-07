@@ -1,0 +1,25 @@
+#include <vcc.h>
+
+typedef unsigned char *PUINT8;
+#define CONTAINING_RECORD(_Address_, _Type_, _Field_) \
+    ((_Type_ *)( (PUINT8)(_Address_) - (PUINT8)(&((_Type_ *)0)->_Field_)))
+
+typedef struct A_ {
+  int x;
+  int y;
+} A;
+
+void foo(A *a)
+  _(requires a->\valid)
+{
+  _(assert a == CONTAINING_RECORD(&a->y, A, y))
+}
+
+void bar(int *a)
+{
+  _(assert a == &CONTAINING_RECORD(a, A, y)->y)
+}
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

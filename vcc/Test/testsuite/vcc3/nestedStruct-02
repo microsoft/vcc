@@ -1,0 +1,19 @@
+#include <vcc.h>
+
+typedef struct _X { int c; } X;
+typedef struct _Y { X z; int a; } Y;
+
+void bar(X t) { }
+
+void baz(X *p) { }
+
+void foo(Y S) { 
+  int a = S.a;
+  bar(S.z);
+  baz(&S.z);
+}
+`
+Verification of bar succeeded.
+Verification of baz succeeded.
+Verification of foo succeeded.
+`

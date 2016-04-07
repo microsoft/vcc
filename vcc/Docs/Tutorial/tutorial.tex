@@ -1,0 +1,252 @@
+\ifdense
+\documentclass[preprint,nocopyrightspace]{sigplanconf}
+\else
+\documentclass{article}
+\usepackage{fancyhdr}
+%\pagestyle{fancy}
+\fi
+\bibliographystyle{plain}
+
+% on-screen reading version
+\ifwide
+\usepackage[margin=3mm, paperwidth=5in, paperheight=4in]{geometry}
+\fi
+
+\usepackage{amsmath}
+\usepackage{stmaryrd}
+\usepackage{color}
+\usepackage{graphicx}
+%\usepackage{marginnote}
+\usepackage{hyperref}
+\usepackage{amsmath, amssymb}
+\usepackage{url, listings}
+%\usepackage{msrtr}
+\usepackage{vcc}
+\usepackage{boogie}
+\usepackage{xspace}
+\usepackage{paralist}
+% default to roman numerals:
+\let\oldinparaenum=\inparaenum
+\def\inparaenum{\oldinparaenum[(i)]}
+\definecolor{bgcode}{rgb}{0.92,0.92,0.92}
+
+\definecolor{todocolor}{rgb}{0.9,0.0,0.0}
+\definecolor{noteframe}{rgb}{0.5,0.5,0.5}
+%\ifdense
+\newcommand{\todo}[1]{[\textcolor{red}{\textbf{TODO:} {#1}}]}
+%\else
+%\newcommand{\todo}[1]{\marginnote{\scriptsize {[\textcolor{red}{\textbf{TODO:} {#1}}]}}}
+%\fi
+\newcommand{\itodo}[1]{{[\textcolor{red}{\textbf{TODO:} {#1}}]}}
+%\renewcommand{\todo}[1]{}
+%\renewcommand{\itodo}[1]{}
+\newcommand{\lines}[1]{\begin{array}{l}#1\end{array}}
+\newcommand{\linesi}[1]{\;\;\;\begin{array}{l}#1\end{array}}
+\newcommand{\tuple}[1]{{\langle}{#1}\rangle}
+
+\ifdense
+\usepackage[T1]{fontenc}
+\usepackage{epigrafica}
+%\usepackage{iwona}
+%\usepackage[scaled]{berasans}
+%\usepackage{cmbright}
+%\usepackage{lxfonts}
+%\usepackage{kurier}
+\usepackage{times}
+\else
+\usepackage[OT1]{fontenc}
+\usepackage{courier}
+%\usepackage[T1]{fontenc}
+%\usepackage[scaled=0.81]{luximono}
+\fi
+
+\newcommand{\secref}[1]{\hyperref[sect:#1]{\textsection~\ref{sect:#1}}}
+\newcommand{\figref}[1]{Figure~\ref{fig:#1}}
+\newcommand{\Secref}[1]{Section~\ref{sect:#1}}
+\newcommand{\Figref}[1]{Figure~\ref{fig:#1}}
+
+\newcommand{\lemmaref}[1]{Lemma~\ref{lemma:#1}}
+\newcommand{\thmref}[1]{Theorem~\ref{thm:#1}}
+\newcommand{\lineref}[1]{line~\ref{line:#1}}
+
+\newcommand{\ie}[0]{i.e.,{ }}
+\newcommand{\eg}[0]{e.g.,{ }}
+\newcommand{\cf}[0]{cf.{ }}
+
+
+\ifdense
+\newenvironment{note}{%
+\vspace{-3mm}
+\begin{list}{}%
+    {\setlength{\leftmargin}{0.03\textwidth}}%
+    \item[]%
+  \textcolor{noteframe}{\rule{0.444\textwidth}{1pt}} \\
+  %\small
+  %\sffamily
+  \selectfont
+  %\textbf{Note:}
+}{%
+  \vspace{-2mm} \\ 
+  \textcolor{noteframe}{\rule{0.444\textwidth}{1pt}} 
+  \end{list}
+\vspace{-2mm}
+}
+\else
+\newenvironment{note}{%
+\vspace{-3mm}
+\begin{list}{}%
+    {\setlength{\leftmargin}{0.1\textwidth}}%
+    \item[]%
+  \textcolor{noteframe}{\rule{0.9\textwidth}{1pt}} \\
+  \small
+  %\textbf{Note:}
+}{%
+  \vspace{-2mm} \\ 
+  \textcolor{noteframe}{\rule{0.9\textwidth}{1pt}} 
+  \end{list}
+\vspace{-2mm}
+}
+\fi
+\newcommand{\notehd}[1]{\textbf{#1} \\}
+
+\newcommand{\eqspc}[1]{\;\;{#1}\;\;}
+\setlength{\arraycolsep}{0mm}
+
+%%% the model
+
+%%% general
+\newcommand{\MathOp}[2]{{}\mathbin{\hbox{$\mkern#2mu#1\mkern#2mu$}}{}}
+\newcommand{\Iff}{\MathOp{\Leftrightarrow}{6}}
+\newcommand{\Equal}{\MathOp{=}{6}}
+\newcommand{\Xor}{\MathOp{\not\equiv}{6}}
+\newcommand{\Implies}{\MathOp{\Rightarrow}{4}}
+\renewcommand{\And}{\MathOp{\wedge}{2}}
+\newcommand{\Or}{\MathOp{\vee}{2}}
+\newcommand{\Neg}{\neg}
+\newcommand{\dor}[0]{\MathOp{|}{2}}
+
+\newcommand{\ON}[1]{\operatorname{#1}}
+\newcommand{\Version}[0]{0.2}
+
+% -----------------------------------------------------
+
+\newcommand{\Def}[1]{\textit{\textbf{#1}}}
+
+\begin{document}
+
+\title{Verifying C Programs: \\ A VCC Tutorial \\
+\vspace{2mm}
+\Large  Working draft, version \Version, \today}
+%\title{Developing VCC Specifications \\ for Concurrent C Programs}
+
+\ifdense
+\authorinfo{Ernie Cohen, Mark A. Hillebrand, \\ Stephan Tobies}{European Microsoft Innovation Center}{\{ecohen,mahilleb,stobies\}@microsoft.com}
+\authorinfo{Micha{\l} Moskal, Wolfram Schulte}{Microsoft Research Redmond}{\{micmo,schulte\}@microsoft.com}
+\preprintfooter{VCC Tutorial (working draft, ver. \Version)}
+\else
+\author{
+Micha{\l} Moskal, Wolfram Schulte \\
+\normalsize Microsoft Research Redmond \\
+\and Ernie Cohen, Mark A. Hillebrand, Stephan Tobies \\
+\normalsize European Microsoft Innovation Center}
+\date{}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.3pt}
+\fancyfoot[LO,RE]{\footnotesize VCC Tutorial (working draft, ver. \Version, \today)}
+\fancyfoot[RO,LE]{\thepage}
+\fi
+
+
+%\msrtrno{MSR-TR-2010-9}
+%{\def\@titletext{foo}}
+%\msrtrmaketitle
+
+%\pagebreak
+%\begin{figure*}
+%\vspace{3in}
+%\begin{center}
+%This page intentionally left blank.
+
+%\end{center}
+%\end{figure*}
+
+%\setcounter{page}{0}
+
+\maketitle
+
+
+\begin{abstract}
+VCC is a verification environment for software written in C.
+VCC takes a program (annotated with function
+contracts, state assertions, and type invariants) and attempts to prove that these 
+annotations are correct, i.e. that they hold for every possible program execution.
+The environment includes tools for monitoring proof attempts and constructing
+partial counterexample executions for failed proofs.
+VCC handles fine-grained concurrency and low-level C features, and
+has been used to verify the functional correctness of tens of thousands of 
+lines of commercial concurrent system code. 
+
+This tutorial describes how to use VCC to verify C code. It covers the
+annotation language, the verification methodology, and the use of VCC itself.
+\end{abstract}
+
+
+\ifdense
+\lstset{
+  basicstyle=\small\sffamily,
+  columns=fullflexible,
+}
+\else
+\lstset{
+  basicstyle=\small\ttfamily,
+}
+\fi
+
+\definecolor{kwColor}{rgb}{0.2,0.2,0.8}
+
+\lstset{
+  keywordstyle=\bfseries, %\textcolor{kwColor},
+  breaklines=true,
+  breakatwhitespace=true,
+  numberstyle=\tiny\sf,
+  escapeinside={/*-}{*/},
+  numbers=none,
+  emptylines=1,
+  rangeprefix=\/\*\{,
+  rangesuffix=\}\*\/,
+  includerangemarker=false,  
+%  aboveskip=2mm,
+%  belowskip=2mm,
+%  xleftmargin=2mm,
+%  xrightmargin=2mm,
+}
+
+\ifdense
+\renewcommand{\labelitemi}{{\footnotesize \centeroncapheight{$\bullet$}}}
+\fi
+
+\input{preface}
+\input{assertAssume}
+\input{arithmetic}
+\input{functions}
+\input{loops}
+\input{objects}
+\input{abstraction}
+\input{memmodel}
+\input{concurrency}
+\input{triggers}
+
+\appendix
+%%\input{unchecked}
+%%\input{bitvectors}
+%%\input{others}
+%%\input{soundness}
+%%\input{caveats}
+\bibliography{tutorial}
+
+
+\end{document}
+
+% vim: spell

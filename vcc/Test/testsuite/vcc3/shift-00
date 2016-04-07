@@ -1,0 +1,27 @@
+#include "vcc.h"
+
+ void foo()
+ {
+        _(assert  (0xDEADF00D << 32) == 0xDEADF00D)
+        _(assert  (0xDEADF00D >> 32) == 0xDEADF00D)
+        _(assert  (0xDEADF00D << -1) == 0xDEADF00D)
+        _(assert  (0xDEADF00D >> -1) == 0xDEADF00D)
+ }
+
+void bar()
+ {
+        _(assert  (0xFFFFFFFFDEADF00D << 64) == 0xFFFFFFFFDEADF00D)
+        _(assert  (0xFFFFFFFFDEADF00D >> 64) == 0xFFFFFFFFDEADF00D)
+        _(assert  (0xFFFFFFFFDEADF00D << -1) == 0xFFFFFFFFDEADF00D)
+        _(assert  (0xFFFFFFFFDEADF00D >> -1) == 0xFFFFFFFFDEADF00D)
+ }
+`
+testcase(5,20) : error VC0000: Shift count must be between 0 and 31.
+testcase(6,20) : error VC0000: Shift count must be between 0 and 31.
+testcase(7,20) : error VC0000: Shift count must be between 0 and 31.
+testcase(8,20) : error VC0000: Shift count must be between 0 and 31.
+testcase(13,20) : error VC0000: Shift count must be between 0 and 63.
+testcase(14,20) : error VC0000: Shift count must be between 0 and 63.
+testcase(15,20) : error VC0000: Shift count must be between 0 and 63.
+testcase(16,20) : error VC0000: Shift count must be between 0 and 63.
+`

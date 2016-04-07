@@ -1,0 +1,35 @@
+#include <vcc.h>
+
+typedef union pte_t {
+	struct {
+		unsigned ppx:20;	
+		unsigned v:1;	
+		unsigned p:1;	
+		unsigned reserved_9_0:10;	
+	} f;			
+	_(backing_member) unsigned uint32;	
+} pte_t;
+
+unsigned *mm_4; 
+
+void update_spt(unsigned i, unsigned j, unsigned k)
+	_(requires i<(8))
+	_(requires k <= (100))
+	_(requires j<=k)
+	_(requires \thread_local_array((((union pte_t *) &mm_4[((33) + (((1)*(8)+(i))*(((100)>>10)+1)))<<10])), (((100))+1)*sizeof(unsigned)))
+	_(writes \array_range((((union pte_t *) &mm_4[((33) + (((1)*(8)+(i))*(((100)>>10)+1)))<<10])), 100+1))
+{
+	pte_t hpte;
+	unsigned l;
+
+	l = j;
+	while (l <= k) 
+		_(invariant j <= l && l <= k+1)
+	{
+		hpte.f.v = 0; 
+		l++;
+	}
+}
+`
+Verification of update_spt succeeded.
+`

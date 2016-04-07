@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+struct S {
+  unsigned __int64 a:63;
+  unsigned __int64 b:1;
+};
+
+int foo(int p, struct S s) 
+  _(requires p == 2 && (s.b & 1 == 1))
+  _(ensures \result == 1)
+{
+    return  ((p == 2) ? 1 : 0) & s.b;
+}
+
+`
+Verification of foo succeeded.
+`

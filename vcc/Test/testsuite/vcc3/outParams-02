@@ -1,0 +1,22 @@
+#include <vcc.h>
+
+int foo(int i _(out int o)) 
+  _(ensures o == i)
+  _(ensures \result == 6)
+{
+  _(ghost o = i)
+  return 6;
+}		
+
+void bar() {
+  _(ghost int p)
+  int r;
+  r = foo(5 _(out p));
+  _(assert p == 5)
+  _(assert r == 6)
+}
+
+`
+Verification of foo succeeded.
+Verification of bar succeeded.
+`

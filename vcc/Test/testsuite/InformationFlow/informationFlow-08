@@ -1,0 +1,43 @@
+#include <vcc.h>
+#include <stdlib.h>
+
+void testArray()
+{
+	int *arr;
+	spec(club_t myPointerFriends = new_club(seclabel_bot);)
+	
+	arr = malloc(42*sizeof(*arr));
+	assume(arr != NULL);
+	
+	arr[2] = 1;
+	assert(set_in(arr + 2, full_extent(as_array(arr, 42))));
+	assert(is_low(arr[2]));
+	
+	spec(add_member(arr + 1, myPointerFriends);)
+	spec(add_member(arr + 40, myPointerFriends);)
+	
+	assert(is_member(arr + 1, myPointerFriends));
+	
+	assert(is_low(arr + 1 == arr + 40));
+}
+
+void testLocalArray()
+{
+	int arr[42];
+	spec(club_t myPointerFriends = new_club(seclabel_bot);)
+	
+	arr[2] = 1;
+	assert(set_in(arr + 2, full_extent(as_array(arr, 42))));
+	assert(is_low(arr[2]));
+
+	spec(add_member(arr + 1, myPointerFriends);)
+	spec(add_member(arr + 40, myPointerFriends);)
+	
+	assert(is_member(arr + 1, myPointerFriends));
+	
+	assert(is_low(arr + 1 == arr + 40));
+}
+`
+Verification of testArray succeeded.
+Verification of testLocalArray succeeded.
+`

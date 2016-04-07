@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+typedef struct B {
+     int c;
+} B;
+
+void bar(B* a)
+     _(writes a)
+     _(requires \mutable(a))
+{
+     _(ghost a->\owns += a)
+}
+
+`
+Verification of bar failed.
+testcase(11,14) : error VC8510: Assertion '\span(obj) is writable in call to a->\owns += a' did not verify.
+`

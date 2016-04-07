@@ -1,0 +1,12 @@
+#include <vcc.h>
+
+int b;
+
+void bar()
+{
+  int tmp = b;
+}
+`
+Verification of bar failed.
+testcase(7,13) : error VC8512: Assertion 'b is thread local (accessing field data)' did not verify.
+`

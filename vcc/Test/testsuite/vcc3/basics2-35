@@ -1,0 +1,8 @@
+#include <vcc.h>
+
+typedef struct S { } S
+typedef struct S { } S
+`
+testcase(4,1) : error VC0000: ; expected.
+; expected.
+`

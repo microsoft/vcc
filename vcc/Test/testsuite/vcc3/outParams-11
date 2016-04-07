@@ -1,0 +1,17 @@
+#include <vcc.h>
+
+_(ghost int foo(int x, int y _(out int o1) _(out int o2))
+  _(ensures o1 == x && o2 == y && \result == 0)
+{
+  _(ghost o1 = x;) _(ghost o2 = y)
+})
+
+void bar()
+{
+  _(ghost int z)
+  _(ghost int y)
+  _(ghost z = foo(1, 2 _(out z) _(out y)))
+}
+`
+testcase(13,30) : error VC9676: duplicate out parameter 'z'
+`

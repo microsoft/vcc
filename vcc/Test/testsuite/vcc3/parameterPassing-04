@@ -1,0 +1,40 @@
+#include <vcc.h>
+
+void foo(int *p)
+  _(writes p)
+{
+  *p = 10;
+}
+
+void foo_w(int *p)
+  _(writes p)
+{
+  *p = 10;
+}
+
+struct A { int x; };
+
+void bar(struct A *a)
+  _(ensures \mutable(a))
+  _(writes a);
+
+int baz()
+{
+  int x;
+  struct A a;
+  foo(&x);
+  bar(&a);
+  return x;
+}
+
+void ok1()
+{
+  struct A a;
+  foo_w(&a.x);
+}
+`
+Verification of foo succeeded.
+Verification of foo_w succeeded.
+Verification of baz succeeded.
+Verification of ok1 succeeded.
+`
