@@ -49,3 +49,6 @@ updated very often.)
   (Describes the VCC typestate)
 
 
+## License
+
+MIT
