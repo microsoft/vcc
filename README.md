@@ -42,7 +42,7 @@ To build VCC:
   [PDF](https://research.microsoft.com/en-us/um/people/moskal/pdf/local.pdf) 
   (The best description of the underlying methodology)
 * **A Practical Verification Methodology for Concurrent Programs.** Ernie Cohen, Michał Moskal, Wolfram Schulte, Stephan Tobies. MSR-TR-2009-15. 
-  [PDF](https://research.microsoft.com/en-us/um/people/moskal/pdf/concurrency3.pdf]
+  [PDF](https://research.microsoft.com/en-us/um/people/moskal/pdf/concurrency3.pdf)
   (The methodological description is out-of-date, but this provides some detail on how programs are actually verified).
 * **A Precise Yet Efficient Memory Model For C.** Ernie Cohen, Michał Moskal, Wolfram Schulte, Stephan Tobies. 
   4th International Workshop on Systems Software Verification (SSV2009). 
