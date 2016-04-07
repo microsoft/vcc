@@ -5,6 +5,10 @@ annotated with function specifications, data invariants, loop invariants, and
 ghost code, and tries to prove these annotations correct. If it succeeds, VCC
 promises that your program actually meets its specifications.
 
+VCC was developed at the [Research in Software Engineering](http://research.microsoft.com/en-us/groups/rise/) 
+group at [Microsoft Research](http://research.microsoft.com/) in Redmond, WA and at the
+European Microsoft Innovation Center in Aachen, Germany.
+
 ## Features
 
 * VCC is **sound** -- if VCC verifies your program, it really is correct (modulo bugs in VCC itself).
