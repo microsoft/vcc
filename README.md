@@ -18,6 +18,11 @@ You get a taste of VCC by running it in your browser from
 [RiSE4Fun website](http://rise4fun.com/vcc). (Note however that this version is not
 updated very often.)
 
+To build VCC:
+* Install Visual Studio Community 2015. Make sure to include F# language.
+* Open `Vcc.sln` and build solution.
+* You'll get `vcc.exe` and related binaries in `Vcc/Host/bin/Debug/`
+
 
 ## Papers
 
