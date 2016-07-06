@@ -31,11 +31,11 @@ To build VCC:
 ## Papers
 
 * **Verifying Concurrent C Programs with VCC.** Ernie Cohen, Mark Hillebrand, Michał Moskal, Wolfram Schulte, Stephan Tobies. 
-  [PDF print](https://research.microsoft.com/en-us/um/people/moskal/pdf/vcc-tutorial-col2.pdf)
-  [PDF screen](https://research.microsoft.com/en-us/um/people/moskal/pdf/vcc-tutorial-col1w.pdf)
+  [PDF print](http://www.codeplex.com/Download?ProjectName=VCC&DownloadId=476508)
+  [PDF screen](http://www.codeplex.com/Download?ProjectName=VCC&DownloadId=476507)
 * **The VCC Manual**
-  [PDF print](https://research.microsoft.com/en-us/um/people/moskal/pdf/vcc-manual-col2.pdf)
-  [PDF screen](https://research.microsoft.com/en-us/um/people/moskal/pdf/vcc-manual-col1w.pdf)
+  [PDF print](http://www.codeplex.com/Download?ProjectName=VCC&DownloadId=476953)
+  [PDF screen](http://www.codeplex.com/Download?ProjectName=VCC&DownloadId=476509)
   (A working draft of the VCC manual.)
 * **VCC: A Practical System for Verifying Concurrent C.** Ernie Cohen, Markus Dahlweid, Mark Hillebrand, Dirk Leinenbach, Michał Moskal, Thomas Santen, Wolfram Schulte, Stephan Tobies. 
   22nd International Conference on Theorem Proving in Higher Order Logics (TPHOLs 2009). (LNCS 5674). 
